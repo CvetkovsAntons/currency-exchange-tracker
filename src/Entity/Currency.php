@@ -4,11 +4,19 @@ namespace App\Entity;
 
 use App\Enum\CurrencyType;
 use App\Repository\CurrencyRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CurrencyRepository::class)]
+#[ORM\Table(name: 'currency', uniqueConstraints: [
+    new UniqueConstraint('code'),
+    new UniqueConstraint('name'),
+    new UniqueConstraint('namePlural'),
+])]
 class Currency
 {
     #[ORM\Id]
@@ -29,7 +37,7 @@ class Currency
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 255)]
-    private string $name_plural;
+    private string $namePlural;
 
     #[ORM\Column(length: 8)]
     #[Assert\NotBlank]
@@ -39,13 +47,15 @@ class Currency
     #[ORM\Column(length: 8)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 8)]
-    private string $symbol_native;
+    private string $symbolNative;
 
     #[ORM\Column]
     #[Assert\PositiveOrZero]
-    private int $decimal_digits;
+    private int $decimalDigits;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
+    // DECIMAL(10, 6) is used for non-conventional currency and cryptocurrency
+    // rounding use cases (e.g. BTC, ETH). Ensures future scalability.
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 6)]
     #[Assert\Type('numeric')]
     #[Assert\GreaterThanOrEqual(0)]
     private string $rounding;
@@ -54,27 +64,36 @@ class Currency
     #[Assert\NotBlank]
     private CurrencyType $type;
 
+    #[ORM\OneToMany(targetEntity: CurrencyPair::class, mappedBy: 'fromCurrency')]
+    private Collection $fromPairs;
+
+    #[ORM\OneToMany(targetEntity: CurrencyPair::class, mappedBy: 'toCurrency')]
+    private Collection $toPairs;
+
     public function __construct(
-        string $code,
-        string $name,
-        string $name_plural,
-        string $symbol,
-        string $symbol_native,
-        int $decimal_digits,
-        string $rounding,
+        string       $code,
+        string       $name,
+        string       $namePlural,
+        string       $symbol,
+        string       $symbolNative,
+        int          $decimalDigits,
+        string       $rounding,
         CurrencyType $type,
-    ) {
+    )
+    {
         $this->code = $code;
         $this->name = $name;
-        $this->name_plural = $name_plural;
+        $this->namePlural = $namePlural;
         $this->symbol = $symbol;
-        $this->symbol_native = $symbol_native;
-        $this->decimal_digits = $decimal_digits;
+        $this->symbolNative = $symbolNative;
+        $this->decimalDigits = $decimalDigits;
         $this->rounding = $rounding;
         $this->type = $type;
+        $this->fromPairs = new ArrayCollection();
+        $this->toPairs = new ArrayCollection();
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -87,7 +106,6 @@ class Currency
     public function setCode(string $code): static
     {
         $this->code = strtoupper($code);
-
         return $this;
     }
 
@@ -99,19 +117,17 @@ class Currency
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
     public function getNamePlural(): string
     {
-        return $this->name_plural;
+        return $this->namePlural;
     }
 
-    public function setNamePlural(string $name_plural): static
+    public function setNamePlural(string $namePlural): static
     {
-        $this->name_plural = $name_plural;
-
+        $this->namePlural = $namePlural;
         return $this;
     }
 
@@ -123,31 +139,28 @@ class Currency
     public function setSymbol(string $symbol): static
     {
         $this->symbol = $symbol;
-
         return $this;
     }
 
     public function getSymbolNative(): string
     {
-        return $this->symbol_native;
+        return $this->symbolNative;
     }
 
-    public function setSymbolNative(string $symbol_native): static
+    public function setSymbolNative(string $symbolNative): static
     {
-        $this->symbol_native = $symbol_native;
-
+        $this->symbolNative = $symbolNative;
         return $this;
     }
 
     public function getDecimalDigits(): int
     {
-        return $this->decimal_digits;
+        return $this->decimalDigits;
     }
 
-    public function setDecimalDigits(int $decimal_digits): static
+    public function setDecimalDigits(int $decimalDigits): static
     {
-        $this->decimal_digits = $decimal_digits;
-
+        $this->decimalDigits = $decimalDigits;
         return $this;
     }
 
@@ -159,7 +172,6 @@ class Currency
     public function setRounding(string $rounding): static
     {
         $this->rounding = $rounding;
-
         return $this;
     }
 
@@ -171,7 +183,49 @@ class Currency
     public function setType(CurrencyType $type): static
     {
         $this->type = $type;
-
         return $this;
     }
+
+    public function getFromPairs(): Collection
+    {
+        return $this->fromPairs;
+    }
+
+    public function addFromPair(CurrencyPair $fromPair): static
+    {
+        if (!$this->fromPairs->contains($fromPair)) {
+            $this->fromPairs->add($fromPair);
+        }
+        return $this;
+    }
+
+    public function removeFromPair(CurrencyPair $fromPair): static
+    {
+        if ($this->fromPairs->contains($fromPair)) {
+            $this->fromPairs->removeElement($fromPair);
+        }
+        return $this;
+    }
+
+    public function getToPairs(): Collection
+    {
+        return $this->toPairs;
+    }
+
+    public function addToPair(CurrencyPair $toPair): static
+    {
+        if (!$this->toPairs->contains($toPair)) {
+            $this->toPairs->add($toPair);
+        }
+        return $this;
+    }
+
+    public function removeToPair(CurrencyPair $toPair): static
+    {
+        if ($this->toPairs->contains($toPair)) {
+            $this->toPairs->removeElement($toPair);
+        }
+        return $this;
+    }
+
 }
