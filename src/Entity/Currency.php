@@ -26,7 +26,7 @@ class Currency
 
     #[ORM\Column(length: 3)]
     #[Assert\NotBlank]
-    #[Assert\Length(min: 3, max: 3)]
+    #[Assert\Length(min: 3, max: 3)] // ISO 4217 standard
     private string $code;
 
     #[ORM\Column(length: 255)]
