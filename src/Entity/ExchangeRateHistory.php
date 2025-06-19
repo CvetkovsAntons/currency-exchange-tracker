@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ExchangeRateHistoryRepository::class)]
 #[ORM\Table(name: 'exchange_rate_history')]
+#[ORM\Index(name: 'idx_exchange_rate_history_currency_pair', columns: ['currency_pair_id'])]
 class ExchangeRateHistory
 {
     #[ORM\Id]

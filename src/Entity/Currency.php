@@ -13,9 +13,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CurrencyRepository::class)]
 #[ORM\Table(name: 'currency', uniqueConstraints: [
-    new UniqueConstraint('code'),
-    new UniqueConstraint('name'),
-    new UniqueConstraint('namePlural'),
+    new UniqueConstraint(name: 'idx_currency_code', columns: ['code']),
+    new UniqueConstraint(name: 'idx_currency_name', columns: ['name']),
+    new UniqueConstraint(name: 'idx_currency_name_plural', columns: ['name_plural']),
 ])]
 class Currency
 {

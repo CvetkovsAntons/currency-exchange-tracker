@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping\UniqueConstraint;
 
 #[ORM\Entity(repositoryClass: ExchangeRateRepository::class)]
 #[ORM\Table(name: 'exchange_rate', uniqueConstraints: [
-    new UniqueConstraint('currency_pair_id')
+    new UniqueConstraint(name: 'idx_exchange_rate_currency_pair', columns: ['currency_pair_id'])
 ])]
 class ExchangeRate
 {
@@ -19,7 +19,7 @@ class ExchangeRate
     #[ORM\Column]
     private readonly int $id;
 
-    #[ORM\OneToOne(inversedBy: 'exchangeRate', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: CurrencyPair::class, inversedBy: 'exchangeRate', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'currency_pair_id', referencedColumnName: 'id', nullable: false)]
     private CurrencyPair $currencyPair;
 

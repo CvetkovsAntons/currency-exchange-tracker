@@ -9,8 +9,9 @@ use Doctrine\ORM\Mapping\UniqueConstraint;
 
 #[ORM\Entity(repositoryClass: CurrencyPairRepository::class)]
 #[ORM\Table(name: 'currency_pair', uniqueConstraints: [
-    new UniqueConstraint(columns: ['from_currency_id', 'to_currency_id'])
+    new UniqueConstraint(name: 'idx_currency_pair_from_currency_to_currency', columns: ['from_currency_id', 'to_currency_id'])
 ])]
+#[ORM\Index(name: 'idx_currency_pair_from_currency', columns: ['from_currency_id'])]
 class CurrencyPair
 {
     #[ORM\Id]
