@@ -3,7 +3,7 @@ services:
         build:
             context: .
             dockerfile: ./docker/php-fpm/Dockerfile
-        container_name: php
+        container_name: currency-exchange-php
         working_dir: /var/www/symfony
         volumes:
             - .:/var/www/symfony
@@ -12,7 +12,7 @@ services:
 
     nginx:
         image: nginx:latest
-        container_name: nginx
+        container_name: currency-exchange-nginx
         ports:
             - "8080:80"
         volumes:
@@ -23,7 +23,7 @@ services:
 
     postgres:
         image: postgres:16
-        container_name: postgres
+        container_name: currency-exchange-postgres
         restart: unless-stopped
         environment:
             POSTGRES_USER: ${DATABASE_USER}
