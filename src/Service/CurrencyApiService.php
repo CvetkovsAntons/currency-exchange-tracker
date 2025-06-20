@@ -4,7 +4,12 @@ namespace App\Service;
 
 use App\Enum\CurrencyApiEndpoint;
 use App\Enum\HttpMethod;
+use App\Exception\CurrencyApiException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -19,7 +24,11 @@ readonly class CurrencyApiService
         private string              $apiKey,
     ) {}
 
-    public function isAlive(): bool
+    /**
+     * @return ResponseInterface
+     * @throws CurrencyApiException
+     */
+    public function status(): ResponseInterface
     {
         try {
             $response = $this->makeRequest(
@@ -27,35 +36,39 @@ readonly class CurrencyApiService
                 endpoint: CurrencyApiEndpoint::STATUS,
             );
 
-            if ($response->getStatusCode() !== 200) {
-                $response->getContent();
-                return false;
-            }
+            $this->validateResponse($response);
 
-            return true;
+            return $response;
         } catch (Throwable $e) {
-            $this->logger->error($e);
-            return false;
+            $this->processException($e);
         }
     }
 
-    public function getCurrencyData(string $currencyCode): ?array
+    /**
+     * @param string ...$currencies
+     * @return ResponseInterface
+     * @throws CurrencyApiException
+     */
+    public function currencies(string ...$currencies): ResponseInterface
     {
         try {
+            $query = [];
+
+            if (!empty($currencies)) {
+                $query['currencies'] = implode(',', $currencies);
+            }
+
             $response = $this->makeRequest(
                 method: HttpMethod::GET,
                 endpoint: CurrencyApiEndpoint::CURRENCIES,
-                options: ['query' => ['currencies' => $currencyCode]],
+                options: ['query' => $query],
             );
 
-            if ($response->getStatusCode() !== 200) {
-                return null;
-            }
+            $this->validateResponse($response);
 
-            return $response->toArray();
+            return $response;
         } catch (Throwable $e) {
-            $this->logger->error($e);
-            return null;
+            $this->processException($e);
         }
     }
 
@@ -73,6 +86,47 @@ readonly class CurrencyApiService
         $options['query']['apikey'] = $this->apiKey;
 
         return $this->httpClient->request($method->value, $url, $options);
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @return void
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    private function validateResponse(ResponseInterface $response): void
+    {
+        $statusCode = $response->getStatusCode();
+
+        if ($statusCode === 200) {
+            return;
+        }
+
+        $message = $response->getContent(false);
+
+        throw new HttpException(
+            statusCode: $statusCode,
+            message: "Unexpected HTTP status code: $statusCode. Message: $message",
+            code: $statusCode
+        );
+    }
+
+    /**
+     * @param Throwable $throwable
+     * @return void
+     * @throws CurrencyApiException
+     */
+    private function processException(Throwable $throwable): void
+    {
+        $this->logger->error($throwable);
+
+        throw new CurrencyApiException(
+            message: "Currency API request failed: {$throwable->getMessage()}",
+            code: $throwable->getCode(),
+            previous: $throwable
+        );
     }
 
 }

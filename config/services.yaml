@@ -23,3 +23,5 @@ services:
         arguments:
             $apiKey: '%env(CURRENCY_API_KEY)%'
             $baseUrl: '%env(CURRENCY_API_BASE_URL)%'
+
+    Symfony\Component\Serializer\Normalizer\ObjectNormalizer: ~

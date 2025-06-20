@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Factory\CurrencyFactory;
+use App\Provider\CurrencyProvider;
 use App\Repository\CurrencyRepository;
 use App\Service\CurrencyApiService;
 use Exception;
@@ -27,6 +28,7 @@ class CurrencyCreateCommand extends Command
         private readonly CurrencyRepository $repository,
         private readonly CurrencyFactory    $factory,
         private readonly CurrencyApiService $apiService,
+        private readonly CurrencyProvider   $provider,
         private readonly LoggerInterface    $logger,
     )
     {
@@ -46,28 +48,28 @@ class CurrencyCreateCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $currencyCode = $input->getArgument(self::ARG_CURRENCY_CODE);
-        $currencyCode = strtoupper($currencyCode);
-
         try {
+            $currencyCode = $input->getArgument(self::ARG_CURRENCY_CODE);
+            $currencyCode = strtoupper($currencyCode);
+
             if (!preg_match('/^[A-Z]{3}$/', $currencyCode)) {
                 throw new Exception('Incorrect currency code format as per ISO 4217 standard. Example: EUR');
             }
 
-            if (!$this->apiService->isAlive()) {
+            if (!$this->apiService->status()) {
                 throw new Exception("Couldn't connect to API");
             }
 
-            $currencyData = $this->apiService->getCurrencyData($currencyCode);
-            $io->note(print_r($currencyData, true));
+            $currency = $this->provider->getCurrency($currencyCode);
 
-            if (empty($currencyData)) {
+            if (empty($currency)) {
                 throw new Exception("Data for $currencyCode not found");
             }
 
-            $currency = $this->factory->create();
+            $currency = $this->factory->create($currency);
+            $this->repository->save($currency);
 
-            $io->success(" ($currencyCode) currency has been created!");
+            $io->success("{$currency->getName()} ($currencyCode) has been created!");
 
             return Command::SUCCESS;
         } catch (Throwable $e) {

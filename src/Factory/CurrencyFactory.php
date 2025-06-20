@@ -2,17 +2,24 @@
 
 namespace App\Factory;
 
-use App\Entity\Currency;
-use App\Entity\CurrencyPair;
+use App\Dto\Currency as CurrencyDto;
+use App\Entity\Currency as CurrencyEntity;
+use App\Enum\CurrencyType;
 
 class CurrencyFactory
 {
-    public static function create(Currency $from, Currency $to): CurrencyPair
+    public function create(CurrencyDto $dto): CurrencyEntity
     {
-        $pair = new CurrencyPair();
-        $pair->setFromCurrency($from);
-        $pair->setToCurrency($to);
-        return $pair;
+        return new CurrencyEntity(
+            code: $dto->code,
+            name: $dto->name,
+            namePlural: $dto->name_plural,
+            symbol: $dto->symbol,
+            symbolNative: $dto->symbol_native,
+            decimalDigits: $dto->decimal_digits,
+            rounding: $dto->rounding,
+            type: CurrencyType::from($dto->type),
+        );
     }
 
 }

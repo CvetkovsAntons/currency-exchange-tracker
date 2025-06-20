@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Currency;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -11,33 +12,21 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CurrencyRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly EntityManagerInterface $em
+    )
     {
         parent::__construct($registry, Currency::class);
     }
 
-//    /**
-//     * @return Currency[] Returns an array of Currency objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function save(Currency $currency, bool $flush = true): void
+    {
+        $this->em->persist($currency);
 
-//    public function findOneBySomeField($value): ?Currency
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($flush) {
+            $this->em->flush();
+        }
+    }
+
 }
