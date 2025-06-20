@@ -20,6 +20,17 @@ readonly class CurrencyProvider
     ) {}
 
     /**
+     * @return bool
+     * @throws TransportExceptionInterface
+     */
+    public function isAlive(): bool
+    {
+        $response = $this->apiService->status();
+
+        return $response->getStatusCode() === 200;
+    }
+
+    /**
      * @param string ...$code
      * @return CUrrency[]|null
      * @throws CurrencyApiException
@@ -31,6 +42,10 @@ readonly class CurrencyProvider
      */
     public function getCurrencies(string ...$code): ?array
     {
+        if (!$this->isAlive()) {
+            throw new CurrencyApiException("Couldn't connect to API");
+        }
+
         $response = $this->apiService->currencies(...$code);
 
         return array_map(

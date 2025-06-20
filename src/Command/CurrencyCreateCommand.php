@@ -27,7 +27,6 @@ class CurrencyCreateCommand extends Command
     public function __construct(
         private readonly CurrencyRepository $repository,
         private readonly CurrencyFactory    $factory,
-        private readonly CurrencyApiService $apiService,
         private readonly CurrencyProvider   $provider,
         private readonly LoggerInterface    $logger,
     )
@@ -56,10 +55,6 @@ class CurrencyCreateCommand extends Command
                 throw new Exception('Incorrect currency code format as per ISO 4217 standard. Example: EUR');
             }
 
-            if (!$this->apiService->status()) {
-                throw new Exception("Couldn't connect to API");
-            }
-
             $currency = $this->provider->getCurrency($currencyCode);
 
             if (empty($currency)) {
@@ -67,6 +62,7 @@ class CurrencyCreateCommand extends Command
             }
 
             $currency = $this->factory->create($currency);
+
             $this->repository->save($currency);
 
             $io->success("{$currency->getName()} ($currencyCode) has been created!");
