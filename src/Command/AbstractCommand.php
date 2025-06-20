@@ -2,10 +2,15 @@
 
 namespace App\Command;
 
+use App\Enum\YesNo;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\MissingInputException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 
@@ -35,6 +40,34 @@ abstract class AbstractCommand extends Command
     {
         $io->error(sprintf("Error occurred during command execution: %s", $e->getMessage()));
         $this->logger->error($e);
+    }
+
+    protected final function inputCurrencyCode(string $question, SymfonyStyle $io): string
+    {
+        $validator = function (?string $input) {
+            if (empty($input)) {
+                throw new MissingInputException('Currency code is required');
+            }
+
+            if (!preg_match('/^[A-Z]{3}$/', $input)) {
+                throw new RuntimeException('Incorrect currency code format as per ISO 4217 standard (e.g. PHP)');
+            }
+
+            return $input;
+        };
+
+        $question = new Question($question)
+            ->setNormalizer(fn($v) => strtoupper($v))
+            ->setValidator($validator);
+
+        return $io->askQuestion($question);
+    }
+
+    protected final function askYesNo(string $question, SymfonyStyle $io): YesNo
+    {
+        $question = new ChoiceQuestion($question, YesNo::classifier(), YesNo::YES->value);
+
+        return YesNo::from($io->askQuestion($question));
     }
 
 }

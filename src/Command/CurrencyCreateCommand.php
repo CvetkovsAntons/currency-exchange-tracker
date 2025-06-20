@@ -8,7 +8,6 @@ use App\Repository\CurrencyRepository;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -17,8 +16,6 @@ use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Throwable;
-
 #[AsCommand(
     name: 'app:currency:create',
     description: 'Creates a new currency',
@@ -37,15 +34,6 @@ class CurrencyCreateCommand extends AbstractCommand
         parent::__construct($logger);
     }
 
-    protected function configure(): void
-    {
-        $this->addArgument(
-            name: self::ARG_CURRENCY_CODE,
-            mode: InputArgument::REQUIRED,
-            description: 'Unique currency code. Example: EUR'
-        );
-    }
-
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
@@ -60,14 +48,19 @@ class CurrencyCreateCommand extends AbstractCommand
      */
     public function process(InputInterface $input, OutputInterface $output, SymfonyStyle $io): void
     {
-        $io->info('Currency creation is in the progress. It can take up some time...');
+        $currencyCode = $this->inputCurrencyCode(
+            question: 'Currency code to import from API to database (e.g. EUR)',
+            io: $io
+        );
 
-        $currencyCode = $input->getArgument(self::ARG_CURRENCY_CODE);
-        $currencyCode = strtoupper($currencyCode);
+        $question = sprintf('Are you sure you want to import %s?', $currencyCode);
 
-        if (!preg_match('/^[A-Z]{3}$/', $currencyCode)) {
-            throw new Exception('Incorrect currency code format as per ISO 4217 standard. Example: EUR');
+        if ($this->askYesNo($question, $io)->isNo()) {
+            $io->warning('Currency creation process has been canceled!');
+            return;
         }
+
+        $io->info('Currency creation is in the progress. It can take up some time...');
 
         $currency = $this->provider->getCurrency($currencyCode);
 
