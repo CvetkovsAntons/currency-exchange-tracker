@@ -8,18 +8,22 @@ use App\Repository\CurrencyRepository;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Throwable;
 
 #[AsCommand(
     name: 'app:currency:create',
     description: 'Creates a new currency',
 )]
-class CurrencyCreateCommand extends Command
+class CurrencyCreateCommand extends AbstractCommand
 {
     private const string ARG_CURRENCY_CODE = 'currency-code';
 
@@ -30,7 +34,7 @@ class CurrencyCreateCommand extends Command
         private readonly LoggerInterface    $logger,
     )
     {
-        parent::__construct();
+        parent::__construct($logger);
     }
 
     protected function configure(): void
@@ -42,38 +46,40 @@ class CurrencyCreateCommand extends Command
         );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param SymfonyStyle $io
+     * @return void
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     * @throws Exception
+     */
+    public function process(InputInterface $input, OutputInterface $output, SymfonyStyle $io): void
     {
-        $io = new SymfonyStyle($input, $output);
+        $io->info('Currency creation is in the progress. It can take up some time...');
 
-        try {
-            $io->info('Currency creation is in the progress. It can take up some time...');
+        $currencyCode = $input->getArgument(self::ARG_CURRENCY_CODE);
+        $currencyCode = strtoupper($currencyCode);
 
-            $currencyCode = $input->getArgument(self::ARG_CURRENCY_CODE);
-            $currencyCode = strtoupper($currencyCode);
-
-            if (!preg_match('/^[A-Z]{3}$/', $currencyCode)) {
-                throw new Exception('Incorrect currency code format as per ISO 4217 standard. Example: EUR');
-            }
-
-            $currency = $this->provider->getCurrency($currencyCode);
-
-            if (empty($currency)) {
-                throw new Exception("Data for $currencyCode not found");
-            }
-
-            $currency = $this->factory->create($currency);
-
-            $this->repository->save($currency);
-
-            $io->success("{$currency->getName()} ($currencyCode) has been created!");
-
-            return Command::SUCCESS;
-        } catch (Throwable $e) {
-            $io->error("Couldn't create currency: " . $e->getMessage());
-            $this->logger->error($e);
-            return Command::FAILURE;
+        if (!preg_match('/^[A-Z]{3}$/', $currencyCode)) {
+            throw new Exception('Incorrect currency code format as per ISO 4217 standard. Example: EUR');
         }
+
+        $currency = $this->provider->getCurrency($currencyCode);
+
+        if (empty($currency)) {
+            throw new Exception(sprintf("Data for %s not found", $currencyCode));
+        }
+
+        $currency = $this->factory->create($currency);
+
+        $this->repository->save($currency);
+
+        $io->success(sprintf("%s (%s) has been created!", $currency->getName(), $currencyCode));
     }
 
 }

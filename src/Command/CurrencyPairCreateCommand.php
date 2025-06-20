@@ -49,11 +49,11 @@ class CurrencyPairCreateCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $arg1 = $input->getArgument('arg1');
+            $from_currency_code = $input->getArgument(self::ARG_FROM_CURRENCY_CODE);
+            $to_currency_code = $input->getArgument(self::ARG_TO_CURRENCY_CODE);
 
-            if ($arg1) {
-                $io->note(sprintf('You passed an argument: %s', $arg1));
-            }
+            $io->note(sprintf('You passed an argument 1: %s', $from_currency_code));
+            $io->note(sprintf('You passed an argument: %s', $to_currency_code));
 
             if ($input->getOption('option1')) {
                 // ...
@@ -63,7 +63,7 @@ class CurrencyPairCreateCommand extends Command
 
             return Command::SUCCESS;
         } catch (Throwable $e) {
-            $io->error("Couldn't create currency pair: " . $e->getMessage());
+            $io->error(sprintf("Couldn't create currency: %s", $e->getMessage()));
             $this->logger->error($e);
             return Command::FAILURE;
         }
