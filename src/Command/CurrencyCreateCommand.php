@@ -5,7 +5,6 @@ namespace App\Command;
 use App\Factory\CurrencyFactory;
 use App\Provider\CurrencyProvider;
 use App\Repository\CurrencyRepository;
-use App\Service\CurrencyApiService;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -37,9 +36,9 @@ class CurrencyCreateCommand extends Command
     protected function configure(): void
     {
         $this->addArgument(
-            self::ARG_CURRENCY_CODE,
-            InputArgument::REQUIRED,
-            'Unique currency code. Example: EUR'
+            name: self::ARG_CURRENCY_CODE,
+            mode: InputArgument::REQUIRED,
+            description: 'Unique currency code. Example: EUR'
         );
     }
 
