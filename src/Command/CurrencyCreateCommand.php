@@ -47,6 +47,8 @@ class CurrencyCreateCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
+            $io->info('Currency creation is in the progress. It can take up some time...');
+
             $currencyCode = $input->getArgument(self::ARG_CURRENCY_CODE);
             $currencyCode = strtoupper($currencyCode);
 
