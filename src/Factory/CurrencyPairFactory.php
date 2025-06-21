@@ -9,10 +9,9 @@ class CurrencyPairFactory
 {
     public static function create(Currency $from, Currency $to): CurrencyPair
     {
-        $pair = new CurrencyPair();
-        $pair->setFromCurrency($from);
-        $pair->setToCurrency($to);
-        return $pair;
+        return new CurrencyPair()
+            ->setFromCurrency($from)
+            ->setToCurrency($to);
     }
 
 }

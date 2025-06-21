@@ -3,8 +3,8 @@
 namespace App\Command;
 
 use App\Enum\YesNo;
+use App\Exception\CurrencyCodeException;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\MissingInputException;
 use Symfony\Component\Console\Input\InputInterface;
@@ -42,22 +42,23 @@ abstract class AbstractCommand extends Command
         $this->logger->error($e);
     }
 
-    protected final function inputCurrencyCode(string $question, SymfonyStyle $io): string
+    protected function inputCurrencyCode(string $question, SymfonyStyle $io, ?callable $validation = null): string
     {
-        $validator = function (?string $input) {
+        $validator = function (?string $input) use ($validation): string {
             if (empty($input)) {
                 throw new MissingInputException('Currency code is required');
             }
-
             if (!preg_match('/^[A-Z]{3}$/', $input)) {
-                throw new RuntimeException('Incorrect currency code format as per ISO 4217 standard (e.g. PHP)');
+                throw new CurrencyCodeException('Incorrect currency code format as per ISO 4217 standard (e.g. PHP)');
             }
-
+            if (!is_null($validation)) {
+                $validation($input);
+            }
             return $input;
         };
 
         $question = new Question($question)
-            ->setNormalizer(fn($v) => strtoupper($v))
+            ->setNormalizer(fn($v) => strtoupper(trim($v)))
             ->setValidator($validator);
 
         return $io->askQuestion($question);

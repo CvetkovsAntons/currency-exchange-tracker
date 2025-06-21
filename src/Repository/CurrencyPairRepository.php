@@ -2,8 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\Currency;
 use App\Entity\CurrencyPair;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -11,33 +13,33 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CurrencyPairRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly EntityManagerInterface $em
+    )
     {
         parent::__construct($registry, CurrencyPair::class);
     }
 
-//    /**
-//     * @return CurrencyPair[] Returns an array of CurrencyPair objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function save(CurrencyPair $currency, bool $flush = true): void
+    {
+        $this->em->persist($currency);
 
-//    public function findOneBySomeField($value): ?CurrencyPair
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($flush) {
+            $this->em->flush();
+        }
+    }
+
+    public function exists(Currency $from, Currency $to): bool
+    {
+        return (bool) $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.fromCurrency = :from')
+            ->andWhere('c.toCurrency = :to')
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
 }

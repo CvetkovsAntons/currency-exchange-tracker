@@ -29,4 +29,24 @@ class CurrencyRepository extends ServiceEntityRepository
         }
     }
 
+    public function getByCode(string $code): ?Currency
+    {
+        return $this->findOneBy(['code' => $code]);
+    }
+
+    public function exists(string $code): bool
+    {
+        return !is_null($this->getByCode($code));
+    }
+
+    public function getAllCodes(): array
+    {
+        $codes = $this->createQueryBuilder('c')
+            ->select('c.code')
+            ->getQuery()
+            ->getResult();
+
+        return array_column($codes, 'code');
+    }
+
 }

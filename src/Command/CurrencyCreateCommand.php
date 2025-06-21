@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Exception\CurrencyCodeException;
 use App\Factory\CurrencyFactory;
 use App\Provider\CurrencyProvider;
 use App\Repository\CurrencyRepository;
@@ -22,8 +23,6 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 )]
 class CurrencyCreateCommand extends AbstractCommand
 {
-    private const string ARG_CURRENCY_CODE = 'currency-code';
-
     public function __construct(
         private readonly CurrencyRepository $repository,
         private readonly CurrencyFactory    $factory,
@@ -48,9 +47,18 @@ class CurrencyCreateCommand extends AbstractCommand
      */
     public function process(InputInterface $input, OutputInterface $output, SymfonyStyle $io): void
     {
+        $io->section('Currency creation');
+
+        $validation = function (string $input) {
+            if ($this->repository->exists($input)) {
+                throw new CurrencyCodeException(sprintf('Currency %s already exists.', $input));
+            }
+        };
+
         $currencyCode = $this->inputCurrencyCode(
             question: 'Currency code to import from API to database (e.g. EUR)',
-            io: $io
+            io: $io,
+            validation: $validation,
         );
 
         $question = sprintf('Are you sure you want to import %s?', $currencyCode);
@@ -72,7 +80,11 @@ class CurrencyCreateCommand extends AbstractCommand
 
         $this->repository->save($currency);
 
-        $io->success(sprintf("%s (%s) has been created!", $currency->getName(), $currencyCode));
+        $io->success(sprintf(
+            '%s (%s) has been created!',
+            $currency->getName(),
+            $currencyCode
+        ));
     }
 
 }
