@@ -58,6 +58,14 @@ readonly class CurrencyService
         return $this->repository->exists($currencyCode);
     }
 
+    /**
+     * @return Currency[]
+     */
+    public function getAll(): array
+    {
+        return $this->repository->findAll();
+    }
+
     public function get(string $currencyCode): ?Currency
     {
         return $this->repository->getByCode($currencyCode);

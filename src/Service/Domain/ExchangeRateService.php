@@ -62,7 +62,7 @@ readonly class ExchangeRateService
         return $this->repository->exists($currencyPair);
     }
 
-    public function update(ExchangeRate $exchangeRate): ExchangeRate
+    public function sync(ExchangeRate $exchangeRate): ExchangeRate
     {
         $currencyPair = $exchangeRate->getCurrencyPair();
 
@@ -84,24 +84,6 @@ readonly class ExchangeRateService
         return $exchangeRate;
     }
 
-    public function updateByPair(CurrencyPair $currencyPair): ExchangeRate
-    {
-        $exchangeRate = $this->get($currencyPair);
-
-        if (is_null($exchangeRate)) {
-            $fromCurrency = $currencyPair->getFromCurrency();
-            $toCurrency = $currencyPair->getToCurrency();
-
-            throw new CurrencyPairException(sprintf(
-                "Exchange rate for currency pair %s-%s doesn't exist",
-                $fromCurrency->getCode(),
-                $toCurrency->getCode()
-            ));
-        }
-
-        return $this->update($exchangeRate);
-    }
-
     private function saveExchangeRate(ExchangeRate $exchangeRate): void
     {
         $this->repository->save($exchangeRate);
@@ -113,6 +95,11 @@ readonly class ExchangeRateService
     public function get(CurrencyPair $currencyPair): ?ExchangeRate
     {
         return $this->repository->findOneBy(['currencyPair' => $currencyPair]);
+    }
+
+    public function getAll(): array
+    {
+        return $this->repository->findAll();
     }
 
 }

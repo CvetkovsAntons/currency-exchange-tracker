@@ -2,7 +2,10 @@
 
 namespace App\Command;
 
+use App\Entity\Currency;
+use App\Enum\Argument;
 use App\Enum\YesNo;
+use App\Service\Domain\CurrencyService;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -16,7 +19,10 @@ use Throwable;
 
 abstract class AbstractCommand extends Command
 {
-    public function __construct(private readonly LoggerInterface $logger)
+    public function __construct(
+        private readonly LoggerInterface $logger,
+        private readonly CurrencyService $currencyService,
+    )
     {
         parent::__construct();
     }
@@ -34,7 +40,11 @@ abstract class AbstractCommand extends Command
         }
     }
 
-    abstract protected function process(InputInterface $input, OutputInterface $output, SymfonyStyle $io): void;
+    abstract protected function process(
+        InputInterface $input,
+        OutputInterface $output,
+        SymfonyStyle $io
+    ): void;
 
     protected function processError(Throwable $e, SymfonyStyle $io): void
     {
@@ -42,33 +52,37 @@ abstract class AbstractCommand extends Command
         $this->logger->error($e);
     }
 
-    protected function inputCurrencyCode(string $question, SymfonyStyle $io, ?callable $validation = null): string
+    protected function getCurrency(
+        Argument $argument,
+        InputInterface $input,
+        SymfonyStyle $io,
+        ?string $question = null,
+    ): Currency
     {
-        $validator = function (?string $input) use ($validation): string {
-            if (empty($input)) {
-                throw new MissingInputException('Currency code is required');
-            }
-            if (!preg_match('/^[A-Z]{3}$/', $input)) {
-                throw new InvalidArgumentException('Incorrect currency code format as per ISO 4217 standard (e.g. PHP)');
-            }
-            if (!is_null($validation)) {
-                $validation($input);
-            }
-            return $input;
-        };
+        $currencyCode = $input->getArgument($argument->value);
+        if (is_null($currencyCode)) {
+            $question ??= 'Select a currency';
 
-        $question = new Question($question)
-            ->setNormalizer(fn($v) => strtoupper(trim($v)))
-            ->setValidator($validator);
+            $currencyCodes = $this->currencyService->getAllCodes();
+            $question = new ChoiceQuestion($question, $currencyCodes)
+                ->setNormalizer(fn($v) => is_numeric($v) ? $currencyCodes[$v] : $v);
 
-        return $io->askQuestion($question);
-    }
+            $currencyCode = $io->askQuestion($question);
+        }
 
-    protected final function askYesNo(string $question, SymfonyStyle $io): YesNo
-    {
-        $question = new ChoiceQuestion($question, YesNo::classifier(), YesNo::YES->value);
+        $currency = $this->currencyService->get($currencyCode);
+        if (is_null($currency)) {
+            $io->warning(sprintf(
+                "Currency %s doesn't exist. Will be created",
+                $currencyCode
+            ));
 
-        return YesNo::from($io->askQuestion($question));
+            $currency = $this->currencyService->create($currencyCode);
+
+            $io->success(sprintf('Currency %s has been created', $currencyCode));
+        }
+
+        return $currency;
     }
 
 }
