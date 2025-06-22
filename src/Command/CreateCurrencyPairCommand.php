@@ -13,6 +13,7 @@ use App\Service\Domain\CurrencyService;
 use http\Exception\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -78,7 +79,35 @@ class CreateCurrencyPairCommand extends AbstractCommand
 
         $io->info('Currency pair creation is in the progress. It can take up some time...');
 
-        $this->pairService->createFromCodes($fromCurrencyCode, $toCurrencyCode);
+        $fromCurrency = $this->currencyService->get($fromCurrencyCode);
+        if (is_null($fromCurrency)) {
+            $currencyCreate = new ArrayInput([
+                'command' => 'app:create:currency',
+                Argument::CURRENCY->value => $fromCurrencyCode,
+            ]);
+
+            $currencyCreate->setInteractive(false);
+
+            $this->getApplication()->doRun($currencyCreate, $output);
+
+            $fromCurrency = $this->currencyService->get($fromCurrencyCode);
+        }
+
+        $toCurrency = $this->currencyService->get($toCurrencyCode);
+        if (is_null($toCurrency)) {
+            $currencyCreate = new ArrayInput([
+                'command' => 'app:create:currency',
+                Argument::CURRENCY->value => $toCurrencyCode,
+            ]);
+
+            $currencyCreate->setInteractive(false);
+
+            $this->getApplication()->doRun($currencyCreate, $output);
+
+            $toCurrency = $this->currencyService->get($toCurrencyCode);
+        }
+
+        $this->pairService->create($fromCurrency, $toCurrency);
 
         $io->success(sprintf(
             "%s-%s currency pair has been created!",

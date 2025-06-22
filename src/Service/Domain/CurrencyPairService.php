@@ -46,13 +46,6 @@ readonly class CurrencyPairService
         return $this->repository->exists($from, $to);
     }
 
-    public function existsByCodes(string $fromCurrencyCode, string $toCurrencyCode): bool
-    {
-        [$from, $to] = $this->prepareCurrencies($fromCurrencyCode, $toCurrencyCode);
-
-        return $this->repository->exists($from, $to);
-    }
-
     public function get(Currency $from, Currency $to): ?CurrencyPair
     {
         return $this->repository->get($from, $to);
@@ -72,12 +65,12 @@ readonly class CurrencyPairService
      */
     private function prepareCurrencies(string $fromCurrencyCode, string $toCurrencyCode): array
     {
-        $fromCurrency = $this->currencyService->getByCode($fromCurrencyCode);
+        $fromCurrency = $this->currencyService->get($fromCurrencyCode);
         if (is_null($fromCurrency)) {
             throw new CurrencyCodeException($fromCurrencyCode);
         }
 
-        $toCurrency = $this->currencyService->getByCode($toCurrencyCode);
+        $toCurrency = $this->currencyService->get($toCurrencyCode);
         if (is_null($toCurrency)) {
             throw new CurrencyCodeException($toCurrencyCode);
         }

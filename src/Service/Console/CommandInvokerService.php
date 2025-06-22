@@ -5,7 +5,6 @@ namespace App\Service\Console;
 use App\Enum\Argument;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 readonly class CommandInvokerService
@@ -17,7 +16,7 @@ readonly class CommandInvokerService
     public function runCreateCurrencyPair(
         string $fromCurrencyCode,
         string $toCurrencyCode,
-        ?OutputInterface $output = null
+        OutputInterface $output
     ): void
     {
         $currencyPairCreate = new ArrayInput([
@@ -27,8 +26,6 @@ readonly class CommandInvokerService
         ]);
 
         $currencyPairCreate->setInteractive(false);
-
-        $output ??= new NullOutput();
 
         $this->application->doRun($currencyPairCreate, $output);
     }

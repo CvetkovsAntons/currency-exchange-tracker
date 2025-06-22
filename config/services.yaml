@@ -25,3 +25,9 @@ services:
             $baseUrl: '%env(CURRENCY_API_BASE_URL)%'
 
     Symfony\Component\Serializer\Normalizer\ObjectNormalizer: ~
+
+    Symfony\Component\Console\Application: ~
+
+    App\Service\Console\CommandInvokerService:
+        arguments:
+            $application: '@Symfony\Component\Console\Application'

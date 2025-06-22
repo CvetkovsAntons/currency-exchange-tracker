@@ -2,12 +2,14 @@
 
 namespace App\Command;
 
+use App\Enum\Argument;
 use App\Exception\CurrencyApiException;
 use App\Exception\CurrencyCodeException;
 use App\Service\Domain\CurrencyService;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -26,6 +28,16 @@ class CreateCurrencyCommand extends AbstractCommand
     )
     {
         parent::__construct($logger);
+    }
+
+    protected function configure(): void
+    {
+        $this
+            ->addArgument(
+                name: Argument::CURRENCY->value,
+                mode: InputArgument::OPTIONAL,
+                description: 'Currency code (e.g. USD)'
+            );
     }
 
     /**
@@ -49,11 +61,14 @@ class CreateCurrencyCommand extends AbstractCommand
             }
         };
 
-        $currencyCode = $this->inputCurrencyCode(
-            question: 'Currency code to import from API to database (e.g. EUR)',
-            io: $io,
-            validation: $validation,
-        );
+        $currencyCode = $input->getArgument(Argument::CURRENCY->value);
+        if (is_null($currencyCode)) {
+            $currencyCode = $this->inputCurrencyCode(
+                question: 'Currency code to import from API to database (e.g. EUR)',
+                io: $io,
+                validation: $validation,
+            );
+        }
 
         $question = sprintf('Are you sure you want to import %s?', $currencyCode);
 

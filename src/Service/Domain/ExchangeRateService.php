@@ -4,6 +4,7 @@ namespace App\Service\Domain;
 
 use App\Entity\CurrencyPair;
 use App\Entity\ExchangeRate;
+use App\Exception\CurrencyPairException;
 use App\Factory\ExchangeRateFactory;
 use App\Factory\ExchangeRateHistoryFactory;
 use App\Provider\CurrencyApiProvider;
@@ -22,7 +23,6 @@ readonly class ExchangeRateService
         private ExchangeRateHistoryRepository $historyRepository,
         private CurrencyApiProvider           $provider,
         private CurrencyPairService           $pairService,
-        private CommandInvokerService         $commandInvokerService,
     ) {}
 
     public function create(CurrencyPair $currencyPair): ExchangeRate
@@ -31,8 +31,11 @@ readonly class ExchangeRateService
         $toCurrency = $currencyPair->getToCurrency();
 
         if (!$this->pairService->exists($fromCurrency, $toCurrency)) {
-            $this->commandInvokerService->runCreateCurrencyPair($fromCurrency->getCode(), $toCurrency->getCode());
-            $currencyPair = $this->pairService->get($fromCurrency,  $toCurrency);
+            throw new CurrencyPairException(sprintf(
+                "Currency pair %s-%s doesn't exist",
+                $fromCurrency->getCode(),
+                $toCurrency->getCode()
+            ));
         }
 
         if ($this->exists($currencyPair)) {
@@ -64,7 +67,14 @@ readonly class ExchangeRateService
         $currencyPair = $exchangeRate->getCurrencyPair();
 
         if (!$this->exists($currencyPair)) {
-            return $this->create($currencyPair);
+            $fromCurrency = $currencyPair->getFromCurrency();
+            $toCurrency = $currencyPair->getToCurrency();
+
+            throw new CurrencyPairException(sprintf(
+                "Exchange rate for currency pair %s-%s doesn't exist",
+                $fromCurrency->getCode(),
+                $toCurrency->getCode()
+            ));
         }
 
         $exchangeRate->setRate($this->provider->getLatestExchangeRate($currencyPair));
@@ -79,7 +89,14 @@ readonly class ExchangeRateService
         $exchangeRate = $this->get($currencyPair);
 
         if (is_null($exchangeRate)) {
-            return $this->create($currencyPair);
+            $fromCurrency = $currencyPair->getFromCurrency();
+            $toCurrency = $currencyPair->getToCurrency();
+
+            throw new CurrencyPairException(sprintf(
+                "Exchange rate for currency pair %s-%s doesn't exist",
+                $fromCurrency->getCode(),
+                $toCurrency->getCode()
+            ));
         }
 
         return $this->update($exchangeRate);

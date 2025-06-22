@@ -58,7 +58,7 @@ readonly class CurrencyService
         return $this->repository->exists($currencyCode);
     }
 
-    public function getByCode(string $currencyCode): ?Currency
+    public function get(string $currencyCode): ?Currency
     {
         return $this->repository->getByCode($currencyCode);
     }
