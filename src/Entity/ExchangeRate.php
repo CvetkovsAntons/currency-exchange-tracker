@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ExchangeRateRepository;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -35,13 +36,13 @@ class ExchangeRate
     #[ORM\PrePersist]
     public function onPrePersist(): void
     {
-        $this->createdAt = $this->updatedAt = new \DateTimeImmutable();
+        $this->createdAt = $this->updatedAt = new DateTimeImmutable();
     }
 
     #[ORM\PreUpdate]
     public function onPreUpdate(): void
     {
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = new DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -68,6 +69,7 @@ class ExchangeRate
     public function setRate(string $rate): static
     {
         $this->rate = $rate;
+        $this->updatedAt = new DateTimeImmutable();
         return $this;
     }
 

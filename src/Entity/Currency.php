@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Enum\CurrencyType;
 use App\Repository\CurrencyRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -69,29 +68,6 @@ class Currency
 
     #[ORM\OneToMany(targetEntity: CurrencyPair::class, mappedBy: 'toCurrency')]
     private Collection $toPairs;
-
-    public function __construct(
-        string       $code,
-        string       $name,
-        string       $namePlural,
-        string       $symbol,
-        string       $symbolNative,
-        int          $decimalDigits,
-        string       $rounding,
-        CurrencyType $type,
-    )
-    {
-        $this->code = $code;
-        $this->name = $name;
-        $this->namePlural = $namePlural;
-        $this->symbol = $symbol;
-        $this->symbolNative = $symbolNative;
-        $this->decimalDigits = $decimalDigits;
-        $this->rounding = $rounding;
-        $this->type = $type;
-        $this->fromPairs = new ArrayCollection();
-        $this->toPairs = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -191,6 +167,12 @@ class Currency
         return $this->fromPairs;
     }
 
+    public function setFromPairs(Collection $fromPairs): static
+    {
+        $this->fromPairs = $fromPairs;
+        return $this;
+    }
+
     public function addFromPair(CurrencyPair $fromPair): static
     {
         if (!$this->fromPairs->contains($fromPair)) {
@@ -210,6 +192,12 @@ class Currency
     public function getToPairs(): Collection
     {
         return $this->toPairs;
+    }
+
+    public function setToPairs(Collection $toPairs): static
+    {
+        $this->toPairs = $toPairs;
+        return $this;
     }
 
     public function addToPair(CurrencyPair $toPair): static

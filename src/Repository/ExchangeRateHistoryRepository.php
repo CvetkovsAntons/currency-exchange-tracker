@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\ExchangeRateHistory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -11,33 +12,21 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ExchangeRateHistoryRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly EntityManagerInterface $em,
+    )
     {
         parent::__construct($registry, ExchangeRateHistory::class);
     }
 
-//    /**
-//     * @return ExchangeRateHistory[] Returns an array of ExchangeRateHistory objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('e')
-//            ->andWhere('e.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('e.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function save(ExchangeRateHistory $exchangeRate, bool $flush = true): void
+    {
+        $this->em->persist($exchangeRate);
 
-//    public function findOneBySomeField($value): ?ExchangeRateHistory
-//    {
-//        return $this->createQueryBuilder('e')
-//            ->andWhere('e.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($flush) {
+            $this->em->flush();
+        }
+    }
+
 }

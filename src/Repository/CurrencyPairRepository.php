@@ -42,4 +42,9 @@ class CurrencyPairRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    public function get(Currency $fromCurrency, Currency $toCurrency): ?CurrencyPair
+    {
+        return $this->findOneBy(['fromCurrency' => $fromCurrency, 'toCurrency' => $toCurrency]);
+    }
+
 }

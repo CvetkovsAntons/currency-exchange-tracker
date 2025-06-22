@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Api;
 
 use App\Enum\CurrencyApiEndpoint;
 use App\Enum\HttpMethod;
@@ -61,6 +61,35 @@ readonly class CurrencyApiService
             $response = $this->makeRequest(
                 method: HttpMethod::GET,
                 endpoint: CurrencyApiEndpoint::CURRENCIES,
+                options: ['query' => $query],
+            );
+
+            $this->validateResponse($response);
+
+            return $response;
+        } catch (Throwable $e) {
+            $this->processException($e);
+        }
+    }
+
+    /**
+     * @param string $from_currency
+     * @param string ...$to_currencies
+     * @return ResponseInterface
+     * @throws CurrencyApiException
+     */
+    public function latestExchangeRate(string $from_currency, string ...$to_currencies): ResponseInterface
+    {
+        try {
+            $query = ['base_currency' => $from_currency];
+
+            if (!empty($currencies)) {
+                $query['currencies'] = implode(',', $to_currencies);
+            }
+
+            $response = $this->makeRequest(
+                method: HttpMethod::GET,
+                endpoint: CurrencyApiEndpoint::LATEST_EXCHANGE_RATE,
                 options: ['query' => $query],
             );
 

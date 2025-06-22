@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Enum\YesNo;
-use App\Exception\CurrencyCodeException;
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\MissingInputException;
@@ -49,7 +49,7 @@ abstract class AbstractCommand extends Command
                 throw new MissingInputException('Currency code is required');
             }
             if (!preg_match('/^[A-Z]{3}$/', $input)) {
-                throw new CurrencyCodeException('Incorrect currency code format as per ISO 4217 standard (e.g. PHP)');
+                throw new InvalidArgumentException('Incorrect currency code format as per ISO 4217 standard (e.g. PHP)');
             }
             if (!is_null($validation)) {
                 $validation($input);

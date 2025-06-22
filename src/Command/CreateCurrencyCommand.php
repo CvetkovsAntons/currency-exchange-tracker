@@ -2,10 +2,9 @@
 
 namespace App\Command;
 
+use App\Exception\CurrencyApiException;
 use App\Exception\CurrencyCodeException;
-use App\Factory\CurrencyFactory;
-use App\Provider\CurrencyProvider;
-use App\Repository\CurrencyRepository;
+use App\Service\Domain\CurrencyService;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -13,21 +12,17 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 #[AsCommand(
-    name: 'app:currency:create',
+    name: 'app:create:currency',
     description: 'Creates a new currency',
 )]
-class CurrencyCreateCommand extends AbstractCommand
+class CreateCurrencyCommand extends AbstractCommand
 {
     public function __construct(
-        private readonly CurrencyRepository $repository,
-        private readonly CurrencyFactory    $factory,
-        private readonly CurrencyProvider   $provider,
-        private readonly LoggerInterface    $logger,
+        private readonly CurrencyService $service,
+        private readonly LoggerInterface $logger,
     )
     {
         parent::__construct($logger);
@@ -39,10 +34,9 @@ class CurrencyCreateCommand extends AbstractCommand
      * @param SymfonyStyle $io
      * @return void
      * @throws ClientExceptionInterface
-     * @throws DecodingExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
+     * @throws CurrencyApiException
      * @throws Exception
      */
     public function process(InputInterface $input, OutputInterface $output, SymfonyStyle $io): void
@@ -50,8 +44,8 @@ class CurrencyCreateCommand extends AbstractCommand
         $io->section('Currency creation');
 
         $validation = function (string $input) {
-            if ($this->repository->exists($input)) {
-                throw new CurrencyCodeException(sprintf('Currency %s already exists.', $input));
+            if ($this->service->exists($input)) {
+                throw new CurrencyCodeException($input, sprintf('Currency %s already exists.', $input));
             }
         };
 
@@ -70,15 +64,7 @@ class CurrencyCreateCommand extends AbstractCommand
 
         $io->info('Currency creation is in the progress. It can take up some time...');
 
-        $currency = $this->provider->getCurrency($currencyCode);
-
-        if (empty($currency)) {
-            throw new Exception(sprintf("Data for %s not found", $currencyCode));
-        }
-
-        $currency = $this->factory->create($currency);
-
-        $this->repository->save($currency);
+        $currency = $this->service->create($currencyCode);
 
         $io->success(sprintf(
             '%s (%s) has been created!',
