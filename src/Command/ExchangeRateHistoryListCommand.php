@@ -2,8 +2,9 @@
 
 namespace App\Command;
 
-use App\Entity\ExchangeRate;
-use App\Service\Domain\ExchangeRateService;
+use App\Entity\ExchangeRateHistory;
+use App\Service\Domain\CurrencyService;
+use App\Service\Domain\ExchangeRateHistoryService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,14 +12,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'app:exchange-rate:list',
-    description: 'List of exchange rates',
+    name: 'app:exchange-rate-history:list',
+    description: 'List of exchange rate history',
 )]
-class ExchangeRateListCommand extends AbstractCommand
+class ExchangeRateHistoryListCommand extends AbstractCommand
 {
     public function __construct(
-        private readonly ExchangeRateService $service,
-        private readonly LoggerInterface     $logger,
+        private readonly ExchangeRateHistoryService $service,
+        private readonly LoggerInterface            $logger,
     )
     {
         parent::__construct($this->logger);
@@ -26,7 +27,7 @@ class ExchangeRateListCommand extends AbstractCommand
 
     protected function process(InputInterface $input, OutputInterface $output, SymfonyStyle $io): void
     {
-        $io->title('Exchange Rate List');
+        $io->title('Exchange Rate History List');
 
         $exchangeRates = $this->service->getAll();
 
@@ -36,7 +37,7 @@ class ExchangeRateListCommand extends AbstractCommand
         }
 
         $rows = array_map(
-            callback: function (ExchangeRate $row) {
+            callback: function (ExchangeRateHistory $row) {
                 $pair = $row->getCurrencyPair();
                 $from = $pair->getFromCurrency();
                 $to = $pair->getToCurrency();
@@ -44,7 +45,7 @@ class ExchangeRateListCommand extends AbstractCommand
                 return [
                     sprintf('%s -> %s', $from->getCode(), $to->getCode()),
                     $row->getRate(),
-                    $row->getUpdatedAt()->format('Y-m-d H:i:s'),
+                    $row->getCreatedAt()->format('Y-m-d H:i:s'),
                 ];
             },
             array: $exchangeRates
@@ -52,4 +53,5 @@ class ExchangeRateListCommand extends AbstractCommand
 
         $io->table(['Currency pair', 'Rate', 'Synced at'], $rows);
     }
+
 }

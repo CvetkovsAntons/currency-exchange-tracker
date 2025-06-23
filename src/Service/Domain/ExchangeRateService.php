@@ -17,12 +17,11 @@ use Symfony\Component\Config\Definition\Exception\DuplicateKeyException;
 readonly class ExchangeRateService
 {
     public function __construct(
-        private ExchangeRateFactory           $factory,
-        private ExchangeRateHistoryFactory    $historyFactory,
-        private ExchangeRateRepository        $repository,
-        private ExchangeRateHistoryRepository $historyRepository,
-        private CurrencyApiProvider           $provider,
-        private CurrencyPairService           $pairService,
+        private ExchangeRateFactory        $factory,
+        private ExchangeRateRepository     $repository,
+        private ExchangeRateHistoryService $historyService,
+        private CurrencyApiProvider        $provider,
+        private CurrencyPairService        $pairService,
     ) {}
 
     public function create(CurrencyPair $currencyPair): ExchangeRate
@@ -46,11 +45,11 @@ readonly class ExchangeRateService
             ));
         }
 
-        $now = new DateTimeImmutable();
-
-        $exchangeRate = $this->provider->getLatestExchangeRate($currencyPair);
-
-        $exchangeRate = $this->factory->create($currencyPair, $exchangeRate, $now);
+        $exchangeRate = $this->factory->create(
+            pair: $currencyPair,
+            rate: $this->provider->getLatestExchangeRate($currencyPair),
+            datetime: new DateTimeImmutable()
+        );
 
         $this->saveExchangeRate($exchangeRate);
 
@@ -87,9 +86,7 @@ readonly class ExchangeRateService
     private function saveExchangeRate(ExchangeRate $exchangeRate): void
     {
         $this->repository->save($exchangeRate);
-
-        $history = $this->historyFactory->createFromRecord($exchangeRate);
-        $this->historyRepository->save($history);
+        $this->historyService->create($exchangeRate);
     }
 
     public function get(CurrencyPair $currencyPair): ?ExchangeRate

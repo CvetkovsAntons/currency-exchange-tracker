@@ -21,8 +21,8 @@ readonly class CommandInvokerService
     {
         $currencyPairCreate = new ArrayInput([
             'command' => 'app:create:currency-pair',
-            Argument::CURRENCY_FROM->value => $fromCurrencyCode,
-            Argument::CURRENCY_TO->value=> $toCurrencyCode,
+            Argument::FROM->value => $fromCurrencyCode,
+            Argument::TO->value=> $toCurrencyCode,
         ]);
 
         $currencyPairCreate->setInteractive(false);

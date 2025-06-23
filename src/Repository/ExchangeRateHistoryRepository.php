@@ -16,4 +16,20 @@ class ExchangeRateHistoryRepository extends AbstractRepository
         parent::__construct($registry, ExchangeRateHistory::class);
     }
 
+    /**
+     * @return ExchangeRateHistory[]
+     */
+    public function getAll(): array
+    {
+        return $this->createQueryBuilder('h')
+            ->join('h.currencyPair', 'p')
+            ->join('p.fromCurrency', 'f')
+            ->join('p.toCurrency', 't')
+            ->addSelect('p', 'f', 't')
+            ->orderBy('f.code', 'ASC')
+            ->addOrderBy('t.code', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
 }

@@ -20,7 +20,7 @@ class CurrencyListCommand extends AbstractCommand
         private readonly LoggerInterface $logger
     )
     {
-        parent::__construct($this->logger, $this->currencyService);
+        parent::__construct($this->logger);
     }
 
     protected function process(InputInterface $input, OutputInterface $output, SymfonyStyle $io): void

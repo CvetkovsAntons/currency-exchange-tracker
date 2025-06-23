@@ -2,20 +2,19 @@
 
 namespace App\Command;
 
-use App\Command\AbstractCommand;
 use App\Entity\Currency;
 use App\Entity\CurrencyPair;
 use App\Enum\Argument;
 use App\Service\Domain\CurrencyPairService;
 use App\Service\Domain\CurrencyService;
 use App\Service\Domain\ExchangeRateService;
+use App\Trait\CommandCurrencyUtilsTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 
@@ -25,27 +24,29 @@ use Throwable;
 )]
 class ExchangeRateSyncCommand extends AbstractCommand
 {
+    use CommandCurrencyUtilsTrait;
+
     public function __construct(
-        private readonly CurrencyService          $currencyService,
-        private readonly CurrencyPairService      $pairService,
-        private readonly ExchangeRateService      $rateService,
-        protected readonly EntityManagerInterface $em,
-        private readonly LoggerInterface          $logger
+        private readonly CurrencyService        $currencyService,
+        private readonly CurrencyPairService    $pairService,
+        private readonly ExchangeRateService    $rateService,
+        private readonly EntityManagerInterface $em,
+        private readonly LoggerInterface        $logger
     )
     {
-        parent::__construct($this->logger, $this->currencyService);
+        parent::__construct($this->logger);
     }
 
     protected function configure(): void
     {
         $this
             ->addArgument(
-                name: Argument::CURRENCY_FROM->value,
+                name: Argument::FROM->value,
                 mode: InputArgument::OPTIONAL,
                 description: 'Currency code (e.g. PHP)',
             )
             ->addArgument(
-                name: Argument::CURRENCY_TO->value,
+                name: Argument::TO->value,
                 mode: InputArgument::OPTIONAL,
                 description: 'Currency code (e.g. PHP)',
             );
@@ -66,16 +67,16 @@ class ExchangeRateSyncCommand extends AbstractCommand
 
         try {
             $from = $this->getCurrency(
-                argument: Argument::CURRENCY_FROM,
+                argument: Argument::FROM,
                 input: $input,
                 io: $io,
-                question: 'Select currency that will be exchanged (e.g. PHP)',
+                question: 'Select currency that will be exchanged',
             );
             $to = $this->getCurrency(
-                argument: Argument::CURRENCY_TO,
+                argument: Argument::TO,
                 input: $input,
                 io: $io,
-                question: 'Select currency that will be exchanged to (e.g. PHP)',
+                question: 'Select currency that will be exchanged to',
             );
 
             $pair = $this->getCurrencyPair($from, $to, $io);
@@ -102,11 +103,7 @@ class ExchangeRateSyncCommand extends AbstractCommand
         }
     }
 
-    private function getCurrencyPair(
-        Currency     $from,
-        Currency     $to,
-        SymfonyStyle $io,
-    ): CurrencyPair
+    private function getCurrencyPair(Currency $from, Currency $to, SymfonyStyle $io): CurrencyPair
     {
         $pair = $this->pairService->get($from, $to);
 
@@ -130,6 +127,11 @@ class ExchangeRateSyncCommand extends AbstractCommand
         }
 
         return $pair;
+    }
+
+    protected function getCurrencyService(): CurrencyService
+    {
+        return $this->currencyService;
     }
 
 }
