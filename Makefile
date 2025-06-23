@@ -10,7 +10,7 @@ php-shell:
 	docker exec -it currency-exchange-php bash
 
 workers-start:
-	docker exec -it currency-exchange-scheduler php bin/console messenger:consume
+	docker exec -it currency-exchange-php php bin/console messenger:consume
 
 workers-stop:
-	docker exec -it currency-exchange-scheduler php bin/console messenger:stop-workers
+	docker exec -it currency-exchange-php php bin/console messenger:stop-workers

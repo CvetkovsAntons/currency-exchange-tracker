@@ -10,17 +10,6 @@ services:
         depends_on:
             - postgres
 
-    scheduler:
-        build:
-            context: .
-            dockerfile: docker/scheduler/Dockerfile
-        container_name: currency-exchange-scheduler
-        working_dir: /var/www/symfony
-        volumes:
-            - .:/var/www/symfony
-        depends_on:
-            - php
-
     nginx:
         image: nginx:latest
         container_name: currency-exchange-nginx

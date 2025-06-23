@@ -19,6 +19,8 @@ echo "Running migrations..."
 php bin/console doctrine:database:create --if-not-exists
 php bin/console doctrine:migrations:migrate --no-interaction
 
-#php bin/console messenger:consume
+echo "Starting workers..."
+php bin/console messenger:consume > var/log/worker.log 2>&1 &
+echo "Workers started successfully..."
 
 exec php-fpm
