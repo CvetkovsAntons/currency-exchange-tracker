@@ -1,8 +1,0 @@
-#scheduler:
-#    transports:
-#        default: 'doctrine://default'
-#    scheduler:
-#        timezone: 'UTC'
-#    workers:
-#        default:
-#            transport: default

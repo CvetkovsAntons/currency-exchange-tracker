@@ -20,6 +20,7 @@ readonly class ExchangeRateSyncMessageHandler
     {
         try {
             $this->service->syncAll();
+            $this->logger->info('Exchange rate synchronization task has been completed');
         } catch (Throwable $e) {
             $this->logger->error($e->getMessage());
         }

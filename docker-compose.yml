@@ -2,13 +2,24 @@ services:
     php:
         build:
             context: .
-            dockerfile: ./docker/php-fpm/Dockerfile
+            dockerfile: docker/php/Dockerfile
         container_name: currency-exchange-php
         working_dir: /var/www/symfony
         volumes:
             - .:/var/www/symfony
         depends_on:
             - postgres
+
+    scheduler:
+        build:
+            context: .
+            dockerfile: docker/scheduler/Dockerfile
+        container_name: currency-exchange-scheduler
+        working_dir: /var/www/symfony
+        volumes:
+            - .:/var/www/symfony
+        depends_on:
+            - php
 
     nginx:
         image: nginx:latest
