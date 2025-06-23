@@ -6,11 +6,8 @@ use App\Entity\CurrencyPair;
 use App\Entity\ExchangeRate;
 use App\Exception\CurrencyPairException;
 use App\Factory\ExchangeRateFactory;
-use App\Factory\ExchangeRateHistoryFactory;
 use App\Provider\CurrencyApiProvider;
-use App\Repository\ExchangeRateHistoryRepository;
 use App\Repository\ExchangeRateRepository;
-use App\Service\Console\CommandInvokerService;
 use DateTimeImmutable;
 use Symfony\Component\Config\Definition\Exception\DuplicateKeyException;
 
@@ -83,6 +80,13 @@ readonly class ExchangeRateService
         return $exchangeRate;
     }
 
+    public function syncAll(): void
+    {
+        foreach ($this->getAll() as $exchangeRate) {
+            $this->sync($exchangeRate);
+        }
+    }
+
     private function saveExchangeRate(ExchangeRate $exchangeRate): void
     {
         $this->repository->save($exchangeRate);
@@ -94,6 +98,9 @@ readonly class ExchangeRateService
         return $this->repository->findOneBy(['currencyPair' => $currencyPair]);
     }
 
+    /**
+     * @return ExchangeRate[]
+     */
     public function getAll(): array
     {
         return $this->repository->findAll();

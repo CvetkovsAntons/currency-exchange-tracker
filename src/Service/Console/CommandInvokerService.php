@@ -9,9 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 readonly class CommandInvokerService
 {
-    public function __construct(
-        private Application $application,
-    ) {}
+    public function __construct(private Application $application) {}
 
     public function runCreateCurrencyPair(
         string $fromCurrencyCode,

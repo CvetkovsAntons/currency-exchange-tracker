@@ -5,8 +5,17 @@ SHELL := /bin/bash # runs commands using /bin/bash, instead of /bin/sh
 start:
 	docker corpose up -d
 
+stop:
+	docker compose down
+
 setup:
 	bin/setup.sh
 
 php-shell:
 	docker exec -it currency-exchange-php bash
+
+workers-start:
+	php bin/console messenger:consume
+
+workers-stop:
+	php bin/console messenger:stop-workers

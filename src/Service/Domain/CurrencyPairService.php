@@ -4,7 +4,6 @@ namespace App\Service\Domain;
 
 use App\Entity\Currency;
 use App\Entity\CurrencyPair;
-use App\Exception\CurrencyCodeException;
 use App\Exception\CurrencyPairException;
 use App\Factory\CurrencyPairFactory;
 use App\Repository\CurrencyPairRepository;
@@ -14,7 +13,6 @@ readonly class CurrencyPairService
     public function __construct(
         private CurrencyPairFactory    $factory,
         private CurrencyPairRepository $repository,
-        private CurrencyService        $currencyService,
     ) {}
 
     public function create(Currency $from, Currency $to): CurrencyPair
@@ -34,13 +32,6 @@ readonly class CurrencyPairService
         return $currencyPair;
     }
 
-    public function createFromCodes(string $fromCurrencyCode, string $toCurrencyCode): CurrencyPair
-    {
-        [$from, $to] = $this->prepareCurrencies($fromCurrencyCode, $toCurrencyCode);
-
-        return $this->create($from, $to);
-    }
-
     public function exists(Currency $from, Currency $to): bool
     {
         return $this->repository->exists($from, $to);
@@ -49,33 +40,6 @@ readonly class CurrencyPairService
     public function get(Currency $from, Currency $to): ?CurrencyPair
     {
         return $this->repository->get($from, $to);
-    }
-
-    public function getByCodes(string $fromCurrencyCode, string $toCurrencyCode): ?CurrencyPair
-    {
-        [$from, $to] = $this->prepareCurrencies($fromCurrencyCode, $toCurrencyCode);
-
-        return $this->get($from, $to);
-    }
-
-    /**
-     * @param string $fromCurrencyCode
-     * @param string $toCurrencyCode
-     * @return Currency[]
-     */
-    private function prepareCurrencies(string $fromCurrencyCode, string $toCurrencyCode): array
-    {
-        $fromCurrency = $this->currencyService->get($fromCurrencyCode);
-        if (is_null($fromCurrency)) {
-            throw new CurrencyCodeException($fromCurrencyCode);
-        }
-
-        $toCurrency = $this->currencyService->get($toCurrencyCode);
-        if (is_null($toCurrency)) {
-            throw new CurrencyCodeException($toCurrencyCode);
-        }
-
-        return [$fromCurrency, $toCurrency];
     }
 
 }

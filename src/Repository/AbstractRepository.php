@@ -13,7 +13,10 @@ class AbstractRepository extends ServiceEntityRepository
 {
     protected EntityManagerInterface $em;
 
-    public function __construct(ManagerRegistry $registry, string $entityClass)
+    public function __construct(
+        ManagerRegistry $registry,
+        string          $entityClass
+    )
     {
         parent::__construct($registry, $entityClass);
         $this->em = $registry->getManagerForClass($entityClass);
