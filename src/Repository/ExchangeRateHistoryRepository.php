@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Entity\CurrencyPair;
 use App\Entity\ExchangeRateHistory;
+use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -30,6 +32,22 @@ class ExchangeRateHistoryRepository extends AbstractRepository
             ->addOrderBy('t.code', 'ASC')
             ->getQuery()
             ->getResult();
+    }
+
+    public function findClosestBefore(CurrencyPair $pair, ?DateTimeInterface $createdAt = null): ?ExchangeRateHistory
+    {
+        $query = $this->createQueryBuilder('h')
+            ->where('h.currencyPair = :pair')
+            ->orderBy('h.createdAt', 'DESC')
+            ->setParameter('pair', $pair)
+            ->setMaxResults(1);
+
+        if (!is_null($createdAt)) {
+            $query->andWhere('h.createdAt <= :date')
+                ->setParameter('date', $createdAt);
+        }
+
+        return $query->getQuery()->getOneOrNullResult();
     }
 
 }

@@ -18,7 +18,7 @@ class CurrencyCodeException extends RuntimeException
         $this->currencyCode = $currencyCode;
 
         if (empty($message)) {
-            $message = sprintf('Currency code "%s" is invalid', $currencyCode);
+            $message = sprintf('Currency code %s is invalid', $currencyCode);
         }
 
         parent::__construct($message, $code, $previous);
