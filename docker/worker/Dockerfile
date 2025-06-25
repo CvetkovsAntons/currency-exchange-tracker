@@ -1,0 +1,13 @@
+FROM php:8.4-fpm
+
+RUN apt-get update && apt-get install -y \
+    git unzip curl libpq-dev libzip-dev zip \
+    && docker-php-ext-install pdo pdo_pgsql zip
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/symfony
+
+COPY . .
+
+CMD ["php", "bin/console", "messenger:consume", "--time-limit=3600", "--memory-limit=128M"]

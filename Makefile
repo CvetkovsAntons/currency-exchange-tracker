@@ -6,11 +6,11 @@ start:
 stop:
 	docker compose stop
 
-php-shell:
-	docker exec -it currency-exchange-php bash
+app-shell:
+	docker exec -it currency-exchange-app bash
 
-workers-start:
-	docker exec -it currency-exchange-php php bin/console messenger:consume
+app-worker-start:
+	docker exec -it currency-exchange-worker php bin/console messenger:consume async --time-limit=3600 --memory-limit=128M
 
-workers-stop:
-	docker exec -it currency-exchange-php php bin/console messenger:stop-workers
+app-worker-stop:
+	docker exec -it currency-exchange-worker php bin/console messenger:stop-workers
