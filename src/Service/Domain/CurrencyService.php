@@ -74,16 +74,10 @@ readonly class CurrencyService
     public function isValidCode(string $currencyCode): bool
     {
         try {
-            $currency = $this->provider->getCurrency($currencyCode);
+            return !is_null($this->provider->getCurrency($currencyCode));
         } catch (Throwable) {
             return false;
         }
-
-        if (is_null($currency)) {
-            return false;
-        }
-
-        return true;
     }
 
 }

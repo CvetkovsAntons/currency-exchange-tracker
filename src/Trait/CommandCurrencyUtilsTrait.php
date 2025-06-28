@@ -45,9 +45,12 @@ trait CommandCurrencyUtilsTrait
         $currencyCode = $input->getArgument($argument->value);
         if (is_null($currencyCode)) {
             $validator = function (string $input) use ($currencyService) {
+                $input = strtoupper($input);
+
                 if (!preg_match("/^[A-Z]{3}$/i", $input) || !$currencyService->isValidCode($input)) {
                     throw new Exception("Invalid currency code");
                 }
+
                 return $input;
             };
 
