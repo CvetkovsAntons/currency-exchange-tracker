@@ -10,6 +10,11 @@ use App\Provider\CurrencyApiProvider;
 use App\Repository\ExchangeRateRepository;
 use DateTimeImmutable;
 use Symfony\Component\Config\Definition\Exception\DuplicateKeyException;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 readonly class ExchangeRateService
 {
@@ -21,6 +26,19 @@ readonly class ExchangeRateService
         private CurrencyPairService        $pairService,
     ) {}
 
+    private function saveExchangeRate(ExchangeRate $exchangeRate): void
+    {
+        $this->repository->save($exchangeRate);
+        $this->historyService->create($exchangeRate);
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     public function create(CurrencyPair $currencyPair): ExchangeRate
     {
         $fromCurrency = $currencyPair->getFromCurrency();
@@ -58,6 +76,15 @@ readonly class ExchangeRateService
         return $this->repository->exists($currencyPair);
     }
 
+    /**
+     * @param ExchangeRate $exchangeRate
+     * @return ExchangeRate
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
     public function sync(ExchangeRate $exchangeRate): ExchangeRate
     {
         $currencyPair = $exchangeRate->getCurrencyPair();
@@ -73,24 +100,27 @@ readonly class ExchangeRateService
             ));
         }
 
-        $exchangeRate->setRate($this->provider->getLatestExchangeRate($currencyPair));
+        $rate = $this->provider->getLatestExchangeRate($currencyPair);
+        $exchangeRate->setRate($rate);
 
         $this->saveExchangeRate($exchangeRate);
 
         return $exchangeRate;
     }
 
+    /**
+     * @return void
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
     public function syncAll(): void
     {
         foreach ($this->getAll() as $exchangeRate) {
             $this->sync($exchangeRate);
         }
-    }
-
-    private function saveExchangeRate(ExchangeRate $exchangeRate): void
-    {
-        $this->repository->save($exchangeRate);
-        $this->historyService->create($exchangeRate);
     }
 
     public function get(CurrencyPair $currencyPair): ?ExchangeRate

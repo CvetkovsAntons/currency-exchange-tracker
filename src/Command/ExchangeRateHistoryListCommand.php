@@ -3,7 +3,6 @@
 namespace App\Command;
 
 use App\Entity\ExchangeRateHistory;
-use App\Service\Domain\CurrencyService;
 use App\Service\Domain\ExchangeRateHistoryService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;

@@ -6,7 +6,6 @@ use App\Dto\Currency;
 use App\Entity\CurrencyPair;
 use App\Exception\CurrencyApiException;
 use App\Service\Api\CurrencyApiService;
-use Doctrine\DBAL\Types\Types;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;

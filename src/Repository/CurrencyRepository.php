@@ -16,14 +16,9 @@ class CurrencyRepository extends AbstractRepository
         parent::__construct($registry, Currency::class);
     }
 
-    public function getByCode(string $code): ?Currency
+    public function exists(string $currencyCode): bool
     {
-        return $this->findOneBy(['code' => $code]);
-    }
-
-    public function exists(string $code): bool
-    {
-        return !is_null($this->getByCode($code));
+        return !is_null($this->findOneBy(['code' => $currencyCode]));
     }
 
     public function getAllCodes(): array

@@ -39,7 +39,7 @@ readonly class CurrencyPairService
 
     public function get(Currency $from, Currency $to): ?CurrencyPair
     {
-        return $this->repository->get($from, $to);
+        return $this->repository->findOneBy(['fromCurrency' => $from, 'toCurrency' => $to]);
     }
 
 }

@@ -29,9 +29,4 @@ class CurrencyPairRepository extends AbstractRepository
             ->getSingleScalarResult();
     }
 
-    public function get(Currency $fromCurrency, Currency $toCurrency): ?CurrencyPair
-    {
-        return $this->findOneBy(['fromCurrency' => $fromCurrency, 'toCurrency' => $toCurrency]);
-    }
-
 }

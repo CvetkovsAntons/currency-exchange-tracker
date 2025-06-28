@@ -8,7 +8,6 @@ use App\Exception\CurrencyCodeException;
 use App\Factory\CurrencyFactory;
 use App\Provider\CurrencyApiProvider;
 use App\Repository\CurrencyRepository;
-use Symfony\Component\Config\Definition\Exception\DuplicateKeyException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -68,7 +67,7 @@ readonly class CurrencyService
 
     public function get(string $currencyCode): ?Currency
     {
-        return $this->repository->getByCode($currencyCode);
+        return $this->repository->findOneBy(['code' => $currencyCode]);
     }
 
     public function getAllCodes(): array
