@@ -14,3 +14,6 @@ app-worker-start:
 
 app-worker-stop:
 	docker exec -it currency-exchange-worker php bin/console messenger:stop-workers
+
+exchange-rate-sync:
+	docker exec -it currency-exchange-app php bin/console app:exchange-rate:sync

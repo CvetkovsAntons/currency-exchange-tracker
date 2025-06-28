@@ -50,7 +50,7 @@ readonly class CurrencyApiProvider
         $response = $this->apiService->currencies(...$code);
 
         return array_map(
-            callback: fn($v) => $this->serializer->denormalize($v, Currency::class),
+            callback: fn ($v) => $this->serializer->denormalize($v, Currency::class),
             array: $response->toArray()['data'] ?? [],
         );
     }

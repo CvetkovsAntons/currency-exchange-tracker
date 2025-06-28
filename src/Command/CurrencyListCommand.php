@@ -35,7 +35,7 @@ class CurrencyListCommand extends AbstractCommand
         }
 
         $rows = array_map(
-            callback: fn($v) => [$v->getCode(), $v->getName(), $v->getSymbol()],
+            callback: fn ($v) => [$v->getCode(), $v->getName(), $v->getSymbol()],
             array: $currencies
         );
 

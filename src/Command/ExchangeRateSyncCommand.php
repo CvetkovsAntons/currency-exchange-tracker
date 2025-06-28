@@ -66,18 +66,8 @@ class ExchangeRateSyncCommand extends AbstractCommand
         $this->em->beginTransaction();
 
         try {
-            $from = $this->getCurrency(
-                argument: Argument::FROM,
-                input: $input,
-                io: $io,
-                question: 'Select currency that will be exchanged',
-            );
-            $to = $this->getCurrency(
-                argument: Argument::TO,
-                input: $input,
-                io: $io,
-                question: 'Select currency that will be exchanged to',
-            );
+            $from = $this->getCurrency(Argument::FROM, $input, $io);
+            $to = $this->getCurrency(Argument::TO, $input, $io);
 
             $pair = $this->getCurrencyPair($from, $to, $io);
 

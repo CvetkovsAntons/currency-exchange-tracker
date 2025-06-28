@@ -13,6 +13,7 @@ use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Throwable;
 
 readonly class CurrencyService
 {
@@ -70,9 +71,19 @@ readonly class CurrencyService
         return $this->repository->findOneBy(['code' => $currencyCode]);
     }
 
-    public function getAllCodes(): array
+    public function isValidCode(string $currencyCode): bool
     {
-        return $this->repository->getAllCodes();
+        try {
+            $currency = $this->provider->getCurrency($currencyCode);
+        } catch (Throwable) {
+            return false;
+        }
+
+        if (is_null($currency)) {
+            return false;
+        }
+
+        return true;
     }
 
 }
