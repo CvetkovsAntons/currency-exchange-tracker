@@ -3,11 +3,11 @@
 namespace App\Controller;
 
 use App\Dto\ExchangeRateRequest;
-use App\Exception\Api\MissingParametersException;
 use App\Exception\CurrencyCodeException;
 use App\Exception\CurrencyPairException;
 use App\Exception\DateTimeInvalidException;
 use App\Exception\ExchangeRateException;
+use App\Exception\MissingParametersException;
 use App\Service\Query\ExchangeRateHistoryQueryService;
 use DateTimeInterface;
 use Psr\Log\LoggerInterface;

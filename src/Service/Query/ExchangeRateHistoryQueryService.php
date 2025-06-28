@@ -4,11 +4,11 @@ namespace App\Service\Query;
 
 use App\Dto\ExchangeRateRequest;
 use App\Entity\ExchangeRateHistory;
-use App\Exception\Api\MissingParametersException;
 use App\Exception\CurrencyCodeException;
 use App\Exception\CurrencyPairException;
 use App\Exception\DateTimeInvalidException;
 use App\Exception\ExchangeRateException;
+use App\Exception\MissingParametersException;
 use App\Repository\ExchangeRateHistoryRepository;
 use App\Service\Domain\CurrencyPairService;
 use App\Service\Domain\CurrencyService;
