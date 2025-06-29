@@ -61,7 +61,7 @@ class ExchangeRateHistoryRepositoryTest extends WebTestCase
         $this->em->persist($history);
         $this->em->flush();
 
-        $result = $this->repository->findClosestBefore($pair, new DateTimeImmutable());
+        $result = $this->repository->findClosest($pair, new DateTimeImmutable());
 
         $this->assertInstanceOf(ExchangeRateHistory::class, $result);
         $this->assertSame($history->getRate(), $result->getRate());
@@ -78,7 +78,7 @@ class ExchangeRateHistoryRepositoryTest extends WebTestCase
         $this->em->persist($pair);
         $this->em->flush();
 
-        $result = $this->repository->findClosestBefore($pair, new DateTimeImmutable());
+        $result = $this->repository->findClosest($pair, new DateTimeImmutable());
 
         $this->assertNull($result);
     }

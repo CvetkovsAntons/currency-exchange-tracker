@@ -34,20 +34,50 @@ class ExchangeRateHistoryRepository extends AbstractRepository
             ->getResult();
     }
 
-    public function findClosestBefore(CurrencyPair $pair, ?DateTimeInterface $createdAt = null): ?ExchangeRateHistory
+    public function findClosest(CurrencyPair $pair, ?DateTimeInterface $createdAt = null): ?ExchangeRateHistory
     {
-        $query = $this->createQueryBuilder('h')
+        $baseQuery = $this->createQueryBuilder('h')
             ->where('h.currencyPair = :pair')
-            ->orderBy('h.createdAt', 'DESC')
-            ->setParameter('pair', $pair)
-            ->setMaxResults(1);
+            ->setParameter('pair', $pair);
 
-        if (!is_null($createdAt)) {
-            $query->andWhere('h.createdAt <= :date')
-                ->setParameter('date', $createdAt);
+        if (is_null($createdAt)) {
+            return $baseQuery
+                ->orderBy('h.createdAt', 'DESC')
+                ->setMaxResults(1)
+                ->getQuery()
+                ->getOneOrNullResult();
         }
 
-        return $query->getQuery()->getOneOrNullResult();
+        $beforeQuery = clone $baseQuery;
+        $before = $beforeQuery
+            ->andWhere('h.createdAt <= :date')
+            ->orderBy('h.createdAt', 'DESC')
+            ->setParameter('date', $createdAt)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        $afterQuery = clone $baseQuery;
+        $after = $afterQuery
+            ->andWhere('h.createdAt > :date')
+            ->orderBy('h.createdAt', 'ASC')
+            ->setParameter('date', $createdAt)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if (!$before) {
+            return $after;
+        }
+
+        if (!$after) {
+            return $before;
+        }
+
+        $diffBefore = abs($createdAt->getTimestamp() - $before->getCreatedAt()->getTimestamp());
+        $diffAfter = abs($after->getCreatedAt()->getTimestamp() - $createdAt->getTimestamp());
+
+        return $diffBefore <= $diffAfter ? $before : $after;
     }
 
 }

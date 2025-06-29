@@ -51,11 +51,11 @@ class ExchangeRateHistoryQueryServiceTest extends TestCase
         $this->getCurrencyPairMock($from, $to, $pair);
 
         $this->repository
-            ->method('findClosestBefore')
+            ->method('findClosest')
             ->with($pair, new DateTimeImmutable($request->datetime))
             ->willReturn($exchangeRate);
 
-        $result = $this->service->fetch($request);
+        $result = $this->service->getClosestExchangeRate($request);
 
         $this->assertSame($exchangeRate, $result);
     }
@@ -66,7 +66,7 @@ class ExchangeRateHistoryQueryServiceTest extends TestCase
 
         $request = new ExchangeRateRequest();
 
-        $this->service->fetch($request);
+        $this->service->getClosestExchangeRate($request);
     }
 
     public function testFetchThrowsWhenFromCurrencyNotFound(): void
@@ -77,7 +77,7 @@ class ExchangeRateHistoryQueryServiceTest extends TestCase
 
         $this->getCurrencyMock(null);
 
-        $this->service->fetch($request);
+        $this->service->getClosestExchangeRate($request);
     }
 
     public function testFetchThrowsOnInvalidDatetime(): void
@@ -93,7 +93,7 @@ class ExchangeRateHistoryQueryServiceTest extends TestCase
         $this->getCurrencyMock($to);
         $this->getCurrencyPairMock($from, $to, $pair);
 
-        $this->service->fetch($request);
+        $this->service->getClosestExchangeRate($request);
     }
 
     private function getCurrencyMock(?Currency $return): void

@@ -30,7 +30,7 @@ readonly class ExchangeRateHistoryQueryService
      * @throws ExchangeRateException
      * @throws MissingParametersException
      */
-    public function fetch(ExchangeRateRequest $request): ExchangeRateHistory
+    public function getClosestExchangeRate(ExchangeRateRequest $request): ExchangeRateHistory
     {
         if (empty($request->from) || empty($request->to)) {
             throw new MissingParametersException(['from', 'to']);
@@ -64,13 +64,14 @@ readonly class ExchangeRateHistoryQueryService
             }
         }
 
-        $exchangeRate = $this->repository->findClosestBefore($currencyPair, $createdAt);
+        $exchangeRateBefore = $this->repository->findClosest($currencyPair, $createdAt);
 
-        if (is_null($exchangeRate)) {
+
+        if (is_null($exchangeRateBefore)) {
             throw new ExchangeRateException("Couldn't find exchange rate", 404);
         }
 
-        return $exchangeRate;
+        return $exchangeRateBefore;
     }
 
 }
