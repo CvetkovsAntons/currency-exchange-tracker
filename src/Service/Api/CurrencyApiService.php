@@ -73,18 +73,18 @@ readonly class CurrencyApiService
     }
 
     /**
-     * @param string $from_currency
-     * @param string ...$to_currencies
+     * @param string $fromCurrency
+     * @param string ...$toCurrencies
      * @return ResponseInterface
      * @throws CurrencyApiException
      */
-    public function latestExchangeRate(string $from_currency, string ...$to_currencies): ResponseInterface
+    public function latestExchangeRate(string $fromCurrency, string ...$toCurrencies): ResponseInterface
     {
         try {
-            $query = ['base_currency' => $from_currency];
+            $query = ['base_currency' => $fromCurrency];
 
-            if (!empty($currencies)) {
-                $query['currencies'] = implode(',', $to_currencies);
+            if (!empty($toCurrencies)) {
+                $query['currencies'] = implode(',', $toCurrencies);
             }
 
             $response = $this->makeRequest(

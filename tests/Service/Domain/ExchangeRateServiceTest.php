@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Service;
+namespace App\Tests\Service\Domain;
 
 use App\Entity\Currency;
 use App\Entity\CurrencyPair;
