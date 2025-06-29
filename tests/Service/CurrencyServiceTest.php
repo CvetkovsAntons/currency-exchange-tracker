@@ -28,11 +28,95 @@ class CurrencyServiceTest extends TestCase
         $this->factory = $this->createMock(CurrencyFactory::class);
         $this->repository = $this->createMock(CurrencyRepository::class);
 
-        $this->service = new CurrencyService(
-            $this->provider,
-            $this->factory,
-            $this->repository,
-        );
+        $this->service = $this->getMockBuilder(CurrencyService::class)
+            ->setConstructorArgs([$this->provider, $this->factory, $this->repository])
+            ->onlyMethods(['exists'])
+            ->getMock();
+    }
+
+    public function testCreateCurrencySuccess(): void
+    {
+        $code = 'USD';
+        $currencyDto = $this->prepareCurrencyDto();
+        $currency = $this->createMock(Currency::class);
+
+        $this->currencyExistsMock($code, false);
+        $this->getCurrencyMock($code, $currencyDto);
+
+        $this->factory
+            ->method('create')
+            ->with($currencyDto)
+            ->willReturn($currency);
+
+        $this->repository
+            ->expects($this->once())
+            ->method('save')
+            ->with($currency);
+
+        $result = $this->service->create($code);
+
+        $this->assertSame($currency, $result);
+    }
+
+    public function testCreateCurrencyAlreadyExists(): void
+    {
+        $this->expectException(CurrencyCodeException::class);
+
+        $code = 'EUR';
+
+        $this->currencyExistsMock($code, true);
+
+        $this->service->create($code);
+    }
+
+    public function testCreateCurrencyApiReturnsEmpty(): void
+    {
+        $this->expectException(CurrencyApiException::class);
+
+        $code = 'ABC';
+
+        $this->currencyExistsMock($code, false);
+        $this->getCurrencyMock($code, null);
+
+        $this->service->create($code);
+    }
+
+    public function testIsValidCodeReturnsTrueWhenCurrencyExists(): void
+    {
+        $currencyDto = $this->prepareCurrencyDto();
+
+        $code = 'USD';
+
+        $this->getCurrencyMock($code, $currencyDto);
+
+        $result = $this->service->isValidCode($code);
+
+        $this->assertTrue($result);
+    }
+
+    public function testIsValidCodeReturnsFalseWhenCurrencyIsNull(): void
+    {
+        $code = 'XYZ';
+
+        $this->getCurrencyMock($code, null);
+
+        $result = $this->service->isValidCode($code);
+
+        $this->assertFalse($result);
+    }
+
+    public function testIsValidCodeReturnsFalseOnException(): void
+    {
+        $code = 'FAIL';
+
+        $this->provider
+            ->method('getCurrency')
+            ->with($code)
+            ->willThrowException(new RuntimeException('API error'));
+
+        $result = $this->service->isValidCode($code);
+
+        $this->assertFalse($result);
     }
 
     private function prepareCurrencyDto(): CurrencyDto
@@ -50,112 +134,20 @@ class CurrencyServiceTest extends TestCase
         return $dto;
     }
 
-    public function testCreateCurrencySuccess(): void
+    private function currencyExistsMock(string $currencyCode, bool $return): void
     {
-        $code = 'USD';
-        $currencyData = $this->prepareCurrencyDto();
-        $currency = $this->createMock(Currency::class);
-
-        $this->repository
-            ->method('exists')
-            ->with($code)
-            ->willReturn(false);
-
-        $this->provider
-            ->method('getCurrency')
-            ->with($code)
-            ->willReturn($currencyData);
-
-        $this->factory
-            ->method('create')
-            ->with($currencyData)
-            ->willReturn($currency);
-
-        $this->repository
-            ->expects($this->once())
-            ->method('save')
-            ->with($currency);
-
-        $result = $this->service
-            ->create($code);
-
-        $this->assertSame($currency, $result);
-    }
-
-    public function testCreateCurrencyAlreadyExists(): void
-    {
-        $this->expectException(CurrencyCodeException::class);
-
-        $code = 'EUR';
-
-        $this->repository
-            ->method('exists')
-            ->with($code)
-            ->willReturn(true);
-
         $this->service
-            ->create($code);
-    }
-
-    public function testCreateCurrencyApiReturnsEmpty(): void
-    {
-        $this->expectException(CurrencyApiException::class);
-
-        $code = 'ABC';
-
-        $this->repository
             ->method('exists')
-            ->with($code)
-            ->willReturn(false);
-
-        $this->provider
-            ->method('getCurrency')
-            ->with($code)
-            ->willReturn(null);
-
-        $this->service
-            ->create($code);
+            ->with($currencyCode)
+            ->willReturn($return);
     }
 
-    public function testIsValidCodeReturnsTrueWhenCurrencyExists(): void
-    {
-        $dto = $this->prepareCurrencyDto();
-
-        $this->provider
-            ->method('getCurrency')
-            ->with('USD')
-            ->willReturn($dto);
-
-        $result = $this->service
-            ->isValidCode('USD');
-
-        $this->assertTrue($result);
-    }
-
-    public function testIsValidCodeReturnsFalseWhenCurrencyIsNull(): void
+    private function getCurrencyMock(string $currencyCode, ?CurrencyDto $return): void
     {
         $this->provider
             ->method('getCurrency')
-            ->with('XYZ')
-            ->willReturn(null);
-
-        $result = $this->service
-            ->isValidCode('XYZ');
-
-        $this->assertFalse($result);
-    }
-
-    public function testIsValidCodeReturnsFalseOnException(): void
-    {
-        $this->provider
-            ->method('getCurrency')
-            ->with('FAIL')
-            ->willThrowException(new RuntimeException('API error'));
-
-        $result = $this->service
-            ->isValidCode('FAIL');
-
-        $this->assertFalse($result);
+            ->with($currencyCode)
+            ->willReturn($return);
     }
 
 }

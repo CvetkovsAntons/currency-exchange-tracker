@@ -47,72 +47,22 @@ class ExchangeRateServiceTest extends TestCase
             ->getMock();
     }
 
-    private function createMockCurrencyPair(): CurrencyPair
-    {
-        $currencyPair = $this->createMock(CurrencyPair::class);
-        $fromCurrency = $this->createMock(Currency::class);
-        $toCurrency = $this->createMock(Currency::class);
-
-        $fromCurrency->method('getCode')
-            ->willReturn('USD');
-
-        $toCurrency->method('getCode')
-            ->willReturn('EUR');
-
-        $currencyPair->method('getFromCurrency')
-            ->willReturn($fromCurrency);
-
-        $currencyPair->method('getToCurrency')
-            ->willReturn($toCurrency);
-
-        return $currencyPair;
-    }
-
     public function testCreateExchangeRateSuccess(): void
     {
-        $currencyPair = $this->createMock(CurrencyPair::class);
-        $fromCurrency = $this->createMock(Currency::class);
-        $toCurrency = $this->createMock(Currency::class);
+        [$pair, $from, $to] = $this->currencyMocks();
         $exchangeRate = $this->createMock(ExchangeRate::class);
         $rate = '1.23';
 
-        $currencyPair->method('getFromCurrency')
-            ->willReturn($fromCurrency);
-
-        $currencyPair->method('getToCurrency')
-            ->willReturn($toCurrency);
-
-        $fromCurrency->method('getCode')
-            ->willReturn('USD');
-
-        $toCurrency->method('getCode')
-            ->willReturn('EUR');
-
-        $this->pairService
-            ->method('exists')
-            ->with($fromCurrency, $toCurrency)
-            ->willReturn(true);
-
-        $this->service
-            ->method('exists')
-            ->with($currencyPair)
-            ->willReturn(false);
-
-        $this->provider
-            ->method('getLatestExchangeRate')
-            ->with($currencyPair)
-            ->willReturn($rate);
+        $this->currencyPairExistsMock($from, $to, true);
+        $this->exchangeRateExistsMock($pair, false);
+        $this->latestExchangeRateMock($pair, $rate);
 
         $this->factory
             ->method('create')
-            ->with(
-                $currencyPair,
-                $rate,
-                $this->callback(fn($dt) => $dt instanceof DateTimeImmutable),
-            )
+            ->with($pair, $rate, $this->callback(fn($v) => $v instanceof DateTimeImmutable))
             ->willReturn($exchangeRate);
 
-        $result = $this->service->create($currencyPair);
+        $result = $this->service->create($pair);
 
         $this->assertSame($exchangeRate, $result);
     }
@@ -121,99 +71,137 @@ class ExchangeRateServiceTest extends TestCase
     {
         $this->expectException(CurrencyPairException::class);
 
-        $currencyPair = $this->createMock(CurrencyPair::class);
-        $fromCurrency = $this->createMock(Currency::class);
-        $toCurrency = $this->createMock(Currency::class);
+        [$pair, $from, $to] = $this->currencyMocks();
 
-        $currencyPair->method('getFromCurrency')
-            ->willReturn($fromCurrency);
+        $this->currencyPairExistsMock($from, $to, false);
 
-        $currencyPair->method('getToCurrency')
-            ->willReturn($toCurrency);
-
-        $fromCurrency->method('getCode')
-            ->willReturn('USD');
-
-        $toCurrency->method('getCode')
-            ->willReturn('EUR');
-
-        $this->pairService
-            ->method('exists')
-            ->with($fromCurrency, $toCurrency)
-            ->willReturn(false);
-
-        $this->service->create($currencyPair);
+        $this->service->create($pair);
     }
 
     public function testCreateExchangeRateAlreadyExists(): void
     {
         $this->expectException(DuplicateKeyException::class);
 
-        $currencyPair = $this->createMock(CurrencyPair::class);
-        $fromCurrency = $this->createMock(Currency::class);
-        $toCurrency = $this->createMock(Currency::class);
+        [$pair, $from, $to] = $this->currencyMocks();
 
-        $currencyPair->method('getFromCurrency')
-            ->willReturn($fromCurrency);
+        $this->currencyPairExistsMock($from, $to, true);
+        $this->exchangeRateExistsMock($pair, true);
 
-        $currencyPair->method('getToCurrency')
-            ->willReturn($toCurrency);
-
-        $fromCurrency->method('getCode')
-            ->willReturn('USD');
-
-        $toCurrency->method('getCode')
-            ->willReturn('EUR');
-
-        $this->pairService
-            ->method('exists')
-            ->with($fromCurrency, $toCurrency)
-            ->willReturn(true);
-
-        $this->service
-            ->method('exists')
-            ->with($currencyPair)
-            ->willReturn(true);
-
-        $this->service->create($currencyPair);
+        $this->service->create($pair);
     }
 
     public function testCreateExchangeRateNotFound(): void
     {
         $this->expectException(ExchangeRateException::class);
 
-        $currencyPair = $this->createMock(CurrencyPair::class);
-        $fromCurrency = $this->createMock(Currency::class);
-        $toCurrency = $this->createMock(Currency::class);
+        [$pair, $from, $to] = $this->currencyMocks();
 
-        $currencyPair->method('getFromCurrency')
-            ->willReturn($fromCurrency);
+        $this->currencyPairExistsMock($from, $to, true);
+        $this->exchangeRateExistsMock($pair, false);
+        $this->latestExchangeRateMock($pair, null);
 
-        $currencyPair->method('getToCurrency')
-            ->willReturn($toCurrency);
+        $this->service->create($pair);
+    }
 
-        $fromCurrency->method('getCode')
+    public function testSyncExchangeRateSuccess(): void
+    {
+        [$pair] = $this->currencyMocks();
+        $exchangeRate = $this->createMock(ExchangeRate::class);
+        $rate = '1.23';
+
+        $exchangeRate
+            ->method('getCurrencyPair')
+            ->willReturn($pair);
+
+        $this->exchangeRateExistsMock($pair, true);
+        $this->latestExchangeRateMock($pair, $rate);
+
+        $exchangeRate
+            ->expects($this->once())
+            ->method('setRate')
+            ->with($rate);
+
+        $result = $this->service->sync($exchangeRate);
+
+        $this->assertSame($exchangeRate, $result);
+    }
+
+    public function testSyncExchangeRateNotExists(): void
+    {
+        $this->expectException(ExchangeRateException::class);
+
+        [$pair] = $this->currencyMocks();
+        $exchangeRate = $this->createMock(ExchangeRate::class);
+
+        $exchangeRate
+            ->method('getCurrencyPair')
+            ->willReturn($pair);
+
+        $this->exchangeRateExistsMock($pair, false);
+
+        $this->service->sync($exchangeRate);
+    }
+
+    public function testSyncExchangeRateNotFound(): void
+    {
+        $this->expectException(ExchangeRateException::class);
+
+        [$pair] = $this->currencyMocks();
+        $exchangeRate = $this->createMock(ExchangeRate::class);
+
+        $exchangeRate
+            ->method('getCurrencyPair')
+            ->willReturn($pair);
+
+        $this->exchangeRateExistsMock($pair, true);
+        $this->latestExchangeRateMock($pair, null);
+
+        $this->service->sync($exchangeRate);
+    }
+
+    private function currencyMocks(): array
+    {
+        $from = $this->createMock(Currency::class);
+        $to = $this->createMock(Currency::class);
+        $pair = $this->createMock(CurrencyPair::class);
+
+        $from->method('getCode')
             ->willReturn('USD');
 
-        $toCurrency->method('getCode')
+        $to->method('getCode')
             ->willReturn('EUR');
 
+        $pair->method('getFromCurrency')
+            ->willReturn($from);
+
+        $pair->method('getToCurrency')
+            ->willReturn($to);
+
+        return [$pair, $from, $to];
+    }
+
+    private function currencyPairExistsMock(Currency $from, Currency $to, bool $return): void
+    {
         $this->pairService
             ->method('exists')
-            ->with($fromCurrency, $toCurrency)
-            ->willReturn(true);
+            ->with($from, $to)
+            ->willReturn($return);
+    }
 
+    private function exchangeRateExistsMock(CurrencyPair $pair, bool $return): void
+    {
         $this->service
             ->method('exists')
-            ->with($currencyPair)
-            ->willReturn(false);
+            ->with($pair)
+            ->willReturn($return);
+    }
 
+    private function latestExchangeRateMock(CurrencyPair $pair, ?string $return): void
+    {
         $this->provider
             ->method('getLatestExchangeRate')
-            ->with($currencyPair)
-            ->willReturn(null);
-
-        $this->service->create($currencyPair);
+            ->with($pair)
+            ->willReturn($return);
     }
 
 }

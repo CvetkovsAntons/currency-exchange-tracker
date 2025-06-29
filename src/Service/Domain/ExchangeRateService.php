@@ -104,7 +104,7 @@ readonly class ExchangeRateService
         $toCurrency = $currencyPair->getToCurrency();
 
         if (!$this->exists($currencyPair)) {
-            throw new CurrencyPairException(sprintf(
+            throw new ExchangeRateException(sprintf(
                 "Exchange rate for currency pair %s-%s doesn't exist",
                 $fromCurrency->getCode(),
                 $toCurrency->getCode()
