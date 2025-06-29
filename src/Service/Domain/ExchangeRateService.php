@@ -84,7 +84,7 @@ readonly class ExchangeRateService
 
     public function exists(CurrencyPair $currencyPair): bool
     {
-        return $this->repository->exists($currencyPair);
+        return !is_null($this->repository->findOneBy(['currencyPair' => $currencyPair]));
     }
 
     /**

@@ -17,9 +17,4 @@ class ExchangeRateRepository extends AbstractRepository
         parent::__construct($registry, ExchangeRate::class);
     }
 
-    public function exists(CurrencyPair $currencyPair): bool
-    {
-        return !is_null($this->findOneBy(['currencyPair' => $currencyPair]));
-    }
-
 }

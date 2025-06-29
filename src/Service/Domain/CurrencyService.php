@@ -55,7 +55,7 @@ readonly class CurrencyService
 
     public function exists(string $currencyCode): bool
     {
-        return $this->repository->exists($currencyCode);
+        return !is_null($this->repository->findOneBy(['code' => $currencyCode]));
     }
 
     /**
