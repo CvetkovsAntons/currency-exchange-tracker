@@ -165,16 +165,20 @@ class ExchangeRateServiceTest extends TestCase
         $to = $this->createMock(Currency::class);
         $pair = $this->createMock(CurrencyPair::class);
 
-        $from->method('getCode')
+        $from
+            ->method('getCode')
             ->willReturn('USD');
 
-        $to->method('getCode')
+        $to
+            ->method('getCode')
             ->willReturn('EUR');
 
-        $pair->method('getFromCurrency')
+        $pair
+            ->method('getFromCurrency')
             ->willReturn($from);
 
-        $pair->method('getToCurrency')
+        $pair
+            ->method('getToCurrency')
             ->willReturn($to);
 
         return [$pair, $from, $to];

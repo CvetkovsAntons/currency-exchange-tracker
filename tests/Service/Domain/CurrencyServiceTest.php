@@ -4,13 +4,13 @@ namespace App\Tests\Service\Domain;
 
 use App\Dto\Currency as CurrencyDto;
 use App\Entity\Currency;
-use App\Enum\CurrencyType;
 use App\Exception\CurrencyApiException;
 use App\Exception\CurrencyCodeException;
 use App\Factory\CurrencyFactory;
 use App\Provider\CurrencyApiProvider;
 use App\Repository\CurrencyRepository;
 use App\Service\Domain\CurrencyService;
+use App\Tests\Utils\Factory\CurrencyTestFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -37,7 +37,7 @@ class CurrencyServiceTest extends TestCase
     public function testCreateCurrencySuccess(): void
     {
         $code = 'USD';
-        $currencyDto = $this->prepareCurrencyDto();
+        $currencyDto = CurrencyTestFactory::makeDto($code);
         $currency = $this->createMock(Currency::class);
 
         $this->currencyExistsMock($code, false);
@@ -83,9 +83,9 @@ class CurrencyServiceTest extends TestCase
 
     public function testIsValidCodeReturnsTrueWhenCurrencyExists(): void
     {
-        $currencyDto = $this->prepareCurrencyDto();
-
         $code = 'USD';
+
+        $currencyDto = CurrencyTestFactory::makeDto($code);
 
         $this->getCurrencyMock($code, $currencyDto);
 
@@ -117,21 +117,6 @@ class CurrencyServiceTest extends TestCase
         $result = $this->service->isValidCode($code);
 
         $this->assertFalse($result);
-    }
-
-    private function prepareCurrencyDto(): CurrencyDto
-    {
-        $dto = new CurrencyDto();
-        $dto->code = 'USD';
-        $dto->name = 'US Dollar';
-        $dto->name_plural = 'US Dollars';
-        $dto->symbol = '$';
-        $dto->symbol_native = '$';
-        $dto->decimal_digits = 2;
-        $dto->rounding = 0;
-        $dto->type = CurrencyType::FIAT->value;
-
-        return $dto;
     }
 
     private function currencyExistsMock(string $currencyCode, bool $return): void
