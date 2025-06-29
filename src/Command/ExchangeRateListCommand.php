@@ -52,4 +52,5 @@ class ExchangeRateListCommand extends AbstractCommand
 
         $io->table(['Currency pair', 'Rate', 'Synced at'], $rows);
     }
+
 }

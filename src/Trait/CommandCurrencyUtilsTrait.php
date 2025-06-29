@@ -4,7 +4,6 @@ namespace App\Trait;
 
 use App\Entity\Currency;
 use App\Enum\Argument;
-use App\Exception\CurrencyCodeException;
 use App\Service\Domain\CurrencyService;
 use Exception;
 use Symfony\Component\Console\Input\InputInterface;
