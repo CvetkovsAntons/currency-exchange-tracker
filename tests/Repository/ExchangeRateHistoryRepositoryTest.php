@@ -32,7 +32,7 @@ class ExchangeRateHistoryRepositoryTest extends WebTestCase
         $from = CurrencyTestFactory::create();
         $to = CurrencyTestFactory::create('EUR');
         $pair = CurrencyPairTestFactory::create($from, $to);
-        $history = ExchangeRateHistoryTestFactory::create($pair, '1.11', new DateTimeImmutable());
+        $history = ExchangeRateHistoryTestFactory::create($pair, '1.11');
 
         $this->em->persist($from);
         $this->em->persist($to);

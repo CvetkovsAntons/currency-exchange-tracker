@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Throwable;
 
 class ExchangeRateController extends AbstractController
@@ -24,7 +24,7 @@ class ExchangeRateController extends AbstractController
     public function __construct(
         #[Autowire(service: 'monolog.logger.api')]
         private readonly LoggerInterface     $logger,
-        private readonly SerializerInterface $serializer,
+        private readonly DenormalizerInterface $serializer,
     ) {}
 
     #[Route('/exchange-rate/', methods: ['GET'])]
@@ -35,8 +35,9 @@ class ExchangeRateController extends AbstractController
     {
         try {
             $request = $this->serializer->denormalize(
-                data: $request->toArray(),
+                data: $request->query->all(),
                 type: ExchangeRateRequest::class,
+                format: 'json'
             );
 
             $exchangeRate = $service->fetch($request);

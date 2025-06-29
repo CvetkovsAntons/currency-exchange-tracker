@@ -4,6 +4,7 @@ namespace App\Tests\Utils\Factory;
 
 use App\Entity\CurrencyPair;
 use App\Entity\ExchangeRateHistory;
+use DateTimeImmutable;
 use DateTimeInterface;
 
 class ExchangeRateHistoryTestFactory
@@ -11,13 +12,13 @@ class ExchangeRateHistoryTestFactory
     public static function create(
         CurrencyPair      $currencyPair,
         string            $rate,
-        DateTimeInterface $createdAt
+        ?DateTimeInterface $createdAt = null,
     ): ExchangeRateHistory
     {
         return new ExchangeRateHistory()
             ->setCurrencyPair($currencyPair)
             ->setRate($rate)
-            ->setCreatedAt($createdAt);
+            ->setCreatedAt($createdAt ?? new DateTimeImmutable());
     }
 
 }
