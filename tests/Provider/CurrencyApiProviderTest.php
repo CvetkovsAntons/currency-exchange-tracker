@@ -248,9 +248,8 @@ class CurrencyApiProviderTest extends TestCase
     private function prepareGetCurrency(string $currencyCode): CurrencyDto
     {
         $this->provider = $this->providerMock();
-        $dto = CurrencyTestFactory::makeDto($currencyCode);
-        $data = [$currencyCode => CurrencyTestFactory::makeArrayFromDto($dto)];
-        $responseData = ['data' => $data];
+        $dto = CurrencyTestFactory::createDto($currencyCode);
+        $responseData = ['data' => [$currencyCode => $dto->toArray()]];
 
         $response = $this->createMock(ResponseInterface::class);
         $response->method('toArray')->willReturn($responseData);

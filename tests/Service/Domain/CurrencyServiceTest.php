@@ -37,7 +37,7 @@ class CurrencyServiceTest extends TestCase
     public function testCreateCurrencySuccess(): void
     {
         $code = 'USD';
-        $currencyDto = CurrencyTestFactory::makeDto($code);
+        $currencyDto = CurrencyTestFactory::createDto($code);
         $currency = $this->createMock(Currency::class);
 
         $this->currencyExistsMock($code, false);
@@ -85,7 +85,7 @@ class CurrencyServiceTest extends TestCase
     {
         $code = 'USD';
 
-        $currencyDto = CurrencyTestFactory::makeDto($code);
+        $currencyDto = CurrencyTestFactory::createDto($code);
 
         $this->getCurrencyMock($code, $currencyDto);
 

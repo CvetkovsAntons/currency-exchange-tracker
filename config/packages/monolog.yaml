@@ -28,10 +28,12 @@ when@dev:
                 type: stream
                 path: '%kernel.logs_dir%/api_errors.log'
                 level: error
-                channels: [api]
+                channels: ['api']
 
 when@test:
     monolog:
+        channels: ['api']
+
         handlers:
             main:
                 type: fingers_crossed
@@ -43,6 +45,11 @@ when@test:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
+            api:
+                type: stream
+                path: '%kernel.logs_dir%/api_errors.log'
+                level: error
+                channels: ['api']
 
 when@prod:
     monolog:

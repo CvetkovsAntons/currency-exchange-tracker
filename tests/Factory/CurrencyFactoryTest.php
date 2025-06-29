@@ -20,7 +20,7 @@ class CurrencyFactoryTest extends TestCase
     public function testCreateSuccess(): void
     {
         $code = 'USD';
-        $dto = CurrencyTestFactory::makeDto($code);
+        $dto = CurrencyTestFactory::createDto($code);
 
         $entity = $this->factory->create($dto);
 

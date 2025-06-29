@@ -7,12 +7,10 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\UniqueConstraint;
 
 #[ORM\Entity(repositoryClass: ExchangeRateRepository::class)]
-#[ORM\Table(name: 'exchange_rate', uniqueConstraints: [
-    new UniqueConstraint(name: 'idx_exchange_rate_currency_pair', columns: ['currency_pair_id'])
-])]
+#[ORM\Table(name: 'exchange_rate')]
+#[ORM\UniqueConstraint(name: 'idx_exchange_rate_currency_pair', columns: ['currency_pair_id'])]
 class ExchangeRate
 {
     #[ORM\Id]

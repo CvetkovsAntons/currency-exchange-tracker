@@ -17,3 +17,6 @@ app-worker-stop:
 
 exchange-rate-sync:
 	docker exec -it currency-exchange-app php bin/console app:exchange-rate:sync
+
+tests-run:
+	docker exec -it currency-exchange-app php bin/phpunit
