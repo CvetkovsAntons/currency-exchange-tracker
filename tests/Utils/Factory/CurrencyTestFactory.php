@@ -21,4 +21,9 @@ class CurrencyTestFactory
         return $currency;
     }
 
+    public static function makeArrayFromDto(Currency $currency): array
+    {
+        return get_object_vars($currency);
+    }
+
 }

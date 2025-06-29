@@ -6,7 +6,8 @@ use App\Dto\Currency;
 use App\Entity\CurrencyPair;
 use App\Exception\CurrencyApiException;
 use App\Service\Api\CurrencyApiService;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -16,8 +17,8 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 readonly class CurrencyApiProvider
 {
     public function __construct(
-        private CurrencyApiService  $apiService,
-        private SerializerInterface $serializer,
+        private CurrencyApiService    $apiService,
+        private DenormalizerInterface $serializer,
     ) {}
 
     /**
@@ -33,13 +34,14 @@ readonly class CurrencyApiProvider
 
     /**
      * @param string ...$code
-     * @return CUrrency[]
+     * @return Currency[]
      * @throws CurrencyApiException
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws ExceptionInterface
      */
     public function getCurrencies(string ...$code): array
     {
@@ -63,6 +65,7 @@ readonly class CurrencyApiProvider
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws ExceptionInterface
      */
     public function getCurrency(string $code): ?Currency
     {
