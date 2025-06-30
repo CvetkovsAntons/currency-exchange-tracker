@@ -168,8 +168,8 @@ then you'll need to change database URL inside the `.env` file:
 
 ---  
 
-### **Worker commands**
-#### Open worker container terminal
+## **Worker commands**
+### Open worker container terminal
 - Using Make (recommended):
     ```shell
     make worker-shell
@@ -178,7 +178,7 @@ then you'll need to change database URL inside the `.env` file:
     ```shell
     docker exec -it currency-exchange-worker bash
     ```
-#### Start workers
+### Start workers
 - Using Make (recommended):
     ```shell
     make worker-start
@@ -187,7 +187,7 @@ then you'll need to change database URL inside the `.env` file:
     ```shell
     docker compose up -d worker
     ```
-#### Stop workers
+### Stop workers
 After command successful execution worker container will be stopped
 - Using Make (recommended):
     ```shell
@@ -197,7 +197,7 @@ After command successful execution worker container will be stopped
     ```shell
     docker exec -it currency-exchange-worker php bin/console messenger:stop-workers
     ```
-#### Restart workers
+### Restart workers
 After command successful execution worker container will be stopped
 - Using Make (recommended):
     ```shell
