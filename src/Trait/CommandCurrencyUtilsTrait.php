@@ -17,7 +17,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 trait CommandCurrencyUtilsTrait
 {
-    abstract protected function getCurrencyService(): CurrencyService;
+    abstract protected function currencyService(): CurrencyService;
 
     /**
      * @param Argument $argument
@@ -39,7 +39,7 @@ trait CommandCurrencyUtilsTrait
         bool           $createIfNotExists = true,
     ): ?Currency
     {
-        $currencyService = $this->getCurrencyService();
+        $currencyService = $this->currencyService();
 
         $currencyCode = $input->getArgument($argument->value);
         if (is_null($currencyCode)) {

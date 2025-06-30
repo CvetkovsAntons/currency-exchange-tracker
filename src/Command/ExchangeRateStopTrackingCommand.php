@@ -100,7 +100,7 @@ class ExchangeRateStopTrackingCommand extends AbstractCommand
         return $pair;
     }
 
-    protected function getCurrencyService(): CurrencyService
+    protected function currencyService(): CurrencyService
     {
         return $this->currencyService;
     }

@@ -4,7 +4,7 @@ namespace App\Tests\Utils\Builder;
 
 use App\Dto\ExchangeRateRequest;
 
-class ExchangeRateRequestBuilder
+class RequestTestFactory
 {
     public static function valid(
         string $from = 'USD',

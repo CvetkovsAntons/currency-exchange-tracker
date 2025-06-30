@@ -13,7 +13,7 @@ use App\Repository\ExchangeRateHistoryRepository;
 use App\Service\Domain\CurrencyPairService;
 use App\Service\Domain\CurrencyService;
 use App\Service\Query\ExchangeRateHistoryQueryService;
-use App\Tests\Utils\Builder\ExchangeRateRequestBuilder;
+use App\Tests\Utils\Builder\RequestTestFactory;
 use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -40,7 +40,7 @@ class ExchangeRateHistoryQueryServiceTest extends TestCase
 
     public function testFetchSuccess(): void
     {
-        $request = ExchangeRateRequestBuilder::valid();
+        $request = RequestTestFactory::valid();
 
         [$from, $to] = $this->currencyMocks();
         $pair = $this->createMock(CurrencyPair::class);
@@ -73,7 +73,7 @@ class ExchangeRateHistoryQueryServiceTest extends TestCase
     {
         $this->expectException(CurrencyCodeException::class);
 
-        $request = ExchangeRateRequestBuilder::valid('AAA');
+        $request = RequestTestFactory::valid('AAA');
 
         $this->getCurrencyMock(null);
 
@@ -84,7 +84,7 @@ class ExchangeRateHistoryQueryServiceTest extends TestCase
     {
         $this->expectException(DateTimeInvalidException::class);
 
-        $request = ExchangeRateRequestBuilder::invalidDatetime();
+        $request = RequestTestFactory::invalidDatetime();
 
         [$from, $to] = $this->currencyMocks();
         $pair = $this->createMock(CurrencyPair::class);

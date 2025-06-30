@@ -10,13 +10,13 @@ use DateTimeInterface;
 class ExchangeRateHistoryTestFactory
 {
     public static function create(
-        CurrencyPair      $currencyPair,
-        string            $rate,
+        CurrencyPair       $pair,
+        string             $rate,
         ?DateTimeInterface $createdAt = null,
     ): ExchangeRateHistory
     {
         return new ExchangeRateHistory()
-            ->setCurrencyPair($currencyPair)
+            ->setCurrencyPair($pair)
             ->setRate($rate)
             ->setCreatedAt($createdAt ?? new DateTimeImmutable());
     }

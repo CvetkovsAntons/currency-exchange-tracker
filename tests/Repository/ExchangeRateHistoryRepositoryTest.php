@@ -6,31 +6,53 @@ namespace App\Tests\Repository;
 
 use App\Entity\ExchangeRateHistory;
 use App\Repository\ExchangeRateHistoryRepository;
+use App\Tests\Internal\Traits\PurgeDatabaseTrait;
 use App\Tests\Utils\Factory\CurrencyPairTestFactory;
 use App\Tests\Utils\Factory\CurrencyTestFactory;
 use App\Tests\Utils\Factory\ExchangeRateHistoryTestFactory;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DependencyInjection\Container;
 
 class ExchangeRateHistoryRepositoryTest extends WebTestCase
 {
+    use PurgeDatabaseTrait;
+
     private EntityManagerInterface $em;
     private ExchangeRateHistoryRepository $repository;
 
+    protected function container(): Container
+    {
+        return static::getContainer();
+    }
+
     protected function setUp(): void
     {
-        self::bootKernel();
-        $container = self::getContainer();
+        static::bootKernel();
 
-        $this->em = $container->get(EntityManagerInterface::class);
+        $this->em = $this->container()->get(EntityManagerInterface::class);
         $this->repository = $this->em->getRepository(ExchangeRateHistory::class);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->purgeDatabase();
+        parent::tearDown();
     }
 
     public function testGetAllReturnsEntities(): void
     {
         $from = CurrencyTestFactory::create();
-        $to = CurrencyTestFactory::create('EUR');
+
+        $to = CurrencyTestFactory::create(
+            code: 'EUR',
+            name: 'Euro',
+            namePlural: 'Euros',
+            symbol: '€',
+            symbolNative: '€',
+        );
+
         $pair = CurrencyPairTestFactory::create($from, $to);
         $history = ExchangeRateHistoryTestFactory::create($pair, '1.11');
 
@@ -49,11 +71,28 @@ class ExchangeRateHistoryRepositoryTest extends WebTestCase
 
     public function testFindClosestBefore(): void
     {
-        $from = CurrencyTestFactory::create('GBP');
-        $to = CurrencyTestFactory::create('JPY');
+        $from = CurrencyTestFactory::create(
+            code: 'GBP',
+            name: 'British Pound Sterling',
+            namePlural: 'British pounds sterling',
+            symbol: '£',
+            symbolNative: '£',
+        );
+
+        $to = CurrencyTestFactory::create(
+            code: 'JPY',
+            name: 'Japanese Yen',
+            namePlural: 'Japanese yen',
+            symbol: '¥',
+            symbolNative: '￥',
+        );
+
         $pair = CurrencyPairTestFactory::create($from, $to);
-        $createdAt = new DateTimeImmutable('-1 day');
-        $history = ExchangeRateHistoryTestFactory::create($pair, '155.23', $createdAt);
+        $history = ExchangeRateHistoryTestFactory::create(
+            pair: $pair,
+            rate: '155.23',
+            createdAt: new DateTimeImmutable('-1 day')
+        );
 
         $this->em->persist($from);
         $this->em->persist($to);
@@ -69,8 +108,22 @@ class ExchangeRateHistoryRepositoryTest extends WebTestCase
 
     public function testFindClosestBeforeReturnsNull(): void
     {
-        $from = CurrencyTestFactory::create('CHF');
-        $to = CurrencyTestFactory::create('PLN');
+        $from = CurrencyTestFactory::create(
+            code: 'CHF',
+            name: 'Swiss Franc',
+            namePlural: 'Swiss francs',
+            symbol: 'CHF',
+            symbolNative: 'CHF',
+        );
+
+        $to = CurrencyTestFactory::create(
+            code: 'PLN',
+            name: 'Polish Zloty',
+            namePlural: 'Polish zlotys',
+            symbol: 'zł',
+            symbolNative: 'zł',
+        );
+
         $pair = CurrencyPairTestFactory::create($from, $to);
 
         $this->em->persist($from);
