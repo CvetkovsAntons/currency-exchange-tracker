@@ -36,41 +36,25 @@ class ExchangeRateHistoryRepository extends AbstractRepository
 
     public function findClosest(CurrencyPair $pair, ?DateTimeInterface $createdAt = null): ?ExchangeRateHistory
     {
-        $baseQuery = $this->createQueryBuilder('h')
-            ->where('h.currencyPair = :pair')
-            ->setParameter('pair', $pair);
-
         if (is_null($createdAt)) {
-            return $baseQuery
+            return $this->createQueryBuilder('h')
+                ->where('h.currencyPair = :pair')
+                ->setParameter('pair', $pair)
                 ->orderBy('h.createdAt', 'DESC')
                 ->setMaxResults(1)
                 ->getQuery()
                 ->getOneOrNullResult();
         }
 
-        $beforeQuery = clone $baseQuery;
-        $before = $beforeQuery
-            ->andWhere('h.createdAt <= :date')
-            ->orderBy('h.createdAt', 'DESC')
-            ->setParameter('date', $createdAt)
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
+        $before = $this->findClosestBefore($pair, $createdAt);
 
-        $afterQuery = clone $baseQuery;
-        $after = $afterQuery
-            ->andWhere('h.createdAt > :date')
-            ->orderBy('h.createdAt', 'ASC')
-            ->setParameter('date', $createdAt)
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
+        $after = $this->findClosestAfter($pair, $createdAt);
 
-        if (!$before) {
+        if (is_null($before)) {
             return $after;
         }
 
-        if (!$after) {
+        if (is_null($after)) {
             return $before;
         }
 
@@ -78,6 +62,32 @@ class ExchangeRateHistoryRepository extends AbstractRepository
         $diffAfter = abs($after->getCreatedAt()->getTimestamp() - $createdAt->getTimestamp());
 
         return $diffBefore <= $diffAfter ? $before : $after;
+    }
+
+    public function findClosestBefore(CurrencyPair $pair, DateTimeInterface $createdAt): ?ExchangeRateHistory
+    {
+        return $this->createQueryBuilder('h')
+            ->where('h.currencyPair = :pair')
+            ->andWhere('h.createdAt <= :date')
+            ->orderBy('h.createdAt', 'DESC')
+            ->setParameter('pair', $pair)
+            ->setParameter('date', $createdAt)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findClosestAfter(CurrencyPair $pair, DateTimeInterface $createdAt): ?ExchangeRateHistory
+    {
+        return $this->createQueryBuilder('h')
+            ->where('h.currencyPair = :pair')
+            ->andWhere('h.createdAt >= :date')
+            ->orderBy('h.createdAt', 'ASC')
+            ->setParameter('pair', $pair)
+            ->setParameter('date', $createdAt)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
 }
