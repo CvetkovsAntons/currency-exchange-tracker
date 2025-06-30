@@ -6,6 +6,9 @@ start:
 stop:
 	docker compose stop
 
+restart:
+	docker compose restart
+
 app-shell:
 	docker exec -it currency-exchange-app bash
 
@@ -27,11 +30,14 @@ app-currency-list:
 app-history-list:
 	docker exec -it currency-exchange-app php bin/console app:exchange-rate-history:list
 
+worker-shell:
+	docker exec -it currency-exchange-worker bash
+
 worker-start:
-	docker exec -it currency-exchange-worker php bin/console messenger:consume --time-limit=3600 --memory-limit=128M -vv
+	docker compose up -d worker
 
 worker-stop:
 	docker exec -it currency-exchange-worker php bin/console messenger:stop-workers
 
-worker-shell:
-	docker exec -it currency-exchange-worker bash
+worker-restart:
+	docker compose restart worker
