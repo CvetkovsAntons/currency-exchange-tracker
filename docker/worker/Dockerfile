@@ -10,4 +10,6 @@ WORKDIR /var/www/symfony
 
 COPY . .
 
-CMD ["php", "bin/console", "messenger:consume", "--time-limit=3600", "--memory-limit=128M"]
+COPY docker/app/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+
+ENTRYPOINT ["docker-entrypoint.sh"]
