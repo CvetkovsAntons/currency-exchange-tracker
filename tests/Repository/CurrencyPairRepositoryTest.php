@@ -4,9 +4,9 @@ namespace App\Tests\Repository;
 
 use App\Entity\CurrencyPair;
 use App\Repository\CurrencyPairRepository;
+use App\Tests\Internal\Factory\CurrencyPairTestFactory;
+use App\Tests\Internal\Factory\CurrencyTestFactory;
 use App\Tests\Internal\Traits\PurgeDatabaseTrait;
-use App\Tests\Utils\Factory\CurrencyPairTestFactory;
-use App\Tests\Utils\Factory\CurrencyTestFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\Container;

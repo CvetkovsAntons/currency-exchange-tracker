@@ -13,7 +13,7 @@ use App\Repository\ExchangeRateHistoryRepository;
 use App\Service\Domain\CurrencyPairService;
 use App\Service\Domain\CurrencyService;
 use App\Service\Query\ExchangeRateHistoryQueryService;
-use App\Tests\Utils\Builder\RequestTestFactory;
+use App\Tests\Internal\Factory\RequestTestFactory;
 use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

@@ -4,7 +4,7 @@ namespace App\Tests\Factory;
 
 use App\Enum\CurrencyType;
 use App\Factory\CurrencyFactory;
-use App\Tests\Utils\Factory\CurrencyTestFactory;
+use App\Tests\Internal\Factory\CurrencyTestFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\TestCase;
 

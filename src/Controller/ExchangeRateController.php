@@ -46,7 +46,7 @@ class ExchangeRateController extends AbstractController
                 'from' => $request->from,
                 'to' => $request->to,
                 'rate' => $exchangeRate->getRate(),
-                'datetime' => $exchangeRate->getCreatedAt()->format(DateTimeInterface::ATOM),
+                'datetime' => $exchangeRate->getCreatedAt()->format('Y-m-d H:i:s'),
             ]);
         } catch (MissingParametersException|CurrencyCodeException|CurrencyPairException|DateTimeInvalidException|ExchangeRateException $e) {
             return $this->json(['error' => $e->getMessage()], $e->getCode());

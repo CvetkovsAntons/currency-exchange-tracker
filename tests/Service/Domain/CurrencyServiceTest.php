@@ -10,7 +10,7 @@ use App\Factory\CurrencyFactory;
 use App\Provider\CurrencyApiProvider;
 use App\Repository\CurrencyRepository;
 use App\Service\Domain\CurrencyService;
-use App\Tests\Utils\Factory\CurrencyTestFactory;
+use App\Tests\Internal\Factory\CurrencyTestFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Utils\Factory;
+namespace App\Tests\Internal\Factory;
 
 use App\Dto\Currency as CurrencyDto;
 use App\Entity\Currency as CurrencyEntity;

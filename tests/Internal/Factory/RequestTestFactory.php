@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Utils\Builder;
+namespace App\Tests\Internal\Factory;
 
 use App\Dto\ExchangeRateRequest;
 

@@ -8,7 +8,7 @@ use App\Entity\CurrencyPair;
 use App\Exception\CurrencyApiException;
 use App\Provider\CurrencyApiProvider;
 use App\Service\Api\CurrencyApiService;
-use App\Tests\Utils\Factory\CurrencyTestFactory;
+use App\Tests\Internal\Factory\CurrencyTestFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
