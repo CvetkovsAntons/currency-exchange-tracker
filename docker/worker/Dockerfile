@@ -10,6 +10,6 @@ WORKDIR /var/www/symfony
 
 COPY . .
 
-COPY docker/app/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY docker/worker/docker-entrypoint.sh /usr/local/bin/worker-docker-entrypoint.sh
 
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/worker-docker-entrypoint.sh"]
