@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\ExchangeRate;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -33,6 +34,16 @@ class AbstractRepository extends ServiceEntityRepository
         if ($flush) {
             $this->em->flush();
         }
+    }
+
+    /**
+     * @param T $entity
+     * @return void
+     */
+    public function delete(object $entity): void
+    {
+        $this->em->remove($entity);
+        $this->em->flush();
     }
 
 }

@@ -21,7 +21,7 @@ class CurrencyPair
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private readonly int $id;
+    private int $id;
 
     #[ORM\ManyToOne(targetEntity: Currency::class, inversedBy: 'fromPairs')]
     #[ORM\JoinColumn(name: 'from_currency_id', referencedColumnName: 'id', nullable: false)]

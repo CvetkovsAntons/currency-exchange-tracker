@@ -156,4 +156,9 @@ readonly class ExchangeRateService
         return $this->repository->findAll();
     }
 
+    public function delete(ExchangeRate $exchangeRate): void
+    {
+        $this->repository->delete($exchangeRate);
+    }
+
 }

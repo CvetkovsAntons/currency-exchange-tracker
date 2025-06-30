@@ -18,7 +18,7 @@ class Currency
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private readonly int $id;
+    private int $id;
 
     #[ORM\Column(length: 3)]
     #[Assert\NotBlank]

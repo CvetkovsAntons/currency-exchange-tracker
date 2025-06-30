@@ -1,10 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Tests\Command;
 
-use App\Command\ExchangeRateSyncCommand;
+use App\Command\ExchangeRateStopTrackingCommand;
 use App\Entity\Currency;
 use App\Entity\CurrencyPair;
 use App\Entity\ExchangeRate;
@@ -18,14 +16,14 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class ExchangeRateSyncCommandTest extends TestCase
+class ExchangeRateStopTrackingCommandTest extends TestCase
 {
     private CurrencyService&MockObject $currencyService;
     private CurrencyPairService&MockObject $pairService;
     private ExchangeRateService&MockObject $rateService;
     private EntityManagerInterface&MockObject $em;
     private LoggerInterface&MockObject $logger;
-    private ExchangeRateSyncCommand $command;
+    private ExchangeRateStopTrackingCommand $command;
 
     protected function setUp(): void
     {
@@ -35,20 +33,21 @@ class ExchangeRateSyncCommandTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 
-        $this->command = new ExchangeRateSyncCommand(
+        $this->command = new ExchangeRateStopTrackingCommand(
             $this->currencyService,
             $this->pairService,
             $this->rateService,
             $this->em,
-            $this->logger
+            $this->logger,
         );
     }
 
-    public function testExchangeRateSyncWithArguments(): void
+    public function testExchangeRateStopTrackingWithArguments(): void
     {
         $this->prepareCommand();
 
         $tester = new CommandTester($this->command);
+
         $tester->execute([
             Argument::FROM->value => 'USD',
             Argument::TO->value => 'EUR',
@@ -57,13 +56,13 @@ class ExchangeRateSyncCommandTest extends TestCase
         $output = $tester->getDisplay();
 
         $this->assertStringContainsString(
-            needle: 'USD-EUR exchange rate has been synced successfully',
+            needle: 'Tracking of USD-EUR exchange rate has been stoped successfully!',
             haystack: $output
         );
         $this->assertSame(0, $tester->getStatusCode());
     }
 
-    public function testExchangeRateSyncWithoutArguments(): void
+    public function testExchangeRateStopTrackingWithoutArguments(): void
     {
         $this->prepareCommand();
 
@@ -74,13 +73,13 @@ class ExchangeRateSyncCommandTest extends TestCase
         $output = $tester->getDisplay();
 
         $this->assertStringContainsString(
-            needle: 'USD-EUR exchange rate has been synced successfully',
+            needle: 'Tracking of USD-EUR exchange rate has been stoped successfully!',
             haystack: $output
         );
         $this->assertSame(0, $tester->getStatusCode());
     }
 
-    public function testExchangeRateSyncWithInvalidCurrency(): void
+    public function testExchangeRateStopTrackingWithInvalidCurrency(): void
     {
         $this->prepareCommand(fn($v) => in_array($v, ['USD', 'EUR']));
 
@@ -93,7 +92,10 @@ class ExchangeRateSyncCommandTest extends TestCase
         $output = $tester->getDisplay();
 
         $this->assertStringContainsString('Invalid currency code', $output);
-        $this->assertStringContainsString('exchange rate has been synced successfully', $output);
+        $this->assertStringContainsString(
+            needle: 'Tracking of USD-EUR exchange rate has been stoped successfully!',
+            haystack: $output
+        );
         $this->assertSame(0, $tester->getStatusCode());
     }
 
@@ -124,15 +126,11 @@ class ExchangeRateSyncCommandTest extends TestCase
 
         $this->pairService
             ->method('get')
+            ->with($from, $to)
             ->willReturn($pair);
 
         $this->rateService
             ->method('get')
-            ->with($pair)
-            ->willReturn(null);
-
-        $this->rateService
-            ->method('create')
             ->with($pair)
             ->willReturn($rate);
 
@@ -143,6 +141,11 @@ class ExchangeRateSyncCommandTest extends TestCase
         $this->em
             ->expects($this->once())
             ->method('commit');
+
+        $this->rateService
+            ->expects($this->once())
+            ->method('delete')
+            ->with($rate);
     }
 
 }
