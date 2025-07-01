@@ -12,7 +12,7 @@
     - [Application commands](#application-commands)
     - [Worker commands](#worker-commands)
 - [Project structure](#3-project-structure)
-- [API Usage Example](#4-api-usage-example)
+- [API usage example](#4-api-usage-example)
 - [Running tests](#5-running-tests)
 - [Troubleshooting / FAQ](#6-troubleshooting--faq)
 - [License / Author / Credits](#7-license--author--credits)
