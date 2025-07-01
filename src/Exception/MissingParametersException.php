@@ -2,10 +2,9 @@
 
 namespace App\Exception;
 
-use Exception;
 use Throwable;
 
-class MissingParametersException extends Exception
+class MissingParametersException extends AbstractCustomException
 {
     public function __construct(array $parameters, ?int $code = 400, ?Throwable $previous = null)
     {

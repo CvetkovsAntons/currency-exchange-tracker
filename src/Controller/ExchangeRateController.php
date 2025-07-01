@@ -3,13 +3,8 @@
 namespace App\Controller;
 
 use App\Dto\ExchangeRateRequest;
-use App\Exception\CurrencyCodeException;
-use App\Exception\CurrencyPairException;
-use App\Exception\DateTimeInvalidException;
-use App\Exception\ExchangeRateException;
-use App\Exception\MissingParametersException;
+use App\Exception\AbstractCustomException;
 use App\Service\Query\ExchangeRateHistoryQueryService;
-use DateTimeInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -48,7 +43,7 @@ class ExchangeRateController extends AbstractController
                 'rate' => $exchangeRate->getRate(),
                 'datetime' => $exchangeRate->getCreatedAt()->format('Y-m-d H:i:s'),
             ]);
-        } catch (MissingParametersException|CurrencyCodeException|CurrencyPairException|DateTimeInvalidException|ExchangeRateException $e) {
+        } catch (AbstractCustomException $e) {
             return $this->json(['error' => $e->getMessage()], $e->getCode());
         } catch (Throwable $e) {
             $this->logger->error($e);

@@ -29,6 +29,8 @@ readonly class ExchangeRateHistoryQueryService
      * @throws DateTimeInvalidException
      * @throws ExchangeRateException
      * @throws MissingParametersException
+     * @throws CurrencyCodeException
+     * @throws CurrencyPairException
      */
     public function getClosestExchangeRate(ExchangeRateRequest $request): ExchangeRateHistory
     {
@@ -60,7 +62,7 @@ readonly class ExchangeRateHistoryQueryService
             try {
                 $createdAt = new DateTimeImmutable($request->datetime);
             } catch (Throwable) {
-                throw new DateTimeInvalidException();
+                throw new DateTimeInvalidException('Invalid datetime format. Valid format: YYYY-MM-DD HH:MM:SS');
             }
         }
 

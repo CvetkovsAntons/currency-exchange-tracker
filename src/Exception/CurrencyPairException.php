@@ -2,9 +2,7 @@
 
 namespace App\Exception;
 
-use RuntimeException;
-
-class CurrencyPairException extends RuntimeException
+class CurrencyPairException extends AbstractCustomException
 {
 
 }

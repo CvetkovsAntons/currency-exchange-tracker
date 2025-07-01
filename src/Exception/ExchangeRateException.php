@@ -2,9 +2,7 @@
 
 namespace App\Exception;
 
-use Exception;
-
-class ExchangeRateException extends Exception
+class ExchangeRateException extends AbstractCustomException
 {
 
 }
