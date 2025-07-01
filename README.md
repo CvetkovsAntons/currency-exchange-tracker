@@ -321,4 +321,5 @@ Created by Antons Cvetkovs - [GitHub Profile](https://github.com/CvetkovsAntons)
 
 ## License
 
-MIT License
+This project was developed as part of a technical assessment and is intended for demonstration purposes only.
+Use or redistribution without permission is not allowed.
