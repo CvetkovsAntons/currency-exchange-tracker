@@ -36,23 +36,21 @@ Application is integrated with a free third-party API: **FreeCurrencyAPI** (http
 ---
 
 ### 1. How to set up a project
-1. Install `PHP 8.4` (https://www.php.net/downloads.php)
-2. Install `Composer` (https://getcomposer.org/download/)
-3. Install `Docker` (https://docs.docker.com/engine/install/)
-4. Clone repository
+1. Install `Docker` (https://docs.docker.com/engine/install/)
+2. Clone repository
     ```shell
     git clone git@github.com:CvetkovsAntons/currency-exchange-tracker.git
     cd currency-exchange-tracker
     ```
-5. Clone `.env.sample` to `.env`
+3. Clone `.env.sample` to `.env`
     ```shell
     cp .env.sample .env
     ```
-6. Configure environment variables in `.env` file. `CURRENCY_API_KEY` is required
+4. Configure environment variables in `.env` file. `CURRENCY_API_KEY` is required
     ```.dotenv
     CURRENCY_API_KEY=your_currency_api_key_here
     ```
-7. Run docker compose
+5. Run docker compose
    - Using Make (recommended):
        ```shell
        make start
@@ -61,7 +59,7 @@ Application is integrated with a free third-party API: **FreeCurrencyAPI** (http
        ```shell
        docker compose up -d
        ```
-8. Check if the app is running at http://localhost:8080/health-check
+6. Check if the app is running at http://localhost:8080/health-check
 
 ---
 
