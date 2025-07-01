@@ -2,13 +2,26 @@
 
 ---
 
+### **Table of contents**
+
+- [Introduction](#introduction)
+- [How to set up a project](#how-to-set-up-a-project)
+- [Available commands](#available-commands)
+- [Project structure](#project-structure)
+- [API Usage Example](#api-usage-example)
+- [Running tests](#running-tests)
+- [Troubleshooting / FAQ](#troubleshooting--faq)
+- [License / Author / Credits](#license--author--credits)
+
+---
+
 ### **Introduction**
 
 The project goal is to create a backend Symfony application that will 
 provide possibility to track and manage currency exchange rates.
 
 Application provides tools for:
-- Persisting exchange rates between currency pairs (e.g., USD -> EUR).
+- Persisting exchange rates between currency pairs (e.g. USD -> EUR).
 - Storing historical exchange rate data.
 - Managing tracked currency pairs via console commands.
 - Updating exchange rates automatically every minute.
@@ -18,7 +31,7 @@ Application is integrated with a free third-party API: **FreeCurrencyAPI** (http
 
 ---
 
-### 1. How to set up a project
+### 1. **How to set up a project**
 1. Install `PHP 8.4` (https://www.php.net/downloads.php)
 2. Install `Composer` (https://getcomposer.org/download/)
 3. Install `Docker` (https://docs.docker.com/engine/install/)
@@ -298,7 +311,7 @@ Anticipate common issues, such as:
   Ensure `.env` is properly configured and PostgreSQL is accessible at `postgres:5432`.
 ---
 
-### 6. **License / Author / Credits**
+### 7. **License / Author / Credits**
 
 ## Author
 
