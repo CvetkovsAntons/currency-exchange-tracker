@@ -258,9 +258,25 @@ After command successful execution worker container will be stopped
 ---
 
 ### 4. **API Usage Example**
-## Get exchange rate for currency pair
-### Endpoint
-`GET:` /exchange-rate
+
+## GET: `/health-check`
+### Description
+Returns a simple status response to confirm that the application is running and able to serve requests.
+
+### Example call
+```shell
+  curl "localhost:8080/health-check"
+```
+### Example response
+```json
+{
+    "status": "ok"
+}
+```
+
+---
+
+## GET: `/exchange-rate`
 ### Description
 Returns the most recent exchange rate saved in the database for the specified currency pair closest to the given date.
 
@@ -282,6 +298,7 @@ Returns the most recent exchange rate saved in the database for the specified cu
     "datetime": "2025-06-30 12:00:00"
 }
 ```
+
 ---
 
 ### 5. **Running tests**

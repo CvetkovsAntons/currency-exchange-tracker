@@ -27,13 +27,7 @@ class ExchangeRateController extends AbstractController
         private readonly DenormalizerInterface $serializer,
     ) {}
 
-    #[Route('/health-check', methods: ['GET'])]
-    public function healthCheck(): JsonResponse
-    {
-        return $this->json(['status' => 'ok']);
-    }
-
-    #[Route('/exchange-rate/', methods: ['GET'])]
+    #[Route('/exchange-rate', methods: ['GET'])]
     public function getRate(
         Request                         $request,
         ExchangeRateHistoryQueryService $service,
