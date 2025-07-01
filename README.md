@@ -241,7 +241,7 @@ After command successful execution worker container will be stopped
 - `tests/`: Unit and integration tests
   - `Command/`: Tests for Symfony console commands.
   - `Controller/`: Tests for HTTP endpoints.
-  - `Factory/`: Test-specific entity factories.
+  - `Factory/`: Test for application factories.
   - `Internal/`: Internal utilities and helpers for testing.
   - `Provider/`: Tests for external API integrations or mock services.
   - `Repository/`: Tests for custom Doctrine repository methods.
