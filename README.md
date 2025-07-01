@@ -4,14 +4,18 @@
 
 ### **Table of contents**
 
+
 - [Introduction](#introduction)
-- [How to set up a project](#how-to-set-up-a-project)
-- [Available commands](#available-commands)
-- [Project structure](#project-structure)
-- [API Usage Example](#api-usage-example)
-- [Running tests](#running-tests)
-- [Troubleshooting / FAQ](#troubleshooting--faq)
-- [License / Author / Credits](#license--author--credits)
+- [How to set up a project](#1-how-to-set-up-a-project)
+- [Available commands](#2-available-commands)
+    - [Docker commands](#docker-commands)
+    - [Application commands](#application-commands)
+    - [Worker commands](#worker-commands)
+- [Project structure](#3-project-structure)
+- [API Usage Example](#4-api-usage-example)
+- [Running tests](#5-running-tests)
+- [Troubleshooting / FAQ](#6-troubleshooting--faq)
+- [License / Author / Credits](#7-license--author--credits)
 
 ---
 
@@ -31,7 +35,7 @@ Application is integrated with a free third-party API: **FreeCurrencyAPI** (http
 
 ---
 
-### 1. **How to set up a project**
+### 1. How to set up a project
 1. Install `PHP 8.4` (https://www.php.net/downloads.php)
 2. Install `Composer` (https://getcomposer.org/download/)
 3. Install `Docker` (https://docs.docker.com/engine/install/)
