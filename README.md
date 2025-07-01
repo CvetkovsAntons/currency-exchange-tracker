@@ -257,7 +257,7 @@ After command successful execution worker container will be stopped
 
 ---
 
-### 4. **API Usage Example**
+### 4. **API usage example**
 
 ## GET: `/health-check`
 ### Description
