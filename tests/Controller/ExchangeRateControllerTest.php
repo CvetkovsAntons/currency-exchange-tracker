@@ -62,8 +62,8 @@ class ExchangeRateControllerTest extends WebTestCase
         $this->em->clear();
 
         $this->client->request(
-            method: 'GET',
-            uri: '/exchange-rate/',
+            method: HttpMethod::GET->value,
+            uri: '/exchange-rate',
             parameters: [
                 'from' => 'USD',
                 'to' => 'EUR',
@@ -72,26 +72,26 @@ class ExchangeRateControllerTest extends WebTestCase
         );
 
         $response = $this->client->getResponse();
+
         $this->assertResponseIsSuccessful();
         $this->assertResponseFormatSame('json');
 
         $data = json_decode($response->getContent(), true);
+
         $this->assertArrayHasKey('rate', $data);
         $this->assertArrayHasKey('datetime', $data);
     }
 
     public function testMissingParameters(): void
     {
-        $this->client->request(
-            method: HttpMethod::GET->value,
-            uri: '/exchange-rate/',
-        );
+        $this->client->request(HttpMethod::GET->value, '/exchange-rate');
 
         $response = $this->client->getResponse();
 
         $this->assertEquals(400, $response->getStatusCode());
 
         $data = json_decode($response->getContent(), true);
+
         $this->assertArrayHasKey('error', $data);
     }
 
