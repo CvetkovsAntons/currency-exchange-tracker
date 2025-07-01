@@ -3,10 +3,11 @@ set -e
 
 cd /var/www/symfony
 
-if [ ! -f "vendor/autoload_runtime.php" ]; then
-    echo "Installing composer dependencies..."
-    composer install --no-interaction --prefer-dist
-fi
+echo "Waiting for app to start..."
+until curl -sSf http://nginx/health-check > /dev/null; do
+  sleep 1
+done
+echo "App is up!"
 
 echo "Starting workers..."
 php bin/console messenger:consume --time-limit=3600 --memory-limit=128M -vv

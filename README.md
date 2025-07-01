@@ -35,11 +35,7 @@ Application is integrated with a free third-party API: **FreeCurrencyAPI** (http
     ```.dotenv
     CURRENCY_API_KEY=your_currency_api_key_here
     ```
-7. Install all necessary dependencies
-    ```shell
-    composer install
-    ```
-8. Run docker compose
+7. Run docker compose
    - Using Make (recommended):
        ```shell
        make start
@@ -48,7 +44,7 @@ Application is integrated with a free third-party API: **FreeCurrencyAPI** (http
        ```shell
        docker compose up -d
        ```
-9. Check if the app is running at http://localhost:8080
+8. Check if the app is running at http://localhost:8080/health-check
 
 ---
 

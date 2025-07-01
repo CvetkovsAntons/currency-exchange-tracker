@@ -11,7 +11,7 @@ echo "Database is up!"
 
 if [ ! -f "vendor/autoload_runtime.php" ]; then
     echo "Installing composer dependencies..."
-    composer install --no-interaction --prefer-dist
+    composer install
 fi
 
 echo "Running migrations for default env..."
