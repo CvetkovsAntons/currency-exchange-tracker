@@ -6,7 +6,7 @@ use App\Dto\ExchangeRateRequest;
 
 class RequestTestFactory
 {
-    public static function valid(
+    public static function validExchangeRate(
         string $from = 'USD',
         string $to = 'EUR',
         ?string $datetime = '2024-01-01T00:00:00Z'
@@ -20,14 +20,9 @@ class RequestTestFactory
         return $request;
     }
 
-    public static function invalidDatetime(): ExchangeRateRequest
+    public static function invalidExchangeRate(): ExchangeRateRequest
     {
-        $request = new ExchangeRateRequest();
-        $request->from = 'USD';
-        $request->to = 'EUR';
-        $request->datetime = 'not-a-date';
-
-        return $request;
+        return self::validExchangeRate(datetime: 'not-a-date');
     }
 
 }

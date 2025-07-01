@@ -40,7 +40,7 @@ class ExchangeRateHistoryQueryServiceTest extends TestCase
 
     public function testFetchSuccess(): void
     {
-        $request = RequestTestFactory::valid();
+        $request = RequestTestFactory::validExchangeRate();
 
         [$from, $to] = $this->currencyMocks();
         $pair = $this->createMock(CurrencyPair::class);
@@ -73,7 +73,7 @@ class ExchangeRateHistoryQueryServiceTest extends TestCase
     {
         $this->expectException(CurrencyCodeException::class);
 
-        $request = RequestTestFactory::valid('AAA');
+        $request = RequestTestFactory::validExchangeRate('AAA');
 
         $this->getCurrencyMock(null);
 
@@ -84,7 +84,7 @@ class ExchangeRateHistoryQueryServiceTest extends TestCase
     {
         $this->expectException(DateTimeInvalidException::class);
 
-        $request = RequestTestFactory::invalidDatetime();
+        $request = RequestTestFactory::invalidExchangeRate();
 
         [$from, $to] = $this->currencyMocks();
         $pair = $this->createMock(CurrencyPair::class);
