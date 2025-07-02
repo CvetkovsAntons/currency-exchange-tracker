@@ -4,7 +4,7 @@ namespace App\Service\Domain;
 
 use App\Entity\Currency;
 use App\Entity\CurrencyPair;
-use App\Exception\CurrencyPairException;
+use App\Exception\CurrencyPair\DuplicateCurrencyPairException;
 use App\Factory\CurrencyPairFactory;
 use App\Repository\CurrencyPairRepository;
 
@@ -18,11 +18,7 @@ readonly class CurrencyPairService
     public function create(Currency $from, Currency $to): CurrencyPair
     {
         if ($this->exists($from, $to)) {
-            throw new CurrencyPairException(sprintf(
-                'Currency pair %s->%s already exists',
-                $from->getCode(),
-                $to->getCode()
-            ));
+            throw new DuplicateCurrencyPairException($from->getCode(), $to->getCode());
         }
 
         $currencyPair = $this->factory->create($from, $to);

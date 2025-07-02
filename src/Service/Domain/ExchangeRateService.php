@@ -4,13 +4,13 @@ namespace App\Service\Domain;
 
 use App\Entity\CurrencyPair;
 use App\Entity\ExchangeRate;
-use App\Exception\CurrencyPairException;
-use App\Exception\ExchangeRateException;
+use App\Exception\CurrencyPair\CurrencyPairNotFoundException;
+use App\Exception\ExchangeRate\DuplicateExchangeRateException;
+use App\Exception\ExchangeRate\ExchangeRateNotFoundException;
 use App\Factory\ExchangeRateFactory;
 use App\Provider\CurrencyApiProvider;
 use App\Repository\ExchangeRateRepository;
 use DateTimeImmutable;
-use Symfony\Component\Config\Definition\Exception\DuplicateKeyException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -39,43 +39,29 @@ readonly class ExchangeRateService
      * @throws RedirectionExceptionInterface
      * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
-     * @throws ExchangeRateException
+     * @throws CurrencyPairNotFoundException
+     * @throws ExchangeRateNotFoundException
+     * @throws DuplicateExchangeRateException
      */
-    public function create(CurrencyPair $currencyPair): ExchangeRate
+    public function create(CurrencyPair $pair): ExchangeRate
     {
-        $fromCurrency = $currencyPair->getFromCurrency();
-        $toCurrency = $currencyPair->getToCurrency();
+        $from = $pair->getFromCurrency();
+        $to = $pair->getToCurrency();
 
-        if (!$this->pairService->exists($fromCurrency, $toCurrency)) {
-            throw new CurrencyPairException(sprintf(
-                "Currency pair %s-%s doesn't exist",
-                $fromCurrency->getCode(),
-                $toCurrency->getCode()
-            ));
+        if (!$this->pairService->exists($from, $to)) {
+            throw new CurrencyPairNotFoundException($from->getCode(), $to->getCode());
         }
 
-        if ($this->exists($currencyPair)) {
-            throw new DuplicateKeyException(sprintf(
-                'Exchange rate for %s-%s already exists',
-                $fromCurrency->getCode(),
-                $toCurrency->getCode()
-            ));
+        if ($this->exists($pair)) {
+            throw new DuplicateExchangeRateException($from->getCode(), $to->getCode());
         }
 
-        $rate = $this->provider->getLatestExchangeRate($currencyPair);
+        $rate = $this->provider->getLatestExchangeRate($pair);
         if (is_null($rate)) {
-            throw new ExchangeRateException(sprintf(
-                'Exchange rate for %s-%s not found',
-                $fromCurrency->getCode(),
-                $toCurrency->getCode()
-            ));
+            throw new ExchangeRateNotFoundException($from->getCode(), $to->getCode());
         }
 
-        $exchangeRate = $this->factory->create(
-            pair: $currencyPair,
-            rate: $rate,
-            datetime: new DateTimeImmutable()
-        );
+        $exchangeRate = $this->factory->create($pair, $rate, new DateTimeImmutable());
 
         $this->saveExchangeRate($exchangeRate);
 
@@ -95,29 +81,21 @@ readonly class ExchangeRateService
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
-     * @throws ExchangeRateException
+     * @throws ExchangeRateNotFoundException
      */
     public function sync(ExchangeRate $exchangeRate): ExchangeRate
     {
-        $currencyPair = $exchangeRate->getCurrencyPair();
-        $fromCurrency = $currencyPair->getFromCurrency();
-        $toCurrency = $currencyPair->getToCurrency();
+        $pair = $exchangeRate->getCurrencyPair();
+        $from = $pair->getFromCurrency();
+        $to = $pair->getToCurrency();
 
-        if (!$this->exists($currencyPair)) {
-            throw new ExchangeRateException(sprintf(
-                "Exchange rate for currency pair %s-%s doesn't exist",
-                $fromCurrency->getCode(),
-                $toCurrency->getCode()
-            ));
+        if (!$this->exists($pair)) {
+            throw new ExchangeRateNotFoundException($from->getCode(), $to->getCode());
         }
 
-        $rate = $this->provider->getLatestExchangeRate($currencyPair);
+        $rate = $this->provider->getLatestExchangeRate($pair);
         if (is_null($rate)) {
-            throw new ExchangeRateException(sprintf(
-                'Exchange rate for %s-%s not found',
-                $fromCurrency->getCode(),
-                $toCurrency->getCode()
-            ));
+            throw new ExchangeRateNotFoundException($from->getCode(), $to->getCode());
         }
 
         $exchangeRate->setRate($rate);
@@ -134,7 +112,7 @@ readonly class ExchangeRateService
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
-     * @throws ExchangeRateException
+     * @throws ExchangeRateNotFoundException
      */
     public function syncAll(): void
     {

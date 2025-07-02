@@ -4,9 +4,9 @@ namespace App\Service\Api;
 
 use App\Enum\CurrencyApiEndpoint;
 use App\Enum\HttpMethod;
-use App\Exception\CurrencyApiException;
+use App\Exception\CurrencyApi\CurrencyApiRequestException;
+use App\Exception\CurrencyApi\CurrencyApiResponseException;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -26,7 +26,7 @@ readonly class CurrencyApiService
 
     /**
      * @return ResponseInterface
-     * @throws CurrencyApiException
+     * @throws CurrencyApiRequestException
      */
     public function status(): ResponseInterface
     {
@@ -47,7 +47,7 @@ readonly class CurrencyApiService
     /**
      * @param string ...$currencies
      * @return ResponseInterface
-     * @throws CurrencyApiException
+     * @throws CurrencyApiRequestException
      */
     public function currencies(string ...$currencies): ResponseInterface
     {
@@ -76,7 +76,7 @@ readonly class CurrencyApiService
      * @param string $fromCurrency
      * @param string ...$toCurrencies
      * @return ResponseInterface
-     * @throws CurrencyApiException
+     * @throws CurrencyApiRequestException
      */
     public function latestExchangeRate(string $fromCurrency, string ...$toCurrencies): ResponseInterface
     {
@@ -124,6 +124,7 @@ readonly class CurrencyApiService
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws CurrencyApiResponseException
      */
     private function validateResponse(ResponseInterface $response): void
     {
@@ -135,27 +136,19 @@ readonly class CurrencyApiService
 
         $message = $response->getContent(false);
 
-        throw new HttpException(
-            statusCode: $statusCode,
-            message: "Unexpected HTTP status code: $statusCode. Message: $message",
-            code: $statusCode
-        );
+        throw new CurrencyApiResponseException($message, $statusCode);
     }
 
     /**
      * @param Throwable $throwable
      * @return void
-     * @throws CurrencyApiException
+     * @throws CurrencyApiRequestException
      */
     private function processException(Throwable $throwable): void
     {
         $this->logger->error($throwable);
 
-        throw new CurrencyApiException(
-            message: "Currency API request failed: {$throwable->getMessage()}",
-            code: $throwable->getCode(),
-            previous: $throwable
-        );
+        throw new CurrencyApiRequestException($throwable);
     }
 
 }

@@ -3,8 +3,8 @@
 namespace App\Service\Domain;
 
 use App\Entity\Currency;
-use App\Exception\CurrencyApiException;
-use App\Exception\CurrencyCodeException;
+use App\Exception\Currency\DuplicateCurrencyCodeException;
+use App\Exception\CurrencyApi\CurrencyDataNotFoundException;
 use App\Factory\CurrencyFactory;
 use App\Provider\CurrencyApiProvider;
 use App\Repository\CurrencyRepository;
@@ -31,19 +31,19 @@ readonly class CurrencyService
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
-     * @throws CurrencyApiException
-     * @throws CurrencyCodeException
+     * @throws DuplicateCurrencyCodeException
+     * @throws CurrencyDataNotFoundException
      */
     public function create(string $currencyCode): Currency
     {
         if ($this->exists($currencyCode)) {
-            throw new CurrencyCodeException($currencyCode);
+            throw new DuplicateCurrencyCodeException($currencyCode);
         }
 
         $currency = $this->provider->getCurrency($currencyCode);
 
         if (empty($currency)) {
-            throw new CurrencyApiException(sprintf("Data for %s not found", $currencyCode));
+            throw new CurrencyDataNotFoundException($currencyCode);
         }
 
         $currency = $this->factory->create($currency);

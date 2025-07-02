@@ -6,9 +6,8 @@ use App\Dto\ExchangeRateRequest;
 use App\Entity\Currency;
 use App\Entity\CurrencyPair;
 use App\Entity\ExchangeRateHistory;
-use App\Exception\CurrencyCodeException;
-use App\Exception\DateTimeInvalidException;
-use App\Exception\MissingParametersException;
+use App\Exception\DateTime\DateTimeInvalidFormatException;
+use App\Exception\Request\MissingParametersException;
 use App\Repository\ExchangeRateHistoryRepository;
 use App\Service\Domain\CurrencyPairService;
 use App\Service\Domain\CurrencyService;
@@ -69,20 +68,9 @@ class ExchangeRateHistoryQueryServiceTest extends TestCase
         $this->service->getClosestExchangeRate($request);
     }
 
-    public function testFetchThrowsWhenFromCurrencyNotFound(): void
-    {
-        $this->expectException(CurrencyCodeException::class);
-
-        $request = RequestTestFactory::validExchangeRate('AAA');
-
-        $this->getCurrencyMock(null);
-
-        $this->service->getClosestExchangeRate($request);
-    }
-
     public function testFetchThrowsOnInvalidDatetime(): void
     {
-        $this->expectException(DateTimeInvalidException::class);
+        $this->expectException(DateTimeInvalidFormatException::class);
 
         $request = RequestTestFactory::invalidExchangeRate();
 

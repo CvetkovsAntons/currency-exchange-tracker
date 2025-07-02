@@ -4,7 +4,7 @@ namespace App\Provider;
 
 use App\Dto\Currency;
 use App\Entity\CurrencyPair;
-use App\Exception\CurrencyApiException;
+use App\Exception\CurrencyApi\CurrencyApiUnavailableException;
 use App\Service\Api\CurrencyApiService;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -35,18 +35,18 @@ readonly class CurrencyApiProvider
     /**
      * @param string ...$code
      * @return Currency[]
-     * @throws CurrencyApiException
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws CurrencyApiUnavailableException
      * @throws ExceptionInterface
      */
     public function getCurrencies(string ...$code): array
     {
         if (!$this->isAlive()) {
-            throw new CurrencyApiException("Couldn't connect to API");
+            throw new CurrencyApiUnavailableException();
         }
 
         $response = $this->apiService->currencies(...$code);
@@ -65,6 +65,7 @@ readonly class CurrencyApiProvider
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws CurrencyApiUnavailableException
      * @throws ExceptionInterface
      */
     public function getCurrency(string $code): ?Currency

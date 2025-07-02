@@ -2,10 +2,8 @@
 
 namespace App\Command;
 
-use App\Entity\Currency;
-use App\Entity\CurrencyPair;
 use App\Enum\Argument;
-use App\Exception\CurrencyPairException;
+use App\Exception\CurrencyPair\CurrencyPairNotFoundException;
 use App\Service\Domain\CurrencyPairService;
 use App\Service\Domain\CurrencyService;
 use App\Service\Domain\ExchangeRateService;
@@ -66,7 +64,7 @@ class ExchangeRateStopTrackingCommand extends AbstractCommand
             $pair = $this->pairService->get($from, $to);
 
             if (is_null($pair)) {
-                throw new CurrencyPairException('Currency pair does not exist');
+                throw new CurrencyPairNotFoundException($from->getCode(), $to->getCode());
             }
 
             $exchangeRate = $this->rateService->get($pair);
@@ -87,17 +85,6 @@ class ExchangeRateStopTrackingCommand extends AbstractCommand
             $this->em->close();
             throw $e;
         }
-    }
-
-    private function getCurrencyPair(Currency $from, Currency $to, SymfonyStyle $io): CurrencyPair
-    {
-        $pair = $this->pairService->get($from, $to);
-
-        if (is_null($pair)) {
-            throw new CurrencyPairException('Currency pair does not exist');
-        }
-
-        return $pair;
     }
 
     protected function currencyService(): CurrencyService

@@ -4,8 +4,8 @@ namespace App\Tests\Service\Domain;
 
 use App\Dto\Currency as CurrencyDto;
 use App\Entity\Currency;
-use App\Exception\CurrencyApiException;
-use App\Exception\CurrencyCodeException;
+use App\Exception\Currency\DuplicateCurrencyCodeException;
+use App\Exception\CurrencyApi\CurrencyDataNotFoundException;
 use App\Factory\CurrencyFactory;
 use App\Provider\CurrencyApiProvider;
 use App\Repository\CurrencyRepository;
@@ -60,7 +60,7 @@ class CurrencyServiceTest extends TestCase
 
     public function testCreateCurrencyAlreadyExists(): void
     {
-        $this->expectException(CurrencyCodeException::class);
+        $this->expectException(DuplicateCurrencyCodeException::class);
 
         $code = 'EUR';
 
@@ -71,7 +71,7 @@ class CurrencyServiceTest extends TestCase
 
     public function testCreateCurrencyApiReturnsEmpty(): void
     {
-        $this->expectException(CurrencyApiException::class);
+        $this->expectException(CurrencyDataNotFoundException::class);
 
         $code = 'ABC';
 

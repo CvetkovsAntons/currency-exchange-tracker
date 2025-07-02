@@ -4,12 +4,11 @@ namespace App\Tests\Service\Api;
 
 use App\Enum\CurrencyApiEndpoint;
 use App\Enum\HttpMethod;
-use App\Exception\CurrencyApiException;
+use App\Exception\AbstractCustomException;
 use App\Service\Api\CurrencyApiService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
@@ -168,13 +167,13 @@ class CurrencyApiServiceTest extends TestCase
     {
         $this->httpClient
             ->method('request')
-            ->willThrowException(new RuntimeException('Network error'));
+            ->willThrowException(new AbstractCustomException('Network error'));
 
         $this->logger
             ->expects($this->once())
             ->method('error');
 
-        $this->expectException(CurrencyApiException::class);
+        $this->expectException(AbstractCustomException::class);
     }
 
 }

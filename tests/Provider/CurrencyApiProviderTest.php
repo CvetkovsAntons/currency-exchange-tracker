@@ -5,7 +5,7 @@ namespace App\Tests\Provider;
 use App\Dto\Currency as CurrencyDto;
 use App\Entity\Currency;
 use App\Entity\CurrencyPair;
-use App\Exception\CurrencyApiException;
+use App\Exception\CurrencyApi\CurrencyApiUnavailableException;
 use App\Provider\CurrencyApiProvider;
 use App\Service\Api\CurrencyApiService;
 use App\Tests\Internal\Factory\CurrencyTestFactory;
@@ -62,9 +62,9 @@ class CurrencyApiProviderTest extends TestCase
     {
         $this->apiService
             ->method('status')
-            ->willThrowException(new CurrencyApiException('Network error'));
+            ->willThrowException(new CurrencyApiUnavailableException());
 
-        $this->expectException(CurrencyApiException::class);
+        $this->expectException(CurrencyApiUnavailableException::class);
 
         $this->provider->isAlive();
     }
@@ -114,7 +114,7 @@ class CurrencyApiProviderTest extends TestCase
             ->method('isAlive')
             ->willReturn(false);
 
-        $this->expectException(CurrencyApiException::class);
+        $this->expectException(CurrencyApiUnavailableException::class);
 
         $this->provider->getCurrencies('USD');
     }
@@ -161,7 +161,7 @@ class CurrencyApiProviderTest extends TestCase
             ->method('isAlive')
             ->willReturn(false);
 
-        $this->expectException(CurrencyApiException::class);
+        $this->expectException(CurrencyApiUnavailableException::class);
 
         $this->provider->getCurrency('USD');
     }

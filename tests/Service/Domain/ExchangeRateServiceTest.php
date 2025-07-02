@@ -5,8 +5,9 @@ namespace App\Tests\Service\Domain;
 use App\Entity\Currency;
 use App\Entity\CurrencyPair;
 use App\Entity\ExchangeRate;
-use App\Exception\CurrencyPairException;
-use App\Exception\ExchangeRateException;
+use App\Exception\CurrencyPair\CurrencyPairNotFoundException;
+use App\Exception\ExchangeRate\DuplicateExchangeRateException;
+use App\Exception\ExchangeRate\ExchangeRateNotFoundException;
 use App\Factory\ExchangeRateFactory;
 use App\Provider\CurrencyApiProvider;
 use App\Repository\ExchangeRateRepository;
@@ -16,7 +17,6 @@ use App\Service\Domain\ExchangeRateService;
 use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Config\Definition\Exception\DuplicateKeyException;
 
 class ExchangeRateServiceTest extends TestCase
 {
@@ -69,7 +69,7 @@ class ExchangeRateServiceTest extends TestCase
 
     public function testCreateExchangeRatePairNotExists(): void
     {
-        $this->expectException(CurrencyPairException::class);
+        $this->expectException(CurrencyPairNotFoundException::class);
 
         [$pair, $from, $to] = $this->currencyMocks();
 
@@ -80,7 +80,7 @@ class ExchangeRateServiceTest extends TestCase
 
     public function testCreateExchangeRateAlreadyExists(): void
     {
-        $this->expectException(DuplicateKeyException::class);
+        $this->expectException(DuplicateExchangeRateException::class);
 
         [$pair, $from, $to] = $this->currencyMocks();
 
@@ -92,7 +92,7 @@ class ExchangeRateServiceTest extends TestCase
 
     public function testCreateExchangeRateNotFound(): void
     {
-        $this->expectException(ExchangeRateException::class);
+        $this->expectException(ExchangeRateNotFoundException::class);
 
         [$pair, $from, $to] = $this->currencyMocks();
 
@@ -128,7 +128,7 @@ class ExchangeRateServiceTest extends TestCase
 
     public function testSyncExchangeRateNotExists(): void
     {
-        $this->expectException(ExchangeRateException::class);
+        $this->expectException(ExchangeRateNotFoundException::class);
 
         [$pair] = $this->currencyMocks();
         $exchangeRate = $this->createMock(ExchangeRate::class);
@@ -144,7 +144,7 @@ class ExchangeRateServiceTest extends TestCase
 
     public function testSyncExchangeRateNotFound(): void
     {
-        $this->expectException(ExchangeRateException::class);
+        $this->expectException(ExchangeRateNotFoundException::class);
 
         [$pair] = $this->currencyMocks();
         $exchangeRate = $this->createMock(ExchangeRate::class);

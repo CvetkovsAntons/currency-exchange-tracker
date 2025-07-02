@@ -4,7 +4,7 @@ namespace App\Tests\Service\Domain;
 
 use App\Entity\Currency;
 use App\Entity\CurrencyPair;
-use App\Exception\CurrencyPairException;
+use App\Exception\CurrencyPair\DuplicateCurrencyPairException;
 use App\Factory\CurrencyPairFactory;
 use App\Repository\CurrencyPairRepository;
 use App\Service\Domain\CurrencyPairService;
@@ -52,7 +52,7 @@ class CurrencyPairTest extends TestCase
 
     public function testCreateCurrencyPairAlreadyExists(): void
     {
-        $this->expectException(CurrencyPairException::class);
+        $this->expectException(DuplicateCurrencyPairException::class);
 
         [$from, $to] = $this->currencyMocks();
 
