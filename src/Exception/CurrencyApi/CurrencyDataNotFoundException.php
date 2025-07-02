@@ -10,9 +10,9 @@ class CurrencyDataNotFoundException extends AbstractCustomException
 {
     public function __construct(string $currencyCode, ?Throwable $previous = null)
     {
-        $message = sprintf("Couldn't get data for data for %s currency from external API", $currencyCode);
+        $message = sprintf("Couldn't get data for %s currency from external currency API", $currencyCode);
 
-        parent::__construct($message);
+        parent::__construct($message, Response::HTTP_NOT_FOUND, $previous);
     }
 
 }
