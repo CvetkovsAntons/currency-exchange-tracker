@@ -7,6 +7,7 @@ use App\Entity\ExchangeRate;
 use App\Exception\CurrencyPair\CurrencyPairNotFoundException;
 use App\Exception\ExchangeRate\DuplicateExchangeRateException;
 use App\Exception\ExchangeRate\ExchangeRateNotFoundException;
+use App\Exception\CurrencyApi\ExchangeRateNotFoundException as CurrencyApiExchangeRateNotFoundException;
 use App\Factory\ExchangeRateFactory;
 use App\Provider\CurrencyApiProvider;
 use App\Repository\ExchangeRateRepository;
@@ -40,8 +41,8 @@ readonly class ExchangeRateService
      * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
      * @throws CurrencyPairNotFoundException
-     * @throws ExchangeRateNotFoundException
      * @throws DuplicateExchangeRateException
+     * @throws CurrencyApiExchangeRateNotFoundException
      */
     public function create(CurrencyPair $pair): ExchangeRate
     {
@@ -58,7 +59,7 @@ readonly class ExchangeRateService
 
         $rate = $this->provider->getLatestExchangeRate($pair);
         if (is_null($rate)) {
-            throw new ExchangeRateNotFoundException($from->getCode(), $to->getCode());
+            throw new CurrencyApiExchangeRateNotFoundException($from->getCode(), $to->getCode());
         }
 
         $exchangeRate = $this->factory->create($pair, $rate, new DateTimeImmutable());
@@ -82,6 +83,7 @@ readonly class ExchangeRateService
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      * @throws ExchangeRateNotFoundException
+     * @throws CurrencyApiExchangeRateNotFoundException
      */
     public function sync(ExchangeRate $exchangeRate): ExchangeRate
     {
@@ -95,7 +97,7 @@ readonly class ExchangeRateService
 
         $rate = $this->provider->getLatestExchangeRate($pair);
         if (is_null($rate)) {
-            throw new ExchangeRateNotFoundException($from->getCode(), $to->getCode());
+            throw new CurrencyApiExchangeRateNotFoundException($from->getCode(), $to->getCode());
         }
 
         $exchangeRate->setRate($rate);

@@ -5,6 +5,7 @@ namespace App\Tests\Service\Domain;
 use App\Entity\Currency;
 use App\Entity\CurrencyPair;
 use App\Entity\ExchangeRate;
+use App\Exception\CurrencyApi\ExchangeRateNotFoundException as CurrencyApiExchangeRateNotFoundException;
 use App\Exception\CurrencyPair\CurrencyPairNotFoundException;
 use App\Exception\ExchangeRate\DuplicateExchangeRateException;
 use App\Exception\ExchangeRate\ExchangeRateNotFoundException;
@@ -92,7 +93,7 @@ class ExchangeRateServiceTest extends TestCase
 
     public function testCreateExchangeRateNotFound(): void
     {
-        $this->expectException(ExchangeRateNotFoundException::class);
+        $this->expectException(CurrencyApiExchangeRateNotFoundException::class);
 
         [$pair, $from, $to] = $this->currencyMocks();
 
@@ -144,7 +145,7 @@ class ExchangeRateServiceTest extends TestCase
 
     public function testSyncExchangeRateNotFound(): void
     {
-        $this->expectException(ExchangeRateNotFoundException::class);
+        $this->expectException(CurrencyApiExchangeRateNotFoundException::class);
 
         [$pair] = $this->currencyMocks();
         $exchangeRate = $this->createMock(ExchangeRate::class);
