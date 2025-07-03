@@ -15,6 +15,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Throwable;
 
+/**
+ * This service is used to communicate with external currency API
+ */
 readonly class CurrencyApiService
 {
     public function __construct(
@@ -25,7 +28,6 @@ readonly class CurrencyApiService
     ) {}
 
     /**
-     * @return ResponseInterface
      * @throws CurrencyApiRequestException
      */
     public function status(): ResponseInterface
@@ -45,8 +47,6 @@ readonly class CurrencyApiService
     }
 
     /**
-     * @param string ...$currencies
-     * @return ResponseInterface
      * @throws CurrencyApiRequestException
      */
     public function currencies(string ...$currencies): ResponseInterface
@@ -73,9 +73,6 @@ readonly class CurrencyApiService
     }
 
     /**
-     * @param string $fromCurrency
-     * @param string ...$toCurrencies
-     * @return ResponseInterface
      * @throws CurrencyApiRequestException
      */
     public function latestExchangeRate(string $fromCurrency, string ...$toCurrencies): ResponseInterface
@@ -102,10 +99,6 @@ readonly class CurrencyApiService
     }
 
     /**
-     * @param HttpMethod $method
-     * @param CurrencyApiEndpoint $endpoint
-     * @param array $options
-     * @return ResponseInterface
      * @throws TransportExceptionInterface
      */
     private function makeRequest(HttpMethod $method, CurrencyApiEndpoint $endpoint, array $options = []): ResponseInterface
@@ -118,13 +111,11 @@ readonly class CurrencyApiService
     }
 
     /**
-     * @param ResponseInterface $response
-     * @return void
      * @throws ClientExceptionInterface
+     * @throws CurrencyApiResponseException
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
-     * @throws CurrencyApiResponseException
      */
     private function validateResponse(ResponseInterface $response): void
     {
@@ -140,8 +131,6 @@ readonly class CurrencyApiService
     }
 
     /**
-     * @param Throwable $throwable
-     * @return void
      * @throws CurrencyApiRequestException
      */
     private function processException(Throwable $throwable): void

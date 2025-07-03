@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Dto\ExchangeRateRequest;
-use App\Exception\AbstractCustomException;
+use App\Exception\DateTime\DateTimeInvalidFormatException;
+use App\Exception\ExchangeRate\ExchangeRateNotFoundException;
+use App\Exception\Request\MissingParametersException;
 use App\Service\Query\ExchangeRateHistoryQueryService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -38,19 +40,17 @@ class ExchangeRateController extends AbstractController
 
             $exchangeRate = $service->getLatestExchangeRate($request);
 
-            $response = [];
-
-            if (!is_null($exchangeRate)) {
-                $response = [
-                    'from' => $request->from,
-                    'to' => $request->to,
-                    'rate' => $exchangeRate->getRate(),
-                    'datetime' => $exchangeRate->getCreatedAt()->format('Y-m-d H:i:s'),
-                ];
+            if (is_null($exchangeRate)) {
+                return $this->json([]);
             }
 
-            return $this->json($response);
-        } catch (AbstractCustomException $e) {
+            return $this->json([
+                'from' => $request->from,
+                'to' => $request->to,
+                'rate' => $exchangeRate->getRate(),
+                'datetime' => $exchangeRate->getCreatedAt()->format('Y-m-d H:i:s'),
+            ]);
+        } catch (DateTimeInvalidFormatException|MissingParametersException|ExchangeRateNotFoundException $e) {
             return $this->json(['error' => $e->getMessage()], $e->getCode());
         } catch (Throwable $e) {
             $this->logger->error($e);

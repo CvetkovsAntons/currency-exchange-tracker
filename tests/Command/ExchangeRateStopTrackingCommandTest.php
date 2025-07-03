@@ -90,7 +90,7 @@ class ExchangeRateStopTrackingCommandTest extends TestCase
 
         $output = $tester->getDisplay();
 
-        $this->assertStringContainsString('Invalid currency code', $output);
+        $this->assertStringContainsString("Currency code XXX isn't valid", $output);
         $this->assertStringContainsString(
             needle: 'Tracking of USD-EUR exchange rate has been stoped successfully!',
             haystack: $output

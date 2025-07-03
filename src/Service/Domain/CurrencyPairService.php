@@ -15,6 +15,9 @@ readonly class CurrencyPairService
         private CurrencyPairRepository $repository,
     ) {}
 
+    /**
+     * @throws DuplicateCurrencyPairException
+     */
     public function create(Currency $from, Currency $to): CurrencyPair
     {
         if ($this->exists($from, $to)) {

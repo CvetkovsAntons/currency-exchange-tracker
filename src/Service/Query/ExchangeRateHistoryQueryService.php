@@ -25,11 +25,9 @@ readonly class ExchangeRateHistoryQueryService
     ) {}
 
     /**
-     * @param ExchangeRateRequest $request
-     * @return ExchangeRateHistory|null
      * @throws DateTimeInvalidFormatException
-     * @throws MissingParametersException
      * @throws ExchangeRateNotFoundException
+     * @throws MissingParametersException
      */
     public function getLatestExchangeRate(ExchangeRateRequest $request): ?ExchangeRateHistory
     {

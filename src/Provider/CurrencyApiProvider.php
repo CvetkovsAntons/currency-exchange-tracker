@@ -4,6 +4,7 @@ namespace App\Provider;
 
 use App\Dto\Currency;
 use App\Entity\CurrencyPair;
+use App\Exception\CurrencyApi\CurrencyApiRequestException;
 use App\Exception\CurrencyApi\CurrencyApiUnavailableException;
 use App\Service\Api\CurrencyApiService;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
@@ -22,8 +23,8 @@ readonly class CurrencyApiProvider
     ) {}
 
     /**
-     * @return bool
      * @throws TransportExceptionInterface
+     * @throws CurrencyApiRequestException
      */
     public function isAlive(): bool
     {
@@ -33,15 +34,14 @@ readonly class CurrencyApiProvider
     }
 
     /**
-     * @param string ...$code
-     * @return Currency[]
      * @throws ClientExceptionInterface
+     * @throws CurrencyApiRequestException
+     * @throws CurrencyApiUnavailableException
      * @throws DecodingExceptionInterface
+     * @throws ExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
-     * @throws CurrencyApiUnavailableException
-     * @throws ExceptionInterface
      */
     public function getCurrencies(string ...$code): array
     {
@@ -58,15 +58,14 @@ readonly class CurrencyApiProvider
     }
 
     /**
-     * @param string $code
-     * @return Currency|null
      * @throws ClientExceptionInterface
+     * @throws CurrencyApiRequestException
+     * @throws CurrencyApiUnavailableException
      * @throws DecodingExceptionInterface
+     * @throws ExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
-     * @throws CurrencyApiUnavailableException
-     * @throws ExceptionInterface
      */
     public function getCurrency(string $code): ?Currency
     {
@@ -78,9 +77,8 @@ readonly class CurrencyApiProvider
     /**
      * Returns decimal string
      *
-     * @param CurrencyPair $currencyPair
-     * @return string|null
      * @throws ClientExceptionInterface
+     * @throws CurrencyApiRequestException
      * @throws DecodingExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface

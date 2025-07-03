@@ -91,7 +91,7 @@ class ExchangeRateSyncCommandTest extends TestCase
 
         $output = $tester->getDisplay();
 
-        $this->assertStringContainsString('Invalid currency code', $output);
+        $this->assertStringContainsString("Currency code XXX isn't valid", $output);
         $this->assertStringContainsString('exchange rate has been synced successfully', $output);
         $this->assertSame(0, $tester->getStatusCode());
     }

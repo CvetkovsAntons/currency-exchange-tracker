@@ -4,6 +4,7 @@ namespace App\Service\Domain;
 
 use App\Entity\CurrencyPair;
 use App\Entity\ExchangeRate;
+use App\Exception\CurrencyApi\CurrencyApiRequestException;
 use App\Exception\CurrencyPair\CurrencyPairNotFoundException;
 use App\Exception\ExchangeRate\DuplicateExchangeRateException;
 use App\Exception\ExchangeRate\ExchangeRateNotFoundException;
@@ -35,14 +36,15 @@ readonly class ExchangeRateService
     }
 
     /**
-     * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
-     * @throws CurrencyPairNotFoundException
-     * @throws DuplicateExchangeRateException
      * @throws CurrencyApiExchangeRateNotFoundException
+     * @throws CurrencyPairNotFoundException
+     * @throws DecodingExceptionInterface
+     * @throws DuplicateExchangeRateException
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     * @throws CurrencyApiRequestException
      */
     public function create(CurrencyPair $pair): ExchangeRate
     {
@@ -75,15 +77,14 @@ readonly class ExchangeRateService
     }
 
     /**
-     * @param ExchangeRate $exchangeRate
-     * @return ExchangeRate
      * @throws ClientExceptionInterface
+     * @throws CurrencyApiExchangeRateNotFoundException
+     * @throws CurrencyApiRequestException
      * @throws DecodingExceptionInterface
+     * @throws ExchangeRateNotFoundException
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
-     * @throws ExchangeRateNotFoundException
-     * @throws CurrencyApiExchangeRateNotFoundException
      */
     public function sync(ExchangeRate $exchangeRate): ExchangeRate
     {
@@ -108,13 +109,14 @@ readonly class ExchangeRateService
     }
 
     /**
-     * @return void
      * @throws ClientExceptionInterface
+     * @throws CurrencyApiExchangeRateNotFoundException
+     * @throws CurrencyApiRequestException
      * @throws DecodingExceptionInterface
+     * @throws ExchangeRateNotFoundException
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
-     * @throws ExchangeRateNotFoundException
      */
     public function syncAll(): void
     {

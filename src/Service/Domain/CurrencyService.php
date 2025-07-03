@@ -4,10 +4,13 @@ namespace App\Service\Domain;
 
 use App\Entity\Currency;
 use App\Exception\Currency\DuplicateCurrencyCodeException;
+use App\Exception\CurrencyApi\CurrencyApiRequestException;
+use App\Exception\CurrencyApi\CurrencyApiUnavailableException;
 use App\Exception\CurrencyApi\CurrencyDataNotFoundException;
 use App\Factory\CurrencyFactory;
 use App\Provider\CurrencyApiProvider;
 use App\Repository\CurrencyRepository;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -24,15 +27,16 @@ readonly class CurrencyService
     ) {}
 
     /**
-     * @param string $currencyCode
-     * @return Currency
      * @throws ClientExceptionInterface
+     * @throws CurrencyDataNotFoundException
      * @throws DecodingExceptionInterface
+     * @throws DuplicateCurrencyCodeException
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
-     * @throws DuplicateCurrencyCodeException
-     * @throws CurrencyDataNotFoundException
+     * @throws CurrencyApiRequestException
+     * @throws CurrencyApiUnavailableException
+     * @throws ExceptionInterface
      */
     public function create(string $currencyCode): Currency
     {

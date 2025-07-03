@@ -3,6 +3,11 @@
 namespace App\Command;
 
 use App\Enum\Argument;
+use App\Exception\Currency\CurrencyNotFoundException;
+use App\Exception\Currency\DuplicateCurrencyCodeException;
+use App\Exception\CurrencyApi\CurrencyApiRequestException;
+use App\Exception\CurrencyApi\CurrencyApiUnavailableException;
+use App\Exception\CurrencyApi\CurrencyDataNotFoundException;
 use App\Exception\CurrencyPair\CurrencyPairNotFoundException;
 use App\Service\Domain\CurrencyPairService;
 use App\Service\Domain\CurrencyService;
@@ -15,6 +20,12 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Throwable;
 
 #[AsCommand(
@@ -51,6 +62,21 @@ class ExchangeRateStopTrackingCommand extends AbstractCommand
             );
     }
 
+    /**
+     * @throws ClientExceptionInterface
+     * @throws CurrencyPairNotFoundException
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws Throwable
+     * @throws TransportExceptionInterface
+     * @throws CurrencyApiRequestException
+     * @throws CurrencyApiUnavailableException
+     * @throws CurrencyDataNotFoundException
+     * @throws CurrencyNotFoundException
+     * @throws DuplicateCurrencyCodeException
+     * @throws ExceptionInterface
+     */
     protected function process(InputInterface $input, OutputInterface $output, SymfonyStyle $io): void
     {
         $io->title('Stop track of currencies exchange rate');

@@ -5,6 +5,16 @@ namespace App\Command;
 use App\Entity\Currency;
 use App\Entity\CurrencyPair;
 use App\Enum\Argument;
+use App\Exception\Currency\CurrencyNotFoundException;
+use App\Exception\Currency\DuplicateCurrencyCodeException;
+use App\Exception\CurrencyApi\CurrencyApiRequestException;
+use App\Exception\CurrencyApi\CurrencyApiUnavailableException;
+use App\Exception\CurrencyApi\CurrencyDataNotFoundException;
+use App\Exception\CurrencyApi\ExchangeRateNotFoundException as CurrencyApiExchangeRateNotFoundException;
+use App\Exception\CurrencyPair\CurrencyPairNotFoundException;
+use App\Exception\CurrencyPair\DuplicateCurrencyPairException;
+use App\Exception\ExchangeRate\DuplicateExchangeRateException;
+use App\Exception\ExchangeRate\ExchangeRateNotFoundException;
 use App\Service\Domain\CurrencyPairService;
 use App\Service\Domain\CurrencyService;
 use App\Service\Domain\ExchangeRateService;
@@ -16,6 +26,12 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Throwable;
 
 #[AsCommand(
@@ -57,7 +73,23 @@ class ExchangeRateSyncCommand extends AbstractCommand
      * @param OutputInterface $output
      * @param SymfonyStyle $io
      * @return void
+     * @throws DuplicateCurrencyPairException
      * @throws Throwable
+     * @throws CurrencyApiRequestException
+     * @throws CurrencyApiUnavailableException
+     * @throws CurrencyDataNotFoundException
+     * @throws CurrencyApiExchangeRateNotFoundException
+     * @throws CurrencyPairNotFoundException
+     * @throws CurrencyNotFoundException
+     * @throws DuplicateCurrencyCodeException
+     * @throws DuplicateExchangeRateException
+     * @throws ExchangeRateNotFoundException
+     * @throws ExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     protected function process(InputInterface $input, OutputInterface $output, SymfonyStyle $io): void
     {
@@ -93,6 +125,9 @@ class ExchangeRateSyncCommand extends AbstractCommand
         }
     }
 
+    /**
+     * @throws DuplicateCurrencyPairException
+     */
     private function getCurrencyPair(Currency $from, Currency $to, SymfonyStyle $io): CurrencyPair
     {
         $pair = $this->pairService->get($from, $to);
