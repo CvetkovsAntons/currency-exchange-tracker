@@ -2,12 +2,9 @@
 
 namespace App\Tests\Factory;
 
-use App\Entity\Currency;
 use App\Entity\CurrencyPair;
 use App\Entity\ExchangeRate;
 use App\Entity\ExchangeRateHistory;
-use App\Factory\CurrencyPairFactory;
-use App\Factory\ExchangeRateFactory;
 use App\Factory\ExchangeRateHistoryFactory;
 use DateTimeImmutable;
 use DateTimeInterface;

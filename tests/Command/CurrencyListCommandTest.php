@@ -14,15 +14,14 @@ use Symfony\Component\Console\Tester\CommandTester;
 class CurrencyListCommandTest extends TestCase
 {
     private CurrencyService&MockObject $service;
-    private LoggerInterface&MockObject $logger;
     private CurrencyListCommand $command;
 
     protected function setUp(): void
     {
         $this->service = $this->createMock(CurrencyService::class);
-        $this->logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createMock(LoggerInterface::class);
 
-        $this->command = new CurrencyListCommand($this->service, $this->logger);
+        $this->command = new CurrencyListCommand($this->service, $logger);
     }
 
     public function testCurrencyListNotEmpty(): void

@@ -7,16 +7,19 @@ use App\Entity\ExchangeRateHistory;
 use App\Exception\DateTime\DateTimeInvalidFormatException;
 use App\Exception\ExchangeRate\ExchangeRateNotFoundException;
 use App\Exception\Request\MissingParametersException;
-use App\Repository\ExchangeRateHistoryRepository;
 use App\Service\Domain\CurrencyPairService;
 use App\Service\Domain\CurrencyService;
+use App\Service\Domain\ExchangeRateHistoryService;
 use DateTimeImmutable;
 use Throwable;
 
+/**
+ * Service was created for handling hard queries from controllers and commands
+ */
 readonly class ExchangeRateHistoryQueryService
 {
     public function __construct(
-        private ExchangeRateHistoryRepository $repository,
+        private ExchangeRateHistoryService    $historyService,
         private CurrencyService               $currencyService,
         private CurrencyPairService           $pairService,
     ) {}
@@ -28,13 +31,14 @@ readonly class ExchangeRateHistoryQueryService
      * @throws MissingParametersException
      * @throws ExchangeRateNotFoundException
      */
-    public function getClosestExchangeRate(ExchangeRateRequest $request): ?ExchangeRateHistory
+    public function getLatestExchangeRate(ExchangeRateRequest $request): ?ExchangeRateHistory
     {
         if (empty($request->from) || empty($request->to)) {
             throw new MissingParametersException(['from', 'to']);
         }
 
         $createdAt = null;
+
         if (!empty($request->datetime)) {
             try {
                 $createdAt = new DateTimeImmutable($request->datetime);
@@ -43,21 +47,23 @@ readonly class ExchangeRateHistoryQueryService
             }
         }
 
-        $fromCurrency = $this->currencyService->get($request->from);
-        $toCurrency = $this->currencyService->get($request->to);
-        if (is_null($fromCurrency) || is_null($toCurrency)) {
+        $from = $this->currencyService->get($request->from);
+        $to = $this->currencyService->get($request->to);
+
+        if (is_null($from) || is_null($to)) {
             return null;
         }
 
-        $currencyPair = $this->pairService->get($fromCurrency, $toCurrency);
-        if (is_null($currencyPair)) {
+        $pair = $this->pairService->get($from, $to);
+
+        if (is_null($pair)) {
             return null;
         }
 
-        $exchangeRate = $this->repository->findClosest($currencyPair, $createdAt);
+        $exchangeRate = $this->historyService->getLatest($pair, $createdAt);
 
         if (is_null($exchangeRate)) {
-            throw new ExchangeRateNotFoundException($fromCurrency->getCode(), $toCurrency->getCode());
+            throw new ExchangeRateNotFoundException($from->getCode(), $to->getCode());
         }
 
         return $exchangeRate;

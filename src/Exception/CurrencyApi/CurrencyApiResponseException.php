@@ -3,7 +3,6 @@
 namespace App\Exception\CurrencyApi;
 
 use App\Exception\AbstractCustomException;
-
 use Throwable;
 
 class CurrencyApiResponseException extends AbstractCustomException

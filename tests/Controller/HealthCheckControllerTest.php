@@ -3,11 +3,7 @@
 namespace App\Tests\Controller;
 
 use App\Enum\HttpMethod;
-use App\Tests\Internal\Factory\CurrencyPairTestFactory;
-use App\Tests\Internal\Factory\CurrencyTestFactory;
-use App\Tests\Internal\Factory\ExchangeRateHistoryTestFactory;
 use App\Tests\Internal\Traits\PurgeDatabaseTrait;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;

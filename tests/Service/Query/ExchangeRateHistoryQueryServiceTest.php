@@ -2,15 +2,15 @@
 
 namespace App\Tests\Service\Query;
 
-use App\Dto\ExchangeRateRequest;
 use App\Entity\Currency;
 use App\Entity\CurrencyPair;
 use App\Entity\ExchangeRateHistory;
 use App\Exception\DateTime\DateTimeInvalidFormatException;
+use App\Exception\ExchangeRate\ExchangeRateNotFoundException;
 use App\Exception\Request\MissingParametersException;
-use App\Repository\ExchangeRateHistoryRepository;
 use App\Service\Domain\CurrencyPairService;
 use App\Service\Domain\CurrencyService;
+use App\Service\Domain\ExchangeRateHistoryService;
 use App\Service\Query\ExchangeRateHistoryQueryService;
 use App\Tests\Internal\Factory\RequestTestFactory;
 use DateTimeImmutable;
@@ -19,60 +19,91 @@ use PHPUnit\Framework\TestCase;
 
 class ExchangeRateHistoryQueryServiceTest extends TestCase
 {
-    private ExchangeRateHistoryRepository&MockObject $repository;
+    private ExchangeRateHistoryService&MockObject $historyService;
     private CurrencyService&MockObject $currencyService;
     private CurrencyPairService&MockObject $pairService;
     private ExchangeRateHistoryQueryService $service;
 
     protected function setUp(): void
     {
-        $this->repository = $this->createMock(ExchangeRateHistoryRepository::class);
+        $this->historyService = $this->createMock(ExchangeRateHistoryService::class);
         $this->currencyService = $this->createMock(CurrencyService::class);
         $this->pairService = $this->createMock(CurrencyPairService::class);
 
         $this->service = new ExchangeRateHistoryQueryService(
-            $this->repository,
+            $this->historyService,
             $this->currencyService,
             $this->pairService
         );
     }
 
-    public function testFetchSuccess(): void
+    public function testGetLatestExchangeRateSuccess(): void
     {
-        $request = RequestTestFactory::validExchangeRate();
+        $request = RequestTestFactory::exchangeRate();
 
         [$from, $to] = $this->currencyMocks();
         $pair = $this->createMock(CurrencyPair::class);
-        $exchangeRate = $this->createMock(ExchangeRateHistory::class);
+        $rate = $this->createMock(ExchangeRateHistory::class);
 
         $this->getCurrencyMock($from);
         $this->getCurrencyMock($to);
         $this->getCurrencyPairMock($from, $to, $pair);
 
-        $this->repository
-            ->method('findClosest')
+        $this->historyService
+            ->method('getLatest')
             ->with($pair, new DateTimeImmutable($request->datetime))
-            ->willReturn($exchangeRate);
+            ->willReturn($rate);
 
-        $result = $this->service->getClosestExchangeRate($request);
+        $result = $this->service->getLatestExchangeRate($request);
 
-        $this->assertSame($exchangeRate, $result);
+        $this->assertSame($rate, $result);
     }
 
-    public function testFetchThrowsOnMissingParameters(): void
+    public function testGetLatestExchangeRateCurrencyNotFound(): void
+    {
+        $request = RequestTestFactory::exchangeRate();
+
+        $this->currencyService
+            ->method('get')
+            ->willReturn(null);
+
+        $result = $this->service->getLatestExchangeRate($request);
+
+        $this->assertNull($result);
+    }
+
+    public function testGetLatestExchangeRateCurrencyPairNotFound(): void
+    {
+        $request = RequestTestFactory::exchangeRate();
+
+        [$from, $to] = $this->currencyMocks();
+
+        $this->getCurrencyMock($from);
+        $this->getCurrencyMock($to);
+
+        $this->pairService
+            ->method('get')
+            ->willReturn(null);
+
+        $result = $this->service->getLatestExchangeRate($request);
+
+        $this->assertNull($result);
+    }
+
+    public function testGetLatestExchangeRateMissingParameters(): void
     {
         $this->expectException(MissingParametersException::class);
 
-        $request = new ExchangeRateRequest();
+        $request = RequestTestFactory::exchangeRate('', '');
 
-        $this->service->getClosestExchangeRate($request);
+        $this->service->getLatestExchangeRate($request);
     }
 
-    public function testFetchThrowsOnInvalidDatetime(): void
+    public function testGetLatestExchangeRateInvalidDatetime(): void
     {
         $this->expectException(DateTimeInvalidFormatException::class);
 
-        $request = RequestTestFactory::invalidExchangeRate();
+        $request = RequestTestFactory::exchangeRate(datetime: 'not-a-date');
 
         [$from, $to] = $this->currencyMocks();
         $pair = $this->createMock(CurrencyPair::class);
@@ -81,7 +112,28 @@ class ExchangeRateHistoryQueryServiceTest extends TestCase
         $this->getCurrencyMock($to);
         $this->getCurrencyPairMock($from, $to, $pair);
 
-        $this->service->getClosestExchangeRate($request);
+        $this->service->getLatestExchangeRate($request);
+    }
+
+    public function testGetLatestExchangeRateNotFound(): void
+    {
+        $this->expectException(ExchangeRateNotFoundException::class);
+
+        $request = RequestTestFactory::exchangeRate();
+
+        [$from, $to] = $this->currencyMocks();
+        $pair = $this->createMock(CurrencyPair::class);
+
+        $this->getCurrencyMock($from);
+        $this->getCurrencyMock($to);
+        $this->getCurrencyPairMock($from, $to, $pair);
+
+        $this->historyService
+            ->method('getLatest')
+            ->with($pair, new DateTimeImmutable($request->datetime))
+            ->willReturn(null);
+
+        $this->service->getLatestExchangeRate($request);
     }
 
     private function getCurrencyMock(?Currency $return): void

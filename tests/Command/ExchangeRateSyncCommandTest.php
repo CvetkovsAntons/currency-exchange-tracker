@@ -24,7 +24,6 @@ class ExchangeRateSyncCommandTest extends TestCase
     private CurrencyPairService&MockObject $pairService;
     private ExchangeRateService&MockObject $rateService;
     private EntityManagerInterface&MockObject $em;
-    private LoggerInterface&MockObject $logger;
     private ExchangeRateSyncCommand $command;
 
     protected function setUp(): void
@@ -33,14 +32,14 @@ class ExchangeRateSyncCommandTest extends TestCase
         $this->pairService = $this->createMock(CurrencyPairService::class);
         $this->rateService = $this->createMock(ExchangeRateService::class);
         $this->em = $this->createMock(EntityManagerInterface::class);
-        $this->logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createMock(LoggerInterface::class);
 
         $this->command = new ExchangeRateSyncCommand(
             $this->currencyService,
             $this->pairService,
             $this->rateService,
             $this->em,
-            $this->logger
+            $logger
         );
     }
 
@@ -82,7 +81,7 @@ class ExchangeRateSyncCommandTest extends TestCase
 
     public function testExchangeRateSyncWithInvalidCurrency(): void
     {
-        $this->prepareCommand(fn($v) => in_array($v, ['USD', 'EUR']));
+        $this->prepareCommand(fn ($v) => in_array($v, ['USD', 'EUR']));
 
         $tester = new CommandTester($this->command);
 

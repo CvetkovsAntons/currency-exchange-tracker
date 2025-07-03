@@ -10,5 +10,5 @@ done
 echo "App is up!"
 
 echo "Starting workers..."
-php bin/console messenger:consume --time-limit=3600 --memory-limit=128M -vv
+php bin/console messenger:consume --memory-limit=128M -vv
 echo "Workers up!"

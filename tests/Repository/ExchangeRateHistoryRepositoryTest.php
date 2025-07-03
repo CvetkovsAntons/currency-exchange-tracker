@@ -12,10 +12,10 @@ use App\Tests\Internal\Factory\ExchangeRateHistoryTestFactory;
 use App\Tests\Internal\Traits\PurgeDatabaseTrait;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Container;
 
-class ExchangeRateHistoryRepositoryTest extends WebTestCase
+class ExchangeRateHistoryRepositoryTest extends KernelTestCase
 {
     use PurgeDatabaseTrait;
 
@@ -69,71 +69,122 @@ class ExchangeRateHistoryRepositoryTest extends WebTestCase
         $this->assertInstanceOf(ExchangeRateHistory::class, $result[0]);
     }
 
-    public function testFindClosestBefore(): void
+    public function testGetLatest(): void
     {
-        $from = CurrencyTestFactory::create(
-            code: 'GBP',
-            name: 'British Pound Sterling',
-            namePlural: 'British pounds sterling',
-            symbol: '£',
-            symbolNative: '£',
-        );
+        $from = CurrencyTestFactory::create();
 
         $to = CurrencyTestFactory::create(
-            code: 'JPY',
-            name: 'Japanese Yen',
-            namePlural: 'Japanese yen',
-            symbol: '¥',
-            symbolNative: '￥',
+            code: 'EUR',
+            name: 'Euro',
+            namePlural: 'Euros',
+            symbol: '€',
+            symbolNative: '€',
         );
 
         $pair = CurrencyPairTestFactory::create($from, $to);
-        $history = ExchangeRateHistoryTestFactory::create(
+
+        $rateOldest = ExchangeRateHistoryTestFactory::create(
             pair: $pair,
-            rate: '155.23',
-            createdAt: new DateTimeImmutable('-1 day')
+            rate: '1.10',
+            createdAt: new DateTimeImmutable('-2 hours')
+        );
+
+        $rateLatest = ExchangeRateHistoryTestFactory::create(
+            pair: $pair,
+            rate: '1.12',
+            createdAt: new DateTimeImmutable('-1 hour')
         );
 
         $this->em->persist($from);
         $this->em->persist($to);
         $this->em->persist($pair);
-        $this->em->persist($history);
+        $this->em->persist($rateOldest);
+        $this->em->persist($rateLatest);
         $this->em->flush();
 
-        $result = $this->repository->findClosest($pair, new DateTimeImmutable());
+        $latest = $this->repository->getLatest($pair);
 
-        $this->assertInstanceOf(ExchangeRateHistory::class, $result);
-        $this->assertSame($history->getRate(), $result->getRate());
+        $this->assertSame($rateLatest->getRate(), $latest->getRate());
     }
 
-    public function testFindClosestBeforeReturnsNull(): void
+    public function testGetLatestBefore(): void
     {
-        $from = CurrencyTestFactory::create(
-            code: 'CHF',
-            name: 'Swiss Franc',
-            namePlural: 'Swiss francs',
-            symbol: 'CHF',
-            symbolNative: 'CHF',
-        );
+        $from = CurrencyTestFactory::create();
 
         $to = CurrencyTestFactory::create(
-            code: 'PLN',
-            name: 'Polish Zloty',
-            namePlural: 'Polish zlotys',
-            symbol: 'zł',
-            symbolNative: 'zł',
+            code: 'EUR',
+            name: 'Euro',
+            namePlural: 'Euros',
+            symbol: '€',
+            symbolNative: '€',
         );
 
         $pair = CurrencyPairTestFactory::create($from, $to);
 
+        $rateOldest = ExchangeRateHistoryTestFactory::create(
+            pair: $pair,
+            rate: '1.10',
+            createdAt: new DateTimeImmutable('-2 hours')
+        );
+
+        $rateLatest = ExchangeRateHistoryTestFactory::create(
+            pair: $pair,
+            rate: '1.12',
+            createdAt: new DateTimeImmutable('-1 hour')
+        );
+
         $this->em->persist($from);
         $this->em->persist($to);
         $this->em->persist($pair);
+        $this->em->persist($rateOldest);
+        $this->em->persist($rateLatest);
         $this->em->flush();
 
-        $result = $this->repository->findClosest($pair, new DateTimeImmutable());
+        $datetime = new DateTimeImmutable('-90 minutes');
 
-        $this->assertNull($result);
+        $latest = $this->repository->getLatestBefore($pair, $datetime);
+
+        $this->assertSame($rateOldest->getRate(), $latest->getRate());
+    }
+
+    public function testGetLatestAfter(): void
+    {
+        $from = CurrencyTestFactory::create();
+
+        $to = CurrencyTestFactory::create(
+            code: 'EUR',
+            name: 'Euro',
+            namePlural: 'Euros',
+            symbol: '€',
+            symbolNative: '€',
+        );
+
+        $pair = CurrencyPairTestFactory::create($from, $to);
+
+        $rateOldest = ExchangeRateHistoryTestFactory::create(
+            pair: $pair,
+            rate: '1.10',
+            createdAt: new DateTimeImmutable('-2 hours')
+        );
+
+        $rateLatest = ExchangeRateHistoryTestFactory::create(
+            pair: $pair,
+            rate: '1.12',
+            createdAt: new DateTimeImmutable('-1 hour')
+        );
+
+        $this->em->persist($from);
+        $this->em->persist($to);
+        $this->em->persist($pair);
+        $this->em->persist($rateOldest);
+        $this->em->persist($rateLatest);
+        $this->em->flush();
+
+        $datetime = new DateTimeImmutable('-90 minutes');
+
+        $latest = $this->repository->getLatestAfter($pair, $datetime);
+
+        $this->assertSame($rateLatest->getRate(), $latest->getRate());
     }
 
 }

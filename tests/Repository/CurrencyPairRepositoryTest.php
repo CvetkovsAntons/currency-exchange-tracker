@@ -8,10 +8,10 @@ use App\Tests\Internal\Factory\CurrencyPairTestFactory;
 use App\Tests\Internal\Factory\CurrencyTestFactory;
 use App\Tests\Internal\Traits\PurgeDatabaseTrait;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Container;
 
-class CurrencyPairRepositoryTest extends WebTestCase
+class CurrencyPairRepositoryTest extends KernelTestCase
 {
     use PurgeDatabaseTrait;
 

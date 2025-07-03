@@ -36,7 +36,7 @@ class ExchangeRateController extends AbstractController
                 format: 'json'
             );
 
-            $exchangeRate = $service->getClosestExchangeRate($request);
+            $exchangeRate = $service->getLatestExchangeRate($request);
 
             $response = [];
 

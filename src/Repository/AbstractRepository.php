@@ -2,17 +2,17 @@
 
 namespace App\Repository;
 
-use App\Entity\ExchangeRate;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use LogicException;
 
 /**
  * @template T of object
  */
 class AbstractRepository extends ServiceEntityRepository
 {
-    protected EntityManagerInterface $em;
+    private EntityManagerInterface $em;
 
     public function __construct(
         ManagerRegistry $registry,
@@ -20,7 +20,17 @@ class AbstractRepository extends ServiceEntityRepository
     )
     {
         parent::__construct($registry, $entityClass);
-        $this->em = $registry->getManagerForClass($entityClass);
+
+        $manager = $registry->getManagerForClass($entityClass);
+
+        if (!$manager instanceof EntityManagerInterface) {
+            throw new LogicException(sprintf(
+                'Entity manager for class %s is not an instance of EntityManagerInterface.',
+                $entityClass
+            ));
+        }
+
+        $this->em = $manager;
     }
 
     /**

@@ -3,7 +3,6 @@
 namespace App\Exception\CurrencyApi;
 
 use App\Exception\AbstractCustomException;
-use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class CurrencyApiRequestException extends AbstractCustomException

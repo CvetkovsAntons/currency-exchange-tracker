@@ -16,15 +16,14 @@ use Symfony\Component\Console\Tester\CommandTester;
 class ExchangeRateListCommandTest extends TestCase
 {
     private ExchangeRateService&MockObject $service;
-    private LoggerInterface&MockObject $logger;
     private ExchangeRateListCommand $command;
 
     protected function setUp(): void
     {
         $this->service = $this->createMock(ExchangeRateService::class);
-        $this->logger = $this->createMock(LoggerInterface::class);
+        $logger = $this->createMock(LoggerInterface::class);
 
-        $this->command = new ExchangeRateListCommand($this->service, $this->logger);
+        $this->command = new ExchangeRateListCommand($this->service, $logger);
     }
 
     public function testExchangeRateListNotEmpty(): void

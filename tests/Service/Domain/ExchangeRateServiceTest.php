@@ -60,7 +60,7 @@ class ExchangeRateServiceTest extends TestCase
 
         $this->factory
             ->method('create')
-            ->with($pair, $rate, $this->callback(fn($v) => $v instanceof DateTimeImmutable))
+            ->with($pair, $rate, $this->callback(fn ($v) => $v instanceof DateTimeImmutable))
             ->willReturn($exchangeRate);
 
         $result = $this->service->create($pair);
