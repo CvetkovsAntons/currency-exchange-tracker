@@ -18,7 +18,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 readonly class CurrencyApiProvider
 {
     public function __construct(
-        private CurrencyApiClient     $apiService,
+        private CurrencyApiClient     $client,
         private DenormalizerInterface $serializer,
     ) {}
 
@@ -28,7 +28,7 @@ readonly class CurrencyApiProvider
      */
     public function isAlive(): bool
     {
-        $response = $this->apiService->status();
+        $response = $this->client->status();
 
         return $response->getStatusCode() === 200;
     }
@@ -49,7 +49,7 @@ readonly class CurrencyApiProvider
             throw new CurrencyApiUnavailableException();
         }
 
-        $response = $this->apiService->currencies(...$code);
+        $response = $this->client->currencies(...$code);
 
         return array_map(
             callback: fn ($v) => $this->serializer->denormalize($v, Currency::class),
@@ -89,7 +89,7 @@ readonly class CurrencyApiProvider
         $fromCurrencyCode = $currencyPair->getFromCurrency()->getCode();
         $toCurrencyCode = $currencyPair->getToCurrency()->getCode();
 
-        $response = $this->apiService
+        $response = $this->client
             ->latestExchangeRate($fromCurrencyCode, $toCurrencyCode)
             ->toArray();
 

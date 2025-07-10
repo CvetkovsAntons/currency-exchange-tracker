@@ -19,14 +19,14 @@ class CurrencyApiClientTest extends TestCase
 
     private HttpClientInterface&MockObject $httpClient;
     private LoggerInterface&MockObject $logger;
-    private CurrencyApiClient $service;
+    private CurrencyApiClient $client;
 
     protected function setUp(): void
     {
         $this->httpClient = $this->createMock(HttpClientInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 
-        $this->service = new CurrencyApiClient(
+        $this->client = new CurrencyApiClient(
             $this->httpClient,
             $this->logger,
             self::BASE_URL,
@@ -44,7 +44,7 @@ class CurrencyApiClientTest extends TestCase
             endpoint: CurrencyApiEndpoint::STATUS
         );
 
-        $result = $this->service->status();
+        $result = $this->client->status();
 
         $this->assertSame($response, $result);
     }
@@ -53,7 +53,7 @@ class CurrencyApiClientTest extends TestCase
     {
         $this->requestExceptionMock();
 
-        $this->service->status();
+        $this->client->status();
     }
 
     public function testCurrenciesWithoutArgs(): void
@@ -66,7 +66,7 @@ class CurrencyApiClientTest extends TestCase
             endpoint: CurrencyApiEndpoint::CURRENCIES
         );
 
-        $result = $this->service->currencies();
+        $result = $this->client->currencies();
 
         $this->assertSame($response, $result);
     }
@@ -82,7 +82,7 @@ class CurrencyApiClientTest extends TestCase
             options: ['query' => ['currencies' => 'PHP,EUR']]
         );
 
-        $result = $this->service->currencies('PHP', 'EUR');
+        $result = $this->client->currencies('PHP', 'EUR');
 
         $this->assertSame($response, $result);
     }
@@ -91,7 +91,7 @@ class CurrencyApiClientTest extends TestCase
     {
         $this->requestExceptionMock();
 
-        $this->service->currencies('PHP');
+        $this->client->currencies('PHP');
     }
 
     public function testLatestExchangeRateWithoutArgs(): void
@@ -107,7 +107,7 @@ class CurrencyApiClientTest extends TestCase
             options: ['query' => ['base_currency' => $baseCurrency]]
         );
 
-        $result = $this->service->latestExchangeRate($baseCurrency);
+        $result = $this->client->latestExchangeRate($baseCurrency);
 
         $this->assertSame($response, $result);
     }
@@ -126,7 +126,7 @@ class CurrencyApiClientTest extends TestCase
             options: $options
         );
 
-        $result = $this->service->latestExchangeRate($baseCurrency, 'PHP', 'EUR', 'USD');
+        $result = $this->client->latestExchangeRate($baseCurrency, 'PHP', 'EUR', 'USD');
 
         $this->assertSame($response, $result);
     }
@@ -135,7 +135,7 @@ class CurrencyApiClientTest extends TestCase
     {
         $this->requestExceptionMock();
 
-        $this->service->latestExchangeRate('PHP');
+        $this->client->latestExchangeRate('PHP');
     }
 
     private function responseMock(): ResponseInterface

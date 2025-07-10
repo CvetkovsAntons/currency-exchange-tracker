@@ -16,18 +16,18 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class CurrencyApiProviderTest extends TestCase
 {
-    private CurrencyApiClient&MockObject $apiService;
+    private CurrencyApiClient&MockObject $client;
     private DenormalizerInterface $serializer;
     private CurrencyApiProvider $provider;
 
     protected function setUp(): void
     {
-        $this->apiService = $this->createMock(CurrencyApiClient::class);
+        $this->client = $this->createMock(CurrencyApiClient::class);
         $this->serializer = $this->getMockBuilder(DenormalizerInterface::class)
             ->onlyMethods(['denormalize', 'supportsDenormalization', 'getSupportedTypes'])
             ->getMock();
 
-        $this->provider = new CurrencyApiProvider($this->apiService, $this->serializer);
+        $this->provider = new CurrencyApiProvider($this->client, $this->serializer);
     }
 
     public function testIsAliveReturnsTrue(): void
@@ -35,7 +35,7 @@ class CurrencyApiProviderTest extends TestCase
         $response = $this->createMock(ResponseInterface::class);
         $response->method('getStatusCode')->willReturn(200);
 
-        $this->apiService
+        $this->client
             ->method('status')
             ->willReturn($response);
 
@@ -49,7 +49,7 @@ class CurrencyApiProviderTest extends TestCase
         $response = $this->createMock(ResponseInterface::class);
         $response->method('getStatusCode')->willReturn(404);
 
-        $this->apiService
+        $this->client
             ->method('status')
             ->willReturn($response);
 
@@ -60,7 +60,7 @@ class CurrencyApiProviderTest extends TestCase
 
     public function testIsAliveThrowException(): void
     {
-        $this->apiService
+        $this->client
             ->method('status')
             ->willThrowException(new CurrencyApiUnavailableException());
 
@@ -92,7 +92,7 @@ class CurrencyApiProviderTest extends TestCase
             ->method('isAlive')
             ->willReturn(true);
 
-        $this->apiService
+        $this->client
             ->method('currencies')
             ->willReturn($response);
 
@@ -140,7 +140,7 @@ class CurrencyApiProviderTest extends TestCase
             ->method('isAlive')
             ->willReturn(true);
 
-        $this->apiService
+        $this->client
             ->method('currencies')
             ->willReturn($response);
 
@@ -192,7 +192,7 @@ class CurrencyApiProviderTest extends TestCase
         $response = $this->createMock(ResponseInterface::class);
         $response->method('toArray')->willReturn(['data' => ['EUR' => $rate]]);
 
-        $this->apiService
+        $this->client
             ->method('latestExchangeRate')
             ->with('USD', 'EUR')
             ->willReturn($response);
@@ -227,7 +227,7 @@ class CurrencyApiProviderTest extends TestCase
         $response = $this->createMock(ResponseInterface::class);
         $response->method('toArray')->willReturn(['data' => []]);
 
-        $this->apiService
+        $this->client
             ->method('latestExchangeRate')
             ->with('USD', 'EUR')
             ->willReturn($response);
@@ -240,7 +240,7 @@ class CurrencyApiProviderTest extends TestCase
     private function providerMock(): CurrencyApiProvider&MockObject
     {
         return $this->getMockBuilder(CurrencyApiProvider::class)
-            ->setConstructorArgs([$this->apiService, $this->serializer])
+            ->setConstructorArgs([$this->client, $this->serializer])
             ->onlyMethods(['isAlive'])
             ->getMock();
     }
@@ -258,7 +258,7 @@ class CurrencyApiProviderTest extends TestCase
             ->method('isAlive')
             ->willReturn(true);
 
-        $this->apiService
+        $this->client
             ->method('currencies')
             ->with($currencyCode)
             ->willReturn($response);
