@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Api;
+namespace App\Client;
 
 use App\Enum\CurrencyApiEndpoint;
 use App\Enum\HttpMethod;
@@ -18,7 +18,7 @@ use Throwable;
 /**
  * This service is used to communicate with external currency API
  */
-readonly class CurrencyApiService
+readonly class CurrencyApiClient
 {
     public function __construct(
         private HttpClientInterface $httpClient,

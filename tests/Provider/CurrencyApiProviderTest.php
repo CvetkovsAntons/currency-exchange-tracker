@@ -2,12 +2,12 @@
 
 namespace App\Tests\Provider;
 
+use App\Client\CurrencyApiClient;
 use App\Dto\Currency as CurrencyDto;
 use App\Entity\Currency;
 use App\Entity\CurrencyPair;
 use App\Exception\CurrencyApi\CurrencyApiUnavailableException;
 use App\Provider\CurrencyApiProvider;
-use App\Service\Api\CurrencyApiService;
 use App\Tests\Internal\Factory\CurrencyTestFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -16,13 +16,13 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class CurrencyApiProviderTest extends TestCase
 {
-    private CurrencyApiService&MockObject $apiService;
+    private CurrencyApiClient&MockObject $apiService;
     private DenormalizerInterface $serializer;
     private CurrencyApiProvider $provider;
 
     protected function setUp(): void
     {
-        $this->apiService = $this->createMock(CurrencyApiService::class);
+        $this->apiService = $this->createMock(CurrencyApiClient::class);
         $this->serializer = $this->getMockBuilder(DenormalizerInterface::class)
             ->onlyMethods(['denormalize', 'supportsDenormalization', 'getSupportedTypes'])
             ->getMock();

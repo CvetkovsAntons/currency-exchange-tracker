@@ -11,7 +11,7 @@ use App\Service\Domain\CurrencyPairService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class CurrencyPairTest extends TestCase
+class CurrencyPairServiceTest extends TestCase
 {
     private CurrencyPairFactory&MockObject $factory;
     private CurrencyPairRepository&MockObject $repository;

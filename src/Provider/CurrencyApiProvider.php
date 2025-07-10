@@ -2,11 +2,11 @@
 
 namespace App\Provider;
 
+use App\Client\CurrencyApiClient;
 use App\Dto\Currency;
 use App\Entity\CurrencyPair;
 use App\Exception\CurrencyApi\CurrencyApiRequestException;
 use App\Exception\CurrencyApi\CurrencyApiUnavailableException;
-use App\Service\Api\CurrencyApiService;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -18,7 +18,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 readonly class CurrencyApiProvider
 {
     public function __construct(
-        private CurrencyApiService    $apiService,
+        private CurrencyApiClient     $apiService,
         private DenormalizerInterface $serializer,
     ) {}
 

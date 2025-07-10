@@ -1,32 +1,32 @@
 <?php
 
-namespace App\Tests\Service\Api;
+namespace App\Tests\Client;
 
+use App\Client\CurrencyApiClient;
 use App\Enum\CurrencyApiEndpoint;
 use App\Enum\HttpMethod;
 use App\Exception\AbstractCustomException;
-use App\Service\Api\CurrencyApiService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-class CurrencyApiServiceTest extends TestCase
+class CurrencyApiClientTest extends TestCase
 {
     private const string BASE_URL = 'https://api.example.com/';
     private const string API_KEY = 'test-api-key';
 
     private HttpClientInterface&MockObject $httpClient;
     private LoggerInterface&MockObject $logger;
-    private CurrencyApiService $service;
+    private CurrencyApiClient $service;
 
     protected function setUp(): void
     {
         $this->httpClient = $this->createMock(HttpClientInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 
-        $this->service = new CurrencyApiService(
+        $this->service = new CurrencyApiClient(
             $this->httpClient,
             $this->logger,
             self::BASE_URL,
