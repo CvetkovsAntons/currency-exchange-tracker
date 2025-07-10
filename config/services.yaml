@@ -29,3 +29,7 @@ services:
     App\Repository\AbstractRepository:
         arguments:
             $entityClass: ~
+
+    App\Service\RedisService:
+        arguments:
+            $redis: '@cache.redis_pool'
