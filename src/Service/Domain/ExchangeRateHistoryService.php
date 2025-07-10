@@ -26,7 +26,7 @@ readonly class ExchangeRateHistoryService
 
     public function create(ExchangeRate $exchangeRate): ExchangeRateHistory
     {
-        $history = $this->factory->createFromRecord($exchangeRate);
+        $history = $this->factory->makeFromExchangeRate($exchangeRate);
         $this->repository->save($history);
 
         return $history;

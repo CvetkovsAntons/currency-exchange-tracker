@@ -22,7 +22,7 @@ class ExchangeRateFactoryTest extends TestCase
         $pair = $this->createMock(CurrencyPair::class);
         $rate = '1.23';
 
-        $entity = $this->factory->create($pair, $rate);
+        $entity = $this->factory->make($pair, $rate);
 
         $this->assertInstanceOf(CurrencyPair::class, $entity->getCurrencyPair());
         $this->assertSame($pair, $entity->getCurrencyPair());
@@ -38,7 +38,7 @@ class ExchangeRateFactoryTest extends TestCase
         $rate = '1.23';
         $datetime = new DateTimeImmutable();
 
-        $entity = $this->factory->create($pair, $rate, $datetime);
+        $entity = $this->factory->make($pair, $rate, $datetime);
 
         $this->assertInstanceOf(CurrencyPair::class, $entity->getCurrencyPair());
         $this->assertSame($pair, $entity->getCurrencyPair());

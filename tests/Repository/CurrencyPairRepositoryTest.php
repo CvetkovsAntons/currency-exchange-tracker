@@ -39,17 +39,10 @@ class CurrencyPairRepositoryTest extends KernelTestCase
 
     public function testExistsReturnsTrue(): void
     {
-        $from = CurrencyTestFactory::create();
+        $from = CurrencyTestFactory::makeEntity('USD');
+        $to = CurrencyTestFactory::makeEntity('EUR');
 
-        $to = CurrencyTestFactory::create(
-            code: 'EUR',
-            name: 'Euro',
-            namePlural: 'Euros',
-            symbol: '€',
-            symbolNative: '€',
-        );
-
-        $pair = CurrencyPairTestFactory::create($from, $to);
+        $pair = CurrencyPairTestFactory::make($from, $to);
 
         $this->em->persist($from);
         $this->em->persist($to);
@@ -63,21 +56,8 @@ class CurrencyPairRepositoryTest extends KernelTestCase
 
     public function testExistsReturnsFalse(): void
     {
-        $from = CurrencyTestFactory::create(
-            code: 'GBP',
-            name: 'British Pound Sterling',
-            namePlural: 'British pounds sterling',
-            symbol: '£',
-            symbolNative: '£',
-        );
-
-        $to = CurrencyTestFactory::create(
-            code: 'JPY',
-            name: 'Japanese Yen',
-            namePlural: 'Japanese yen',
-            symbol: '¥',
-            symbolNative: '￥',
-        );
+        $from = CurrencyTestFactory::makeEntity('GBP');
+        $to = CurrencyTestFactory::makeEntity('JPY');
 
         $this->em->persist($from);
         $this->em->persist($to);

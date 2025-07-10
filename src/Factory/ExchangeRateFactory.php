@@ -8,7 +8,7 @@ use DateTimeImmutable;
 
 class ExchangeRateFactory
 {
-    public function create(CurrencyPair $pair, string $rate, ?DateTimeImmutable $datetime = null): ExchangeRate
+    public function make(CurrencyPair $pair, string $rate, ?DateTimeImmutable $datetime = null): ExchangeRate
     {
         $datetime ??= new DateTimeImmutable();
 

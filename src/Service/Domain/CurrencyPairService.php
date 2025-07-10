@@ -24,7 +24,7 @@ readonly class CurrencyPairService
             throw new DuplicateCurrencyPairException($from->getCode(), $to->getCode());
         }
 
-        $currencyPair = $this->factory->create($from, $to);
+        $currencyPair = $this->factory->make($from, $to);
 
         $this->repository->save($currencyPair);
 

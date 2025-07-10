@@ -101,7 +101,11 @@ readonly class CurrencyApiService
     /**
      * @throws TransportExceptionInterface
      */
-    private function makeRequest(HttpMethod $method, CurrencyApiEndpoint $endpoint, array $options = []): ResponseInterface
+    private function makeRequest(
+        HttpMethod          $method,
+        CurrencyApiEndpoint $endpoint,
+        array               $options = []
+    ): ResponseInterface
     {
         $url = $this->baseUrl . $endpoint->value;
 

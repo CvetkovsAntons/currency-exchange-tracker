@@ -39,20 +39,13 @@ class ExchangeRateControllerTest extends WebTestCase
 
     public function testGetRateSuccess(): void
     {
-        $from = CurrencyTestFactory::create();
+        $from = CurrencyTestFactory::makeEntity('USD');
+        $to = CurrencyTestFactory::makeEntity('EUR');
 
-        $to = CurrencyTestFactory::create(
-            code: 'EUR',
-            name: 'Euro',
-            namePlural: 'Euros',
-            symbol: '€',
-            symbolNative: '€',
-        );
-
-        $pair = CurrencyPairTestFactory::create($from, $to);
+        $pair = CurrencyPairTestFactory::make($from, $to);
 
         $now = new DateTimeImmutable('2025-06-29 16:52:32');
-        $rate = ExchangeRateHistoryTestFactory::create($pair, '1.23', $now);
+        $rate = ExchangeRateHistoryTestFactory::make($pair, '1.23', $now);
 
         $this->em->persist($from);
         $this->em->persist($to);

@@ -64,7 +64,7 @@ readonly class ExchangeRateService
             throw new CurrencyApiExchangeRateNotFoundException($from->getCode(), $to->getCode());
         }
 
-        $exchangeRate = $this->factory->create($pair, $rate, new DateTimeImmutable());
+        $exchangeRate = $this->factory->make($pair, $rate, new DateTimeImmutable());
 
         $this->saveExchangeRate($exchangeRate);
 

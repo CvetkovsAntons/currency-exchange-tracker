@@ -2,62 +2,61 @@
 
 namespace App\Tests\Internal\Factory;
 
-use App\Dto\Currency as CurrencyDto;
-use App\Entity\Currency as CurrencyEntity;
-use App\Enum\CurrencyType;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Builder\CurrencyBuilder;
+use App\Dto\Currency as Dto;
+use App\Entity\Currency as Entity;
+use App\Mapper\CurrencyDtoMapper;
+use App\Tests\Internal\Exceptions\UnsupportedTestCurrencyCodeException;
 
 class CurrencyTestFactory
 {
-    public static function create(
-        string $code = 'USD',
-        string $name = 'US Dollar',
-        string $namePlural = 'US dollars',
-        string $symbol = '$',
-        string $symbolNative = '$',
-        int $decimalDigits = 2,
-        string $rounding = '0',
-        CurrencyType $type = CurrencyType::FIAT,
-        ?Collection $fromPairs = null,
-        ?Collection $toPairs = null
-    ): CurrencyEntity
+    /**
+     * @throws UnsupportedTestCurrencyCodeException
+     */
+    public static function makeEntity(string $code): Entity
     {
-        return new CurrencyEntity()
-            ->setCode($code)
-            ->setName($name)
-            ->setNamePlural($namePlural)
-            ->setSymbol($symbol)
-            ->setSymbolNative($symbolNative)
-            ->setDecimalDigits($decimalDigits)
-            ->setRounding($rounding)
-            ->setType($type)
-            ->setFromPairs($fromPairs ?? new ArrayCollection())
-            ->setToPairs($toPairs ?? new ArrayCollection());
+        $builder = match ($code) {
+            'USD' => new CurrencyBuilder()
+                ->withCode($code)
+                ->withName('US Dollar')
+                ->withNamePlural('US dollars')
+                ->withSymbol('$')
+                ->withSymbolNative('$'),
+            'EUR' => new CurrencyBuilder()
+                ->withCode($code)
+                ->withName('Euro')
+                ->withNamePlural('Euros')
+                ->withSymbol('€')
+                ->withSymbolNative('€'),
+            'GBP' => new CurrencyBuilder()
+                ->withCode($code)
+                ->withName('British Pound Sterling')
+                ->withNamePlural('British pounds sterling')
+                ->withSymbol('£')
+                ->withSymbolNative('£'),
+            'JPY' => new CurrencyBuilder()
+                ->withCode($code)
+                ->withName('Japanese Yen')
+                ->withNamePlural('Japanese yen')
+                ->withSymbol('¥')
+                ->withSymbolNative('￥'),
+            default => throw new UnsupportedTestCurrencyCodeException(sprintf(
+                'Currency with code %s is not implemented yet',
+                $code
+            ))
+        };
+
+        return $builder->build();
     }
 
-    public static function createDto(
-        string $code = 'USD',
-        string $name = 'US Dollar',
-        string $namePlural = 'US Dollars',
-        string $symbol = '$',
-        string $symbolNative = '$',
-        int $decimalDigits = 2,
-        string $rounding = '0',
-        CurrencyType $type = CurrencyType::FIAT,
-    ): CurrencyDto
+    /**
+     * @throws UnsupportedTestCurrencyCodeException
+     */
+    public static function makeDto(string $code = 'USD'): Dto
     {
-        $currency = new CurrencyDto();
-        $currency->code = $code;
-        $currency->name = $name;
-        $currency->name_plural = $namePlural;
-        $currency->symbol = $symbol;
-        $currency->symbol_native = $symbolNative;
-        $currency->decimal_digits = $decimalDigits;
-        $currency->rounding = $rounding;
-        $currency->type = $type->value;
+        $currency = self::makeEntity($code);
 
-        return $currency;
+        return new CurrencyDtoMapper()->mapFromEntity($currency);
     }
 
 }

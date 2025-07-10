@@ -50,7 +50,7 @@ readonly class CurrencyService
             throw new CurrencyDataNotFoundException($currencyCode);
         }
 
-        $currency = $this->factory->create($currency);
+        $currency = $this->factory->makeFromDto($currency);
 
         $this->repository->save($currency);
 

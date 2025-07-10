@@ -20,7 +20,7 @@ class CurrencyPairFactoryTest extends TestCase
         $from = $this->createMock(Currency::class);
         $to = $this->createMock(Currency::class);
 
-        $entity = $this->factory->create($from, $to);
+        $entity = $this->factory->make($from, $to);
 
         $this->assertInstanceOf(Currency::class, $entity->getFromCurrency());
         $this->assertInstanceOf(Currency::class, $entity->getToCurrency());

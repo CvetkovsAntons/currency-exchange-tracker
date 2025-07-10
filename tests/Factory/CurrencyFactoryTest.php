@@ -17,16 +17,16 @@ class CurrencyFactoryTest extends TestCase
         $this->factory = new CurrencyFactory();
     }
 
-    public function testCreateSuccess(): void
+    public function testMakeFromDtoSuccess(): void
     {
         $code = 'USD';
-        $dto = CurrencyTestFactory::createDto($code);
+        $dto = CurrencyTestFactory::makeDto($code);
 
-        $entity = $this->factory->create($dto);
+        $entity = $this->factory->makeFromDto($dto);
 
         $this->assertSame('USD', $entity->getCode());
         $this->assertSame('US Dollar', $entity->getName());
-        $this->assertSame('US Dollars', $entity->getNamePlural());
+        $this->assertSame('US dollars', $entity->getNamePlural());
         $this->assertSame('$', $entity->getSymbol());
         $this->assertSame('$', $entity->getSymbolNative());
         $this->assertSame(2, $entity->getDecimalDigits());

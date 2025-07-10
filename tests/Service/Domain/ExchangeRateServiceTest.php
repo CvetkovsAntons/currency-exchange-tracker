@@ -59,7 +59,7 @@ class ExchangeRateServiceTest extends TestCase
         $this->latestExchangeRateMock($pair, $rate);
 
         $this->factory
-            ->method('create')
+            ->method('make')
             ->with($pair, $rate, $this->callback(fn ($v) => $v instanceof DateTimeImmutable))
             ->willReturn($exchangeRate);
 

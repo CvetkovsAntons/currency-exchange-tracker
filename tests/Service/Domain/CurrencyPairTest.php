@@ -36,7 +36,7 @@ class CurrencyPairTest extends TestCase
         $this->currencyPairExistsMock($from, $to, false);
 
         $this->factory
-            ->method('create')
+            ->method('make')
             ->with($from, $to)
             ->willReturn($pair);
 

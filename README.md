@@ -223,14 +223,17 @@ After command successful execution worker container will be stopped
 
 ### 3. **Project structure**
 - `src/`: Main application logic
-  - `Command/`: Symfony console commands (e.g. currency sync).
-  - `Controller/`: Application controllers (e.g. JSON API endpoints).
+  - `Builder/`: Application entity builders.
+  - `Command/`: Symfony console commands.
+  - `Contract/`: Application interfaces.
+  - `Controller/`: Application controllers.
   - `DataFixtures/`: (Optional) Doctrine fixtures for preloading test or demo data.
   - `Dto/`: Data Transfer Objects used for input/output mapping.
   - `Entity/`: Doctrine entity definitions representing database tables.
-  - `Enum/`: Enumerations for strict value control (e.g. argument types).
+  - `Enum/`: Enumerations for strict value control.
   - `Exception/`: Custom exception classes for domain-specific error handling.
   - `Factory/`: Entity creation factories.
+  - `Mapper/`: Application mappers.
   - `Provider/`: Classes responsible for fetching data from external sources (e.g. FreeCurrencyAPI).
   - `Repository/`: Custom Doctrine repository classes for database access.
   - `Scheduler/`: Symfony Scheduler tasks.

@@ -43,18 +43,11 @@ class ExchangeRateHistoryRepositoryTest extends KernelTestCase
 
     public function testGetAllReturnsEntities(): void
     {
-        $from = CurrencyTestFactory::create();
+        $from = CurrencyTestFactory::makeEntity('USD');
+        $to = CurrencyTestFactory::makeEntity('EUR');
 
-        $to = CurrencyTestFactory::create(
-            code: 'EUR',
-            name: 'Euro',
-            namePlural: 'Euros',
-            symbol: '€',
-            symbolNative: '€',
-        );
-
-        $pair = CurrencyPairTestFactory::create($from, $to);
-        $history = ExchangeRateHistoryTestFactory::create($pair, '1.11');
+        $pair = CurrencyPairTestFactory::make($from, $to);
+        $history = ExchangeRateHistoryTestFactory::make($pair, '1.11');
 
         $this->em->persist($from);
         $this->em->persist($to);
@@ -71,25 +64,18 @@ class ExchangeRateHistoryRepositoryTest extends KernelTestCase
 
     public function testGetLatest(): void
     {
-        $from = CurrencyTestFactory::create();
+        $from = CurrencyTestFactory::makeEntity('USD');
+        $to = CurrencyTestFactory::makeEntity('EUR');
 
-        $to = CurrencyTestFactory::create(
-            code: 'EUR',
-            name: 'Euro',
-            namePlural: 'Euros',
-            symbol: '€',
-            symbolNative: '€',
-        );
+        $pair = CurrencyPairTestFactory::make($from, $to);
 
-        $pair = CurrencyPairTestFactory::create($from, $to);
-
-        $rateOldest = ExchangeRateHistoryTestFactory::create(
+        $rateOldest = ExchangeRateHistoryTestFactory::make(
             pair: $pair,
             rate: '1.10',
             createdAt: new DateTimeImmutable('-2 hours')
         );
 
-        $rateLatest = ExchangeRateHistoryTestFactory::create(
+        $rateLatest = ExchangeRateHistoryTestFactory::make(
             pair: $pair,
             rate: '1.12',
             createdAt: new DateTimeImmutable('-1 hour')
@@ -109,25 +95,18 @@ class ExchangeRateHistoryRepositoryTest extends KernelTestCase
 
     public function testGetLatestBefore(): void
     {
-        $from = CurrencyTestFactory::create();
+        $from = CurrencyTestFactory::makeEntity('USD');
+        $to = CurrencyTestFactory::makeEntity('EUR');
 
-        $to = CurrencyTestFactory::create(
-            code: 'EUR',
-            name: 'Euro',
-            namePlural: 'Euros',
-            symbol: '€',
-            symbolNative: '€',
-        );
+        $pair = CurrencyPairTestFactory::make($from, $to);
 
-        $pair = CurrencyPairTestFactory::create($from, $to);
-
-        $rateOldest = ExchangeRateHistoryTestFactory::create(
+        $rateOldest = ExchangeRateHistoryTestFactory::make(
             pair: $pair,
             rate: '1.10',
             createdAt: new DateTimeImmutable('-2 hours')
         );
 
-        $rateLatest = ExchangeRateHistoryTestFactory::create(
+        $rateLatest = ExchangeRateHistoryTestFactory::make(
             pair: $pair,
             rate: '1.12',
             createdAt: new DateTimeImmutable('-1 hour')
@@ -149,25 +128,18 @@ class ExchangeRateHistoryRepositoryTest extends KernelTestCase
 
     public function testGetLatestAfter(): void
     {
-        $from = CurrencyTestFactory::create();
+        $from = CurrencyTestFactory::makeEntity('USD');
+        $to = CurrencyTestFactory::makeEntity('EUR');
 
-        $to = CurrencyTestFactory::create(
-            code: 'EUR',
-            name: 'Euro',
-            namePlural: 'Euros',
-            symbol: '€',
-            symbolNative: '€',
-        );
+        $pair = CurrencyPairTestFactory::make($from, $to);
 
-        $pair = CurrencyPairTestFactory::create($from, $to);
-
-        $rateOldest = ExchangeRateHistoryTestFactory::create(
+        $rateOldest = ExchangeRateHistoryTestFactory::make(
             pair: $pair,
             rate: '1.10',
             createdAt: new DateTimeImmutable('-2 hours')
         );
 
-        $rateLatest = ExchangeRateHistoryTestFactory::create(
+        $rateLatest = ExchangeRateHistoryTestFactory::make(
             pair: $pair,
             rate: '1.12',
             createdAt: new DateTimeImmutable('-1 hour')

@@ -25,7 +25,7 @@ class ExchangeRateHistoryFactoryTest extends TestCase
         $rate = '1.23';
         $datetime = new DateTimeImmutable();
 
-        $entity = $this->factory->create($pair, $rate, $datetime);
+        $entity = $this->factory->make($pair, $rate, $datetime);
 
         $this->validate($entity, $pair, $rate, $datetime);
     }
@@ -49,7 +49,7 @@ class ExchangeRateHistoryFactoryTest extends TestCase
             ->method('getUpdatedAt')
             ->willReturn($datetime);
 
-        $entity = $this->factory->createFromRecord($exchangeRate);
+        $entity = $this->factory->makeFromExchangeRate($exchangeRate);
 
         $this->validate($entity, $pair, $rate, $datetime);
     }

@@ -7,7 +7,7 @@ use App\Entity\CurrencyPair;
 
 class CurrencyPairFactory
 {
-    public function create(Currency $from, Currency $to): CurrencyPair
+    public function make(Currency $from, Currency $to): CurrencyPair
     {
         return new CurrencyPair()
             ->setFromCurrency($from)

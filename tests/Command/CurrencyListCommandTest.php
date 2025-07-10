@@ -5,7 +5,6 @@ namespace App\Tests\Command;
 use App\Command\CurrencyListCommand;
 use App\Entity\Currency;
 use App\Service\Domain\CurrencyService;
-use App\Tests\Internal\Factory\CurrencyTestFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -26,9 +25,6 @@ class CurrencyListCommandTest extends TestCase
 
     public function testCurrencyListNotEmpty(): void
     {
-        $from = CurrencyTestFactory::create();
-        $to = CurrencyTestFactory::create('EUR');
-
         $currencies = [
             $this->createConfiguredMock(Currency::class, [
                 'getCode' => 'USD',

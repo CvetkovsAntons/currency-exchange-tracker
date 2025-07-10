@@ -35,7 +35,7 @@ class ExchangeRateHistoryServiceTest extends TestCase
         $exchangeRateHistory = $this->createMock(ExchangeRateHistory::class);
 
         $this->factory
-            ->method('createFromRecord')
+            ->method('makeFromExchangeRate')
             ->with($exchangeRate)
             ->willReturn($exchangeRateHistory);
 
