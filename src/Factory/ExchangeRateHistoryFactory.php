@@ -10,7 +10,11 @@ use DateTimeInterface;
 
 class ExchangeRateHistoryFactory
 {
-    public function make(CurrencyPair $currencyPair, string $rate, ?DateTimeInterface $createdAt = null): ExchangeRateHistory
+    public function make(
+        CurrencyPair $currencyPair,
+        string $rate,
+        ?DateTimeInterface $createdAt = null
+    ): ExchangeRateHistory
     {
         return new ExchangeRateHistory()
             ->setCurrencyPair($currencyPair)
