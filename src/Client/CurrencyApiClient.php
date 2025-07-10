@@ -18,8 +18,8 @@ class CurrencyApiClient extends AbstractApiClient
     public function __construct(
         protected HttpClientInterface $httpClient,
         protected LoggerInterface     $logger,
-        protected string              $baseUrl,
-        protected string              $apiKey
+        protected readonly string     $baseUrl,
+        protected readonly string     $apiKey
     )
     {
         parent::__construct($httpClient, $logger, $baseUrl, $apiKey);
