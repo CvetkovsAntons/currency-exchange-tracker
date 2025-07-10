@@ -1,56 +1,14 @@
 <?php
 
-namespace App\Tests\Service\Domain;
+namespace App\Tests\Service\Domain\ExchangeRateHistoryService;
 
 use App\Entity\CurrencyPair;
-use App\Entity\ExchangeRate;
 use App\Entity\ExchangeRateHistory;
-use App\Factory\ExchangeRateHistoryFactory;
-use App\Repository\ExchangeRateHistoryRepository;
-use App\Service\Domain\ExchangeRateHistoryService;
 use DateTimeImmutable;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-class ExchangeRateHistoryServiceTest extends TestCase
+class ExchangeRateHistoryServiceGetLatestTest extends AbstractExchangeRateHistoryServiceTest
 {
-    private ExchangeRateHistoryFactory&MockObject $factory;
-    private ExchangeRateHistoryRepository&MockObject $repository;
-    private ExchangeRateHistoryService $service;
-
-    protected function setUp(): void
-    {
-        $this->factory = $this->createMock(ExchangeRateHistoryFactory::class);
-        $this->repository = $this->createMock(ExchangeRateHistoryRepository::class);
-
-        $this->service = new ExchangeRateHistoryService(
-            $this->factory,
-            $this->repository,
-        );
-    }
-
-    public function testCreateExchangeRateHistorySuccess(): void
-    {
-        $exchangeRate = $this->createMock(ExchangeRate::class);
-        $exchangeRateHistory = $this->createMock(ExchangeRateHistory::class);
-
-        $this->factory
-            ->method('makeFromExchangeRate')
-            ->with($exchangeRate)
-            ->willReturn($exchangeRateHistory);
-
-        $this->repository
-            ->expects($this->once())
-            ->method('save')
-            ->with($exchangeRateHistory);
-
-        $result = $this->service
-            ->create($exchangeRate);
-
-        $this->assertSame($exchangeRateHistory, $result);
-    }
-
-    public function testGetLatestNoDateTime(): void
+    public function testNoDateTime(): void
     {
         $pair = $this->createMock(CurrencyPair::class);
         $latest = $this->createMock(ExchangeRateHistory::class);
@@ -66,7 +24,7 @@ class ExchangeRateHistoryServiceTest extends TestCase
         $this->assertSame($latest, $result);
     }
 
-    public function testGetLatestReturnsLatestAfter(): void
+    public function testReturnsLatestAfter(): void
     {
         $pair = $this->createMock(CurrencyPair::class);
         $date = new DateTimeImmutable('2025-07-01 12:00:00');
@@ -87,7 +45,7 @@ class ExchangeRateHistoryServiceTest extends TestCase
         $this->assertSame($after, $result);
     }
 
-    public function testGetLatestReturnsLatestBefore(): void
+    public function testReturnsLatestBefore(): void
     {
         $pair = $this->createMock(CurrencyPair::class);
         $date = new DateTimeImmutable('2025-07-01 12:00:00');
@@ -110,7 +68,7 @@ class ExchangeRateHistoryServiceTest extends TestCase
         $this->assertSame($before, $result);
     }
 
-    public function testGetLatestReturnsNull(): void
+    public function testReturnsNull(): void
     {
         $pair = $this->createMock(CurrencyPair::class);
         $date = new DateTimeImmutable('2025-07-01 12:00:00');
