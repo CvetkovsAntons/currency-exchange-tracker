@@ -5,12 +5,7 @@ namespace App\Client;
 use App\Enum\CurrencyApiEndpoint;
 use App\Enum\HttpMethod;
 use App\Exception\CurrencyApi\CurrencyApiRequestException;
-use App\Exception\CurrencyApi\CurrencyApiResponseException;
 use Psr\Log\LoggerInterface;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Throwable;
@@ -18,14 +13,17 @@ use Throwable;
 /**
  * This service is used to communicate with external currency API
  */
-readonly class CurrencyApiClient
+class CurrencyApiClient extends AbstractApiClient
 {
     public function __construct(
-        private HttpClientInterface $httpClient,
-        private LoggerInterface     $logger,
-        private string              $baseUrl,
-        private string              $apiKey,
-    ) {}
+        protected HttpClientInterface $httpClient,
+        protected LoggerInterface     $logger,
+        protected string              $baseUrl,
+        protected string              $apiKey
+    )
+    {
+        parent::__construct($httpClient, $logger, $baseUrl, $apiKey);
+    }
 
     /**
      * @throws CurrencyApiRequestException
@@ -96,52 +94,6 @@ readonly class CurrencyApiClient
         } catch (Throwable $e) {
             $this->processException($e);
         }
-    }
-
-    /**
-     * @throws TransportExceptionInterface
-     */
-    private function makeRequest(
-        HttpMethod          $method,
-        CurrencyApiEndpoint $endpoint,
-        array               $options = []
-    ): ResponseInterface
-    {
-        $url = $this->baseUrl . $endpoint->value;
-
-        $options['query']['apikey'] = $this->apiKey;
-
-        return $this->httpClient->request($method->value, $url, $options);
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws CurrencyApiResponseException
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
-     */
-    private function validateResponse(ResponseInterface $response): void
-    {
-        $statusCode = $response->getStatusCode();
-
-        if ($statusCode === 200) {
-            return;
-        }
-
-        $message = $response->getContent(false);
-
-        throw new CurrencyApiResponseException($message, $statusCode);
-    }
-
-    /**
-     * @throws CurrencyApiRequestException
-     */
-    private function processException(Throwable $throwable): void
-    {
-        $this->logger->error($throwable);
-
-        throw new CurrencyApiRequestException($throwable);
     }
 
 }
