@@ -23,8 +23,6 @@ services:
     nginx:
         image: nginx:latest
         container_name: currency-exchange-nginx
-        environment:
-            NGINX_PORT: ${NGINX_PORT}
         ports:
             - "8080:80"
         volumes:
