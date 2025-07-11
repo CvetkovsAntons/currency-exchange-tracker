@@ -5,6 +5,7 @@ namespace App\Tests\Service\Domain\CurrencyService;
 use App\Entity\Currency;
 use App\Exception\Currency\DuplicateCurrencyCodeException;
 use App\Exception\CurrencyApi\CurrencyDataNotFoundException;
+use App\Tests\Abstract\Service\AbstractCurrencyServiceTest;
 use App\Tests\Internal\Factory\CurrencyTestFactory;
 
 class CurrencyServiceCreateTest extends AbstractCurrencyServiceTest

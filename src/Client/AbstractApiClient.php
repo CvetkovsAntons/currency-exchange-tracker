@@ -15,7 +15,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Throwable;
 
-class AbstractApiClient
+abstract class AbstractApiClient
 {
     public function __construct(
         protected HttpClientInterface $httpClient,

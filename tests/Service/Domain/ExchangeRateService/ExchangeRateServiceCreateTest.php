@@ -6,6 +6,7 @@ use App\Entity\ExchangeRate;
 use App\Exception\CurrencyApi\ExchangeRateNotFoundException as CurrencyApiExchangeRateNotFoundException;
 use App\Exception\CurrencyPair\CurrencyPairNotFoundException;
 use App\Exception\ExchangeRate\DuplicateExchangeRateException;
+use App\Tests\Abstract\Service\AbstractExchangeRateServiceTest;
 use DateTimeImmutable;
 
 class ExchangeRateServiceCreateTest extends AbstractExchangeRateServiceTest

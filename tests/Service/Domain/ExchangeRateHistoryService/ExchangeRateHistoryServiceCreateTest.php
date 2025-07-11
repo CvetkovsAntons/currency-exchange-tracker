@@ -2,10 +2,9 @@
 
 namespace App\Tests\Service\Domain\ExchangeRateHistoryService;
 
-use App\Entity\CurrencyPair;
 use App\Entity\ExchangeRate;
 use App\Entity\ExchangeRateHistory;
-use DateTimeImmutable;
+use App\Tests\Abstract\Service\AbstractExchangeRateHistoryServiceTest;
 
 class ExchangeRateHistoryServiceCreateTest extends AbstractExchangeRateHistoryServiceTest
 {

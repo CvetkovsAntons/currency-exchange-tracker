@@ -4,6 +4,7 @@ namespace App\Tests\Service\Domain\ExchangeRateHistoryService;
 
 use App\Entity\CurrencyPair;
 use App\Entity\ExchangeRateHistory;
+use App\Tests\Abstract\Service\AbstractExchangeRateHistoryServiceTest;
 use DateTimeImmutable;
 
 class ExchangeRateHistoryServiceGetLatestTest extends AbstractExchangeRateHistoryServiceTest

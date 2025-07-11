@@ -1,25 +1,19 @@
 <?php
 
-namespace App\Tests\Service\Domain\ExchangeRateService;
+namespace App\Tests\Abstract\Service;
 
 use App\Entity\Currency;
 use App\Entity\CurrencyPair;
-use App\Entity\ExchangeRate;
-use App\Exception\CurrencyApi\ExchangeRateNotFoundException as CurrencyApiExchangeRateNotFoundException;
-use App\Exception\CurrencyPair\CurrencyPairNotFoundException;
-use App\Exception\ExchangeRate\DuplicateExchangeRateException;
-use App\Exception\ExchangeRate\ExchangeRateNotFoundException;
 use App\Factory\ExchangeRateFactory;
 use App\Provider\CurrencyApiProvider;
 use App\Repository\ExchangeRateRepository;
 use App\Service\Domain\CurrencyPairService;
 use App\Service\Domain\ExchangeRateHistoryService;
 use App\Service\Domain\ExchangeRateService;
-use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class AbstractExchangeRateServiceTest extends TestCase
+abstract class AbstractExchangeRateServiceTest extends TestCase
 {
     protected ExchangeRateFactory&MockObject $factory;
     protected ExchangeRateRepository&MockObject $repository;

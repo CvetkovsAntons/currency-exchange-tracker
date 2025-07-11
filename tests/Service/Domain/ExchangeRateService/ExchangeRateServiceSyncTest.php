@@ -5,6 +5,7 @@ namespace App\Tests\Service\Domain\ExchangeRateService;
 use App\Entity\ExchangeRate;
 use App\Exception\CurrencyApi\ExchangeRateNotFoundException as CurrencyApiExchangeRateNotFoundException;
 use App\Exception\ExchangeRate\ExchangeRateNotFoundException;
+use App\Tests\Abstract\Service\AbstractExchangeRateServiceTest;
 
 class ExchangeRateServiceSyncTest extends AbstractExchangeRateServiceTest
 {

@@ -1,18 +1,14 @@
 <?php
 
-namespace App\Tests\Service\Domain\ExchangeRateHistoryService;
+namespace App\Tests\Abstract\Service;
 
-use App\Entity\CurrencyPair;
-use App\Entity\ExchangeRate;
-use App\Entity\ExchangeRateHistory;
 use App\Factory\ExchangeRateHistoryFactory;
 use App\Repository\ExchangeRateHistoryRepository;
 use App\Service\Domain\ExchangeRateHistoryService;
-use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class AbstractExchangeRateHistoryServiceTest extends TestCase
+abstract class AbstractExchangeRateHistoryServiceTest extends TestCase
 {
     protected ExchangeRateHistoryFactory&MockObject $factory;
     protected ExchangeRateHistoryRepository&MockObject $repository;

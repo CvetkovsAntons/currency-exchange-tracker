@@ -20,6 +20,8 @@
     <testsuites>
         <testsuite name="Project Test Suite">
             <directory>tests</directory>
+            <exclude>tests/Internal</exclude>
+            <exclude>tests/Abstract</exclude>
         </testsuite>
     </testsuites>
 

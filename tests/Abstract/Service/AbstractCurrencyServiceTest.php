@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Service\Domain\CurrencyService;
+namespace App\Tests\Abstract\Service;
 
 use App\Dto\Currency as CurrencyDto;
 use App\Factory\CurrencyFactory;
@@ -10,7 +10,7 @@ use App\Service\Domain\CurrencyService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class AbstractCurrencyServiceTest extends TestCase
+abstract class AbstractCurrencyServiceTest extends TestCase
 {
     protected CurrencyApiProvider&MockObject $provider;
     protected CurrencyFactory&MockObject $factory;

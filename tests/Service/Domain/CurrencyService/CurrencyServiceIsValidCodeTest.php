@@ -2,6 +2,7 @@
 
 namespace App\Tests\Service\Domain\CurrencyService;
 
+use App\Tests\Abstract\Service\AbstractCurrencyServiceTest;
 use App\Tests\Internal\Factory\CurrencyTestFactory;
 use RuntimeException;
 
