@@ -32,4 +32,4 @@ services:
 
     App\Service\RedisService:
         arguments:
-            $redis: '@cache.redis_pool'
+            $cache: '@cache.redis_pool'
