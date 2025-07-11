@@ -7,11 +7,12 @@ use App\Entity\CurrencyPair;
 
 class CurrencyPairFactory
 {
-    public function make(Currency $from, Currency $to): CurrencyPair
+    public function make(Currency $from, Currency $to, bool $isTracked = true): CurrencyPair
     {
         return new CurrencyPair()
             ->setFromCurrency($from)
-            ->setToCurrency($to);
+            ->setToCurrency($to)
+            ->setIsTracked($isTracked);
     }
 
 }

@@ -45,12 +45,13 @@ class ExchangeRateListCommand extends AbstractCommand
                     sprintf('%s -> %s', $from->getCode(), $to->getCode()),
                     $row->getRate(),
                     $row->getUpdatedAt()->format('Y-m-d H:i:s'),
+                    $pair->getIsTracked() ? 'true' : 'false',
                 ];
             },
             array: $exchangeRates
         );
 
-        $io->table(['Currency pair', 'Rate', 'Synced at'], $rows);
+        $io->table(['Currency pair', 'Rate', 'Synced at', 'Is tracked'], $rows);
     }
 
 }

@@ -133,22 +133,14 @@ class ExchangeRateSyncCommand extends AbstractCommand
         $pair = $this->pairService->get($from, $to);
 
         if (is_null($pair)) {
-            $fromCode = $from->getCode();
-            $toCode = $to->getCode();
-
             $io->warning(sprintf(
                 "Currency pair %s-%s doesn't exist. Will be created",
-                $fromCode,
-                $toCode
+                $from->getCode(), $to->getCode()
             ));
 
             $pair = $this->pairService->create($from, $to);
 
-            $io->success(sprintf(
-                'Currency pair %s-%s has been created',
-                $fromCode,
-                $toCode
-            ));
+            $io->success(sprintf('Currency pair %s-%s has been created', $from->getCode(), $to->getCode()));
         }
 
         return $pair;

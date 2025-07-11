@@ -13,11 +13,13 @@ use App\Factory\ExchangeRateFactory;
 use App\Provider\CurrencyApiProvider;
 use App\Repository\ExchangeRateRepository;
 use DateTimeImmutable;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Throwable;
 
 readonly class ExchangeRateService
 {
@@ -27,12 +29,26 @@ readonly class ExchangeRateService
         private ExchangeRateHistoryService $historyService,
         private CurrencyApiProvider        $provider,
         private CurrencyPairService        $pairService,
+        private EntityManagerInterface     $em,
     ) {}
 
+    /**
+     * @throws Throwable
+     */
     private function saveExchangeRate(ExchangeRate $exchangeRate): void
     {
-        $this->repository->save($exchangeRate);
-        $this->historyService->create($exchangeRate);
+        $this->em->beginTransaction();
+
+        try {
+            $this->pairService->track($exchangeRate->getCurrencyPair());
+            $this->repository->save($exchangeRate);
+            $this->historyService->create($exchangeRate);
+            $this->em->commit();
+        } catch (Throwable $e) {
+            $this->em->rollback();
+            $this->em->close();
+            throw $e;
+        }
     }
 
     /**
@@ -45,6 +61,7 @@ readonly class ExchangeRateService
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      * @throws ExternalApiRequestException
+     * @throws Throwable
      */
     public function create(CurrencyPair $pair): ExchangeRate
     {
@@ -85,6 +102,7 @@ readonly class ExchangeRateService
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws Throwable
      */
     public function sync(ExchangeRate $exchangeRate): ExchangeRate
     {
@@ -117,10 +135,11 @@ readonly class ExchangeRateService
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws Throwable
      */
-    public function syncAll(): void
+    public function syncAllTracked(): void
     {
-        foreach ($this->getAll() as $exchangeRate) {
+        foreach ($this->getAllTracked() as $exchangeRate) {
             $this->sync($exchangeRate);
         }
     }
@@ -136,6 +155,11 @@ readonly class ExchangeRateService
     public function getAll(): array
     {
         return $this->repository->findAll();
+    }
+
+    public function getAllTracked(): array
+    {
+        return $this->repository->getAllTracked();
     }
 
     public function delete(ExchangeRate $exchangeRate): void

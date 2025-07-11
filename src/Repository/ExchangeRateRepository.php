@@ -16,4 +16,14 @@ class ExchangeRateRepository extends AbstractRepository
         parent::__construct($registry, ExchangeRate::class);
     }
 
+    public function getAllTracked(): array
+    {
+        return $this->createQueryBuilder('rate')
+            ->join('rate.currencyPair', 'pair')
+            ->where('pair.isTracked = :isTracked')
+            ->setParameter('isTracked', true)
+            ->getQuery()
+            ->getResult();
+    }
+
 }

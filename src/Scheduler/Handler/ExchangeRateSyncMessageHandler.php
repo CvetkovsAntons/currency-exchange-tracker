@@ -13,7 +13,7 @@ use Throwable;
 readonly class ExchangeRateSyncMessageHandler
 {
     public function __construct(
-        private ExchangeRateService $service,
+        private ExchangeRateService $rateService,
         #[Autowire(service: 'monolog.logger.messenger')]
         private LoggerInterface     $logger,
     ) {}
@@ -21,7 +21,7 @@ readonly class ExchangeRateSyncMessageHandler
     public function __invoke(ExchangeRateSyncMessage $message): void
     {
         try {
-            $this->service->syncAll();
+            $this->rateService->syncAllTracked();
             $this->logger->info('Exchange rate synchronization task has been completed');
         } catch (Throwable $e) {
             $this->logger->error($e->getMessage());

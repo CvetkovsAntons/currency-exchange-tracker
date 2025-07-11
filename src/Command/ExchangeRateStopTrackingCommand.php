@@ -13,7 +13,6 @@ use App\Service\Domain\CurrencyPairService;
 use App\Service\Domain\CurrencyService;
 use App\Service\Domain\ExchangeRateService;
 use App\Trait\CommandCurrencyUtilsTrait;
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -40,7 +39,6 @@ class ExchangeRateStopTrackingCommand extends AbstractCommand
         private readonly CurrencyService        $currencyService,
         private readonly CurrencyPairService    $pairService,
         private readonly ExchangeRateService    $rateService,
-        private readonly EntityManagerInterface $em,
         private readonly LoggerInterface        $logger
     )
     {
@@ -81,36 +79,22 @@ class ExchangeRateStopTrackingCommand extends AbstractCommand
     {
         $io->title('Stop track of currencies exchange rate');
 
-        $this->em->beginTransaction();
+        $from = $this->getCurrency(Argument::FROM, $input, $io, false);
+        $to = $this->getCurrency(Argument::TO, $input, $io, false);
 
-        try {
-            $from = $this->getCurrency(Argument::FROM, $input, $io, false);
-            $to = $this->getCurrency(Argument::TO, $input, $io, false);
+        $pair = $this->pairService->get($from, $to);
 
-            $pair = $this->pairService->get($from, $to);
-
-            if (is_null($pair)) {
-                throw new CurrencyPairNotFoundException($from->getCode(), $to->getCode());
-            }
-
-            $exchangeRate = $this->rateService->get($pair);
-
-            if (!is_null($exchangeRate)) {
-                $this->rateService->delete($exchangeRate);
-            }
-
-            $this->em->commit();
-
-            $io->success(sprintf(
-                "Tracking of %s-%s exchange rate has been stoped successfully!",
-                $from->getCode(),
-                $to->getCode()
-            ));
-        } catch (Throwable $e) {
-            $this->em->rollback();
-            $this->em->close();
-            throw $e;
+        if (is_null($pair)) {
+            throw new CurrencyPairNotFoundException($from->getCode(), $to->getCode());
         }
+
+        $this->pairService->untrack($pair);
+
+        $io->success(sprintf(
+            "Tracking of %s-%s exchange rate has been stoped successfully!",
+            $from->getCode(),
+            $to->getCode()
+        ));
     }
 
     protected function currencyService(): CurrencyService
