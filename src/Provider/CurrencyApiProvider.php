@@ -5,8 +5,8 @@ namespace App\Provider;
 use App\Client\CurrencyApiClient;
 use App\Dto\Currency;
 use App\Entity\CurrencyPair;
-use App\Exception\CurrencyApi\CurrencyApiRequestException;
 use App\Exception\CurrencyApi\CurrencyApiUnavailableException;
+use App\Exception\ExternalApi\ExternalApiRequestException;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -24,7 +24,7 @@ readonly class CurrencyApiProvider
 
     /**
      * @throws TransportExceptionInterface
-     * @throws CurrencyApiRequestException
+     * @throws ExternalApiRequestException
      */
     public function isAlive(): bool
     {
@@ -35,7 +35,7 @@ readonly class CurrencyApiProvider
 
     /**
      * @throws ClientExceptionInterface
-     * @throws CurrencyApiRequestException
+     * @throws ExternalApiRequestException
      * @throws CurrencyApiUnavailableException
      * @throws DecodingExceptionInterface
      * @throws ExceptionInterface
@@ -59,7 +59,7 @@ readonly class CurrencyApiProvider
 
     /**
      * @throws ClientExceptionInterface
-     * @throws CurrencyApiRequestException
+     * @throws ExternalApiRequestException
      * @throws CurrencyApiUnavailableException
      * @throws DecodingExceptionInterface
      * @throws ExceptionInterface
@@ -78,7 +78,7 @@ readonly class CurrencyApiProvider
      * Returns decimal string
      *
      * @throws ClientExceptionInterface
-     * @throws CurrencyApiRequestException
+     * @throws ExternalApiRequestException
      * @throws DecodingExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface

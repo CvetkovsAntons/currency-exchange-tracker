@@ -4,11 +4,11 @@ namespace App\Service\Domain;
 
 use App\Entity\CurrencyPair;
 use App\Entity\ExchangeRate;
-use App\Exception\CurrencyApi\CurrencyApiRequestException;
+use App\Exception\CurrencyApi\ExchangeRateNotFoundException as CurrencyApiExchangeRateNotFoundException;
 use App\Exception\CurrencyPair\CurrencyPairNotFoundException;
 use App\Exception\ExchangeRate\DuplicateExchangeRateException;
 use App\Exception\ExchangeRate\ExchangeRateNotFoundException;
-use App\Exception\CurrencyApi\ExchangeRateNotFoundException as CurrencyApiExchangeRateNotFoundException;
+use App\Exception\ExternalApi\ExternalApiRequestException;
 use App\Factory\ExchangeRateFactory;
 use App\Provider\CurrencyApiProvider;
 use App\Repository\ExchangeRateRepository;
@@ -44,7 +44,7 @@ readonly class ExchangeRateService
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
-     * @throws CurrencyApiRequestException
+     * @throws ExternalApiRequestException
      */
     public function create(CurrencyPair $pair): ExchangeRate
     {
@@ -79,7 +79,7 @@ readonly class ExchangeRateService
     /**
      * @throws ClientExceptionInterface
      * @throws CurrencyApiExchangeRateNotFoundException
-     * @throws CurrencyApiRequestException
+     * @throws ExternalApiRequestException
      * @throws DecodingExceptionInterface
      * @throws ExchangeRateNotFoundException
      * @throws RedirectionExceptionInterface
@@ -111,7 +111,7 @@ readonly class ExchangeRateService
     /**
      * @throws ClientExceptionInterface
      * @throws CurrencyApiExchangeRateNotFoundException
-     * @throws CurrencyApiRequestException
+     * @throws ExternalApiRequestException
      * @throws DecodingExceptionInterface
      * @throws ExchangeRateNotFoundException
      * @throws RedirectionExceptionInterface

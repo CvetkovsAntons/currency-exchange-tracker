@@ -9,6 +9,7 @@ services:
             - .:/var/www/symfony
         depends_on:
             - postgres
+            - redis
 
     worker:
         build:

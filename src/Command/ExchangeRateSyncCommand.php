@@ -7,7 +7,6 @@ use App\Entity\CurrencyPair;
 use App\Enum\Argument;
 use App\Exception\Currency\CurrencyNotFoundException;
 use App\Exception\Currency\DuplicateCurrencyCodeException;
-use App\Exception\CurrencyApi\CurrencyApiRequestException;
 use App\Exception\CurrencyApi\CurrencyApiUnavailableException;
 use App\Exception\CurrencyApi\CurrencyDataNotFoundException;
 use App\Exception\CurrencyApi\ExchangeRateNotFoundException as CurrencyApiExchangeRateNotFoundException;
@@ -15,6 +14,7 @@ use App\Exception\CurrencyPair\CurrencyPairNotFoundException;
 use App\Exception\CurrencyPair\DuplicateCurrencyPairException;
 use App\Exception\ExchangeRate\DuplicateExchangeRateException;
 use App\Exception\ExchangeRate\ExchangeRateNotFoundException;
+use App\Exception\ExternalApi\ExternalApiRequestException;
 use App\Service\Domain\CurrencyPairService;
 use App\Service\Domain\CurrencyService;
 use App\Service\Domain\ExchangeRateService;
@@ -75,7 +75,7 @@ class ExchangeRateSyncCommand extends AbstractCommand
      * @return void
      * @throws DuplicateCurrencyPairException
      * @throws Throwable
-     * @throws CurrencyApiRequestException
+     * @throws ExternalApiRequestException
      * @throws CurrencyApiUnavailableException
      * @throws CurrencyDataNotFoundException
      * @throws CurrencyApiExchangeRateNotFoundException

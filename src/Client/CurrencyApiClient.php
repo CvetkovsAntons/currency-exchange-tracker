@@ -3,8 +3,7 @@
 namespace App\Client;
 
 use App\Enum\CurrencyApiEndpoint;
-use App\Enum\HttpMethod;
-use App\Exception\CurrencyApi\CurrencyApiRequestException;
+use App\Exception\ExternalApi\ExternalApiRequestException;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -26,15 +25,12 @@ class CurrencyApiClient extends AbstractApiClient
     }
 
     /**
-     * @throws CurrencyApiRequestException
+     * @throws ExternalApiRequestException
      */
     public function status(): ResponseInterface
     {
         try {
-            $response = $this->makeRequest(
-                method: HttpMethod::GET,
-                endpoint: CurrencyApiEndpoint::STATUS,
-            );
+            $response = $this->get(CurrencyApiEndpoint::STATUS);
 
             $this->validateResponse($response);
 
@@ -45,7 +41,7 @@ class CurrencyApiClient extends AbstractApiClient
     }
 
     /**
-     * @throws CurrencyApiRequestException
+     * @throws ExternalApiRequestException
      */
     public function currencies(string ...$currencies): ResponseInterface
     {
@@ -56,11 +52,7 @@ class CurrencyApiClient extends AbstractApiClient
                 $query['currencies'] = implode(',', $currencies);
             }
 
-            $response = $this->makeRequest(
-                method: HttpMethod::GET,
-                endpoint: CurrencyApiEndpoint::CURRENCIES,
-                options: ['query' => $query],
-            );
+            $response = $this->get(CurrencyApiEndpoint::CURRENCIES, $query);
 
             $this->validateResponse($response);
 
@@ -71,7 +63,7 @@ class CurrencyApiClient extends AbstractApiClient
     }
 
     /**
-     * @throws CurrencyApiRequestException
+     * @throws ExternalApiRequestException
      */
     public function latestExchangeRate(string $fromCurrency, string ...$toCurrencies): ResponseInterface
     {
@@ -82,11 +74,7 @@ class CurrencyApiClient extends AbstractApiClient
                 $query['currencies'] = implode(',', $toCurrencies);
             }
 
-            $response = $this->makeRequest(
-                method: HttpMethod::GET,
-                endpoint: CurrencyApiEndpoint::LATEST_EXCHANGE_RATE,
-                options: ['query' => $query],
-            );
+            $response = $this->get(CurrencyApiEndpoint::LATEST_EXCHANGE_RATE, $query);
 
             $this->validateResponse($response);
 

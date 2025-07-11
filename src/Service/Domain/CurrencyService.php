@@ -4,9 +4,9 @@ namespace App\Service\Domain;
 
 use App\Entity\Currency;
 use App\Exception\Currency\DuplicateCurrencyCodeException;
-use App\Exception\CurrencyApi\CurrencyApiRequestException;
 use App\Exception\CurrencyApi\CurrencyApiUnavailableException;
 use App\Exception\CurrencyApi\CurrencyDataNotFoundException;
+use App\Exception\ExternalApi\ExternalApiRequestException;
 use App\Factory\CurrencyFactory;
 use App\Provider\CurrencyApiProvider;
 use App\Repository\CurrencyRepository;
@@ -34,7 +34,7 @@ readonly class CurrencyService
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
-     * @throws CurrencyApiRequestException
+     * @throws ExternalApiRequestException
      * @throws CurrencyApiUnavailableException
      * @throws ExceptionInterface
      */

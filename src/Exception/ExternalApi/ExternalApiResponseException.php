@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Exception\CurrencyApi;
+namespace App\Exception\ExternalApi;
 
 use App\Exception\AbstractCustomException;
 use Throwable;
 
-class CurrencyApiResponseException extends AbstractCustomException
+class ExternalApiResponseException extends AbstractCustomException
 {
     public function __construct(string $message, int $code, ?Throwable $previous = null)
     {
-        $message = sprintf("Unexpected response from currency API: %s", $message);
+        $message = sprintf("Unexpected response from external API: %s", $message);
 
         parent::__construct($message, $code, $previous);
     }

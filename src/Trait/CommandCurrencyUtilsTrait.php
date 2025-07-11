@@ -4,14 +4,13 @@ namespace App\Trait;
 
 use App\Entity\Currency;
 use App\Enum\Argument;
-use App\Exception\Currency\InvalidCurrencyCodeException;
 use App\Exception\Currency\CurrencyNotFoundException;
 use App\Exception\Currency\DuplicateCurrencyCodeException;
-use App\Exception\CurrencyApi\CurrencyApiRequestException;
+use App\Exception\Currency\InvalidCurrencyCodeException;
 use App\Exception\CurrencyApi\CurrencyApiUnavailableException;
 use App\Exception\CurrencyApi\CurrencyDataNotFoundException;
+use App\Exception\ExternalApi\ExternalApiRequestException;
 use App\Service\Domain\CurrencyService;
-use Exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -28,7 +27,7 @@ trait CommandCurrencyUtilsTrait
 
     /**
      * @throws ClientExceptionInterface
-     * @throws CurrencyApiRequestException
+     * @throws ExternalApiRequestException
      * @throws CurrencyApiUnavailableException
      * @throws CurrencyDataNotFoundException
      * @throws CurrencyNotFoundException
