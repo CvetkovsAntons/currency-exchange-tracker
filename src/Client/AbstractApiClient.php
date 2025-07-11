@@ -35,7 +35,7 @@ abstract class AbstractApiClient
     /**
      * @throws TransportExceptionInterface
      */
-    protected function makeRequest(
+    private function makeRequest(
         HttpMethod          $method,
         CurrencyApiEndpoint $endpoint,
         array               $options = []

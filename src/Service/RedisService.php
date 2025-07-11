@@ -7,18 +7,18 @@ use Symfony\Component\Cache\Adapter\RedisAdapter;
 
 readonly class RedisService
 {
-    public function __construct(private RedisAdapter $redis) {}
+    public function __construct(private RedisAdapter $cache) {}
 
     /**
      * @throws InvalidArgumentException
      */
     public function set(string $key, mixed $value, int $ttl = 3600): void
     {
-        $item = $this->redis->getItem($key);
+        $item = $this->cache->getItem($key);
         $item->set($value);
         $item->expiresAfter($ttl);
 
-        $this->redis->save($item);
+        $this->cache->save($item);
     }
 
     /**
@@ -26,7 +26,7 @@ readonly class RedisService
      */
     public function get(string $key): mixed
     {
-        $item = $this->redis->getItem($key);
+        $item = $this->cache->getItem($key);
 
         if (!$item->isHit()) {
             return null;
@@ -40,7 +40,7 @@ readonly class RedisService
      */
     public function delete(string $key): bool
     {
-        return $this->redis->deleteItem($key);
+        return $this->cache->deleteItem($key);
     }
 
 }
