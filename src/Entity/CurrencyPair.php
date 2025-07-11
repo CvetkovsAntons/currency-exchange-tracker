@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\CurrencyPairRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CurrencyPairRepository::class)]
 #[ORM\Table(name: 'currency_pair')]
@@ -36,6 +37,10 @@ class CurrencyPair
 
     #[ORM\OneToMany(targetEntity: ExchangeRateHistory::class, mappedBy: 'currencyPair', cascade: ['persist'])]
     private ?Collection $exchangeRateHistory = null;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    #[Assert\NotBlank]
+    private bool $isTracked = false;
 
     public function getId(): ?int
     {
@@ -104,6 +109,17 @@ class CurrencyPair
         if ($this->exchangeRateHistory->contains($exchangeRateHistory)) {
             $this->exchangeRateHistory->removeElement($exchangeRateHistory);
         }
+        return $this;
+    }
+
+    public function getIsTracked(): bool
+    {
+        return $this->isTracked;
+    }
+
+    public function setIsTracked(bool $isTracked): static
+    {
+        $this->isTracked = $isTracked;
         return $this;
     }
 
