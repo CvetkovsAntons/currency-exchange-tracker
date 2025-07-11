@@ -10,6 +10,7 @@ use App\Repository\ExchangeRateRepository;
 use App\Service\Domain\CurrencyPairService;
 use App\Service\Domain\ExchangeRateHistoryService;
 use App\Service\Domain\ExchangeRateService;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -21,6 +22,7 @@ abstract class AbstractExchangeRateServiceTest extends TestCase
     protected CurrencyApiProvider&MockObject $provider;
     protected CurrencyPairService&MockObject $pairService;
     protected ExchangeRateService $service;
+    protected EntityManagerInterface $em;
 
     protected function setUp(): void
     {
@@ -29,6 +31,7 @@ abstract class AbstractExchangeRateServiceTest extends TestCase
         $this->historyService = $this->createMock(ExchangeRateHistoryService::class);
         $this->provider = $this->createMock(CurrencyApiProvider::class);
         $this->pairService = $this->createMock(CurrencyPairService::class);
+        $this->em = $this->createMock(EntityManagerInterface::class);
 
         $this->service = $this->getMockBuilder(ExchangeRateService::class)
             ->setConstructorArgs([
@@ -36,7 +39,8 @@ abstract class AbstractExchangeRateServiceTest extends TestCase
                 $this->repository,
                 $this->historyService,
                 $this->provider,
-                $this->pairService
+                $this->pairService,
+                $this->em
             ])
             ->onlyMethods(['exists'])
             ->getMock();

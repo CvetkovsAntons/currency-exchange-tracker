@@ -11,7 +11,6 @@ use App\Exception\CurrencyPair\CurrencyPairNotFoundException;
 use App\Exception\ExternalApi\ExternalApiRequestException;
 use App\Service\Domain\CurrencyPairService;
 use App\Service\Domain\CurrencyService;
-use App\Service\Domain\ExchangeRateService;
 use App\Trait\CommandCurrencyUtilsTrait;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -38,7 +37,6 @@ class ExchangeRateStopTrackingCommand extends AbstractCommand
     public function __construct(
         private readonly CurrencyService        $currencyService,
         private readonly CurrencyPairService    $pairService,
-        private readonly ExchangeRateService    $rateService,
         private readonly LoggerInterface        $logger
     )
     {

@@ -9,8 +9,6 @@ use App\Entity\ExchangeRate;
 use App\Enum\Argument;
 use App\Service\Domain\CurrencyPairService;
 use App\Service\Domain\CurrencyService;
-use App\Service\Domain\ExchangeRateService;
-use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -20,23 +18,17 @@ class ExchangeRateStopTrackingCommandTest extends TestCase
 {
     private CurrencyService&MockObject $currencyService;
     private CurrencyPairService&MockObject $pairService;
-    private ExchangeRateService&MockObject $rateService;
-    private EntityManagerInterface&MockObject $em;
     private ExchangeRateStopTrackingCommand $command;
 
     protected function setUp(): void
     {
         $this->currencyService = $this->createMock(CurrencyService::class);
         $this->pairService = $this->createMock(CurrencyPairService::class);
-        $this->rateService = $this->createMock(ExchangeRateService::class);
-        $this->em = $this->createMock(EntityManagerInterface::class);
         $logger = $this->createMock(LoggerInterface::class);
 
         $this->command = new ExchangeRateStopTrackingCommand(
             $this->currencyService,
             $this->pairService,
-            $this->rateService,
-            $this->em,
             $logger,
         );
     }
@@ -128,23 +120,9 @@ class ExchangeRateStopTrackingCommandTest extends TestCase
             ->with($from, $to)
             ->willReturn($pair);
 
-        $this->rateService
-            ->method('get')
-            ->with($pair)
-            ->willReturn($rate);
-
-        $this->em
-            ->expects($this->once())
-            ->method('beginTransaction');
-
-        $this->em
-            ->expects($this->once())
-            ->method('commit');
-
-        $this->rateService
-            ->expects($this->once())
-            ->method('delete')
-            ->with($rate);
+        $this->pairService
+            ->method('untrack')
+            ->with($pair);
     }
 
 }
