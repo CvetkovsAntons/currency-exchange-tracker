@@ -10,7 +10,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 use Throwable;
 
 /**
- * This service is used to communicate with external currency API
+ * This client is used to communicate with external currency API
  */
 class CurrencyApiClient extends AbstractApiClient
 {
