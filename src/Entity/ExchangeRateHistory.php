@@ -17,7 +17,7 @@ class ExchangeRateHistory
     #[ORM\Column]
     private int $id;
 
-    #[ORM\ManyToOne(targetEntity: CurrencyPair::class, cascade: ['persist', 'remove'], inversedBy: 'exchangeRateHistory')]
+    #[ORM\ManyToOne(targetEntity: CurrencyPair::class, cascade: ['persist'], inversedBy: 'exchangeRateHistory')]
     #[ORM\JoinColumn(name: 'currency_pair_id', referencedColumnName: 'id', nullable: false)]
     private CurrencyPair $currencyPair;
 

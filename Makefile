@@ -41,3 +41,6 @@ worker-stop:
 
 worker-restart:
 	docker compose restart worker
+
+redis-shell:
+	docker exec -it currency-exchange-redis bash

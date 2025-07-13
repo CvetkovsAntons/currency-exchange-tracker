@@ -34,7 +34,7 @@ class CurrencyApiProviderGetCurrencyTest extends AbstractCurrencyApiProviderTest
             ->method('currencies')
             ->willReturn($response);
 
-        $this->serializer
+        $this->denormalizer
             ->expects($this->never())
             ->method('denormalize');
 

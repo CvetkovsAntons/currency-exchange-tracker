@@ -60,10 +60,10 @@ class Currency
     #[Assert\NotBlank]
     private CurrencyType $type;
 
-    #[ORM\OneToMany(targetEntity: CurrencyPair::class, mappedBy: 'fromCurrency')]
+    #[ORM\OneToMany(targetEntity: CurrencyPair::class, mappedBy: 'fromCurrency', cascade: ['persist', 'remove'])]
     private Collection $fromPairs;
 
-    #[ORM\OneToMany(targetEntity: CurrencyPair::class, mappedBy: 'toCurrency')]
+    #[ORM\OneToMany(targetEntity: CurrencyPair::class, mappedBy: 'toCurrency', cascade: ['persist', 'remove'])]
     private Collection $toPairs;
 
     public function getId(): ?int

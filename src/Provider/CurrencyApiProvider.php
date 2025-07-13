@@ -7,6 +7,8 @@ use App\Dto\Currency;
 use App\Entity\CurrencyPair;
 use App\Exception\CurrencyApi\CurrencyApiUnavailableException;
 use App\Exception\ExternalApi\ExternalApiRequestException;
+use App\Service\Cache\CurrencyCacheService;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -19,7 +21,8 @@ readonly class CurrencyApiProvider
 {
     public function __construct(
         private CurrencyApiClient     $client,
-        private DenormalizerInterface $serializer,
+        private DenormalizerInterface $denormalizer,
+        private CurrencyCacheService  $cache,
     ) {}
 
     /**
@@ -42,19 +45,34 @@ readonly class CurrencyApiProvider
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws InvalidArgumentException
      */
     public function getCurrencies(string ...$code): array
     {
+        $currencies = $this->cache->getCurrencies($code);
+        $emptyCurrencies = array_keys(array_filter($currencies, fn ($v) => empty($v)));
+        $currencies = array_filter($currencies);
+
+        if (!empty($currencies) && empty($emptyCurrencies)) {
+            return $currencies;
+        }
+
         if (!$this->isAlive()) {
             throw new CurrencyApiUnavailableException();
         }
 
-        $response = $this->client->currencies(...$code);
+        $response = $this->client->currencies(...$emptyCurrencies);
 
-        return array_map(
-            callback: fn ($v) => $this->serializer->denormalize($v, Currency::class),
+        $emptyCurrencies = array_map(
+            callback: fn ($v) => $this->denormalizer->denormalize($v, Currency::class),
             array: $response->toArray()['data'] ?? [],
         );
+
+        if (!empty($emptyCurrencies)) {
+            $this->cache->setCurrencies($emptyCurrencies);
+        }
+
+        return array_merge($currencies, $emptyCurrencies);
     }
 
     /**
@@ -66,6 +84,7 @@ readonly class CurrencyApiProvider
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws InvalidArgumentException
      */
     public function getCurrency(string $code): ?Currency
     {

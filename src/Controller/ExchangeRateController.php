@@ -21,8 +21,8 @@ class ExchangeRateController extends AbstractController
 {
     public function __construct(
         #[Autowire(service: 'monolog.logger.api')]
-        private readonly LoggerInterface     $logger,
-        private readonly DenormalizerInterface $serializer,
+        private readonly LoggerInterface       $logger,
+        private readonly DenormalizerInterface $denormalizer,
     ) {}
 
     #[Route('/exchange-rate', methods: ['GET'])]
@@ -32,7 +32,7 @@ class ExchangeRateController extends AbstractController
     ): JsonResponse
     {
         try {
-            $request = $this->serializer->denormalize(
+            $request = $this->denormalizer->denormalize(
                 data: $request->query->all(),
                 type: ExchangeRateRequest::class,
                 format: 'json'
