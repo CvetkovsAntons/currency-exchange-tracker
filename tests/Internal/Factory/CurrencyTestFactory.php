@@ -40,10 +40,7 @@ class CurrencyTestFactory
                 ->withNamePlural('Japanese yen')
                 ->withSymbol('¥')
                 ->withSymbolNative('￥'),
-            default => throw new UnsupportedTestCurrencyCodeException(sprintf(
-                'Currency with code %s is not implemented yet',
-                $code
-            ))
+            default => throw new UnsupportedTestCurrencyCodeException($code)
         };
 
         return $builder->build();
