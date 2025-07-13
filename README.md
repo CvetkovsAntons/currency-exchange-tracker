@@ -73,10 +73,12 @@ then you'll need to change database URL inside the `.env` file:
 - From:
     ```dotenv
     DATABASE_URL="pgsql://${DATABASE_USER}:${DATABASE_PASSWORD}@postgres:5432/${DATABASE}?serverVersion=16&charset=utf8"
+    REDIS_URL="redis://default:${REDIS_PASSWORD}@redis:6379"
     ```
 - To:
     ```dotenv
     DATABASE_URL="pgsql://${DATABASE_USER}:${DATABASE_PASSWORD}@127.0.0.1:5432/${DATABASE}?serverVersion=16&charset=utf8"
+    REDIS_URL="redis://default:${REDIS_PASSWORD}@127.0.0.1:6379"  
     ```
   
 ---
@@ -219,6 +221,19 @@ After command successful execution worker container will be stopped
     docker compose restart worker
     ```
   
+---
+
+## **Redis commands**
+### Open redis container terminal
+- Using Make (recommended):
+    ```shell
+    make redis-shell
+    ```
+- Without Make:
+    ```shell
+    docker exec -it currency-exchange-redis bash
+    ```
+
 ---
 
 ### 3. **Project structure**
