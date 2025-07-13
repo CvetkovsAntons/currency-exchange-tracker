@@ -10,6 +10,7 @@ use App\Exception\ExternalApi\ExternalApiRequestException;
 use App\Factory\CurrencyFactory;
 use App\Provider\CurrencyApiProvider;
 use App\Repository\CurrencyRepository;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
@@ -37,6 +38,7 @@ readonly class CurrencyService
      * @throws ExternalApiRequestException
      * @throws CurrencyApiUnavailableException
      * @throws ExceptionInterface
+     * @throws InvalidArgumentException
      */
     public function create(string $currencyCode): Currency
     {

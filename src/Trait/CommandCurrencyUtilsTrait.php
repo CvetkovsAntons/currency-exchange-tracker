@@ -11,6 +11,7 @@ use App\Exception\CurrencyApi\CurrencyApiUnavailableException;
 use App\Exception\CurrencyApi\CurrencyDataNotFoundException;
 use App\Exception\ExternalApi\ExternalApiRequestException;
 use App\Service\Domain\CurrencyService;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -37,6 +38,7 @@ trait CommandCurrencyUtilsTrait
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws InvalidArgumentException
      */
     private function getCurrency(
         Argument       $argument,
