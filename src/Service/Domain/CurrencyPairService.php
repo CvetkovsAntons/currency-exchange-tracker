@@ -41,6 +41,14 @@ readonly class CurrencyPairService
         return $this->repository->findOneBy(['fromCurrency' => $from, 'toCurrency' => $to]);
     }
 
+    /**
+     * @return CurrencyPair[]
+     */
+    public function getAllTracked(): array
+    {
+        return $this->repository->findBy(['isTracked' => true]);
+    }
+
     public function track(CurrencyPair $pair): void
     {
         if ($pair->getIsTracked()) {

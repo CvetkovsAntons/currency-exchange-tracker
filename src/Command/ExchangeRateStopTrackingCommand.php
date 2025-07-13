@@ -2,28 +2,17 @@
 
 namespace App\Command;
 
-use App\Enum\Argument;
-use App\Exception\Currency\CurrencyNotFoundException;
-use App\Exception\Currency\DuplicateCurrencyCodeException;
-use App\Exception\CurrencyApi\CurrencyApiUnavailableException;
-use App\Exception\CurrencyApi\CurrencyDataNotFoundException;
-use App\Exception\CurrencyPair\CurrencyPairNotFoundException;
-use App\Exception\ExternalApi\ExternalApiRequestException;
+use App\Entity\CurrencyPair;
 use App\Service\Domain\CurrencyPairService;
-use App\Service\Domain\CurrencyService;
-use App\Trait\CommandCurrencyUtilsTrait;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Throwable;
 
 #[AsCommand(
@@ -32,10 +21,7 @@ use Throwable;
 )]
 class ExchangeRateStopTrackingCommand extends AbstractCommand
 {
-    use CommandCurrencyUtilsTrait;
-
     public function __construct(
-        private readonly CurrencyService        $currencyService,
         private readonly CurrencyPairService    $pairService,
         private readonly LoggerInterface        $logger
     )
@@ -43,61 +29,53 @@ class ExchangeRateStopTrackingCommand extends AbstractCommand
         parent::__construct($this->logger);
     }
 
-    protected function configure(): void
-    {
-        $this
-            ->addArgument(
-                name: Argument::FROM->value,
-                mode: InputArgument::OPTIONAL,
-                description: 'Currency code (e.g. PHP)',
-            )
-            ->addArgument(
-                name: Argument::TO->value,
-                mode: InputArgument::OPTIONAL,
-                description: 'Currency code (e.g. PHP)',
-            );
-    }
-
     /**
      * @throws ClientExceptionInterface
-     * @throws CurrencyPairNotFoundException
-     * @throws DecodingExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws Throwable
-     * @throws TransportExceptionInterface
-     * @throws ExternalApiRequestException
-     * @throws CurrencyApiUnavailableException
-     * @throws CurrencyDataNotFoundException
-     * @throws CurrencyNotFoundException
-     * @throws DuplicateCurrencyCodeException
-     * @throws ExceptionInterface
      */
     protected function process(InputInterface $input, OutputInterface $output, SymfonyStyle $io): void
     {
         $io->title('Stop track of currencies exchange rate');
 
-        $from = $this->getCurrency(Argument::FROM, $input, $io, false);
-        $to = $this->getCurrency(Argument::TO, $input, $io, false);
+        $pairs = $this->pairService->getAllTracked();
 
-        $pair = $this->pairService->get($from, $to);
-
-        if (is_null($pair)) {
-            throw new CurrencyPairNotFoundException($from->getCode(), $to->getCode());
+        if (empty($pairs)) {
+            $io->warning('Any tracked currency pair has not been found');
+            return;
         }
+
+        $pair = $this->getCurrencyPair($pairs, $io);
 
         $this->pairService->untrack($pair);
 
         $io->success(sprintf(
             "Tracking of %s-%s exchange rate has been stoped successfully!",
-            $from->getCode(),
-            $to->getCode()
+            $pair->getFromCurrency()->getCode(),
+            $pair->getToCurrency()->getCode()
         ));
     }
 
-    protected function currencyService(): CurrencyService
+    /**
+     * @param CurrencyPair[] $pairs
+     * @param SymfonyStyle $io
+     * @return CurrencyPair|null
+     */
+    private function getCurrencyPair(array $pairs, SymfonyStyle $io): ?CurrencyPair
     {
-        return $this->currencyService;
+        $choices = [];
+
+        foreach ($pairs as $pair) {
+            $from = $pair->getFromCurrency()->getCode();
+            $to = $pair->getToCurrency()->getCode();
+            $choices[] = sprintf('%s-%s', $from, $to);
+        }
+
+        $question = new ChoiceQuestion('Select a currency code to remove', $choices);
+        $selectedPair = array_flip($choices)[$io->askQuestion($question)] ?? null;
+
+        return $pairs[$selectedPair] ?? null;
     }
 
 }
