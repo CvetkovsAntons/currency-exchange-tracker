@@ -49,12 +49,17 @@ readonly class CurrencyApiProvider
      */
     public function getCurrencies(string ...$code): array
     {
+        $mapToDto = fn (array $currencies) => array_map(
+            callback: fn ($v) => $this->denormalizer->denormalize($v, Currency::class),
+            array: $currencies,
+        );
+
         $currencies = $this->cache->getCurrencies($code);
         $emptyCurrencies = array_keys(array_filter($currencies, fn ($v) => empty($v)));
         $currencies = array_filter($currencies);
 
         if (!empty($currencies) && empty($emptyCurrencies)) {
-            return $currencies;
+            return $mapToDto($currencies);
         }
 
         if (!$this->isAlive()) {
@@ -63,10 +68,7 @@ readonly class CurrencyApiProvider
 
         $response = $this->client->currencies(...$emptyCurrencies);
 
-        $emptyCurrencies = array_map(
-            callback: fn ($v) => $this->denormalizer->denormalize($v, Currency::class),
-            array: $response->toArray()['data'] ?? [],
-        );
+        $emptyCurrencies = $mapToDto($response->toArray()['data'] ?? []);
 
         if (!empty($emptyCurrencies)) {
             $this->cache->setCurrencies($emptyCurrencies);

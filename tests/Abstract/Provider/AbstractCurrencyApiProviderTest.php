@@ -5,6 +5,7 @@ namespace App\Tests\Abstract\Provider;
 use App\Client\CurrencyApiClient;
 use App\Dto\Currency as CurrencyDto;
 use App\Provider\CurrencyApiProvider;
+use App\Service\Cache\CurrencyCacheService;
 use App\Tests\Internal\Factory\CurrencyTestFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -14,7 +15,8 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 abstract class AbstractCurrencyApiProviderTest extends TestCase
 {
     protected CurrencyApiClient&MockObject $client;
-    protected DenormalizerInterface $denormalizer;
+    protected DenormalizerInterface&MockObject $denormalizer;
+    protected CurrencyCacheService&MockObject $cache;
     protected CurrencyApiProvider $provider;
 
     protected function setUp(): void
@@ -23,14 +25,19 @@ abstract class AbstractCurrencyApiProviderTest extends TestCase
         $this->denormalizer = $this->getMockBuilder(DenormalizerInterface::class)
             ->onlyMethods(['denormalize', 'supportsDenormalization', 'getSupportedTypes'])
             ->getMock();
+        $this->cache = $this->createMock(CurrencyCacheService::class);
 
-        $this->provider = new CurrencyApiProvider($this->client, $this->denormalizer);
+        $this->provider = new CurrencyApiProvider(
+            $this->client,
+            $this->denormalizer,
+            $this->cache,
+        );
     }
 
     protected function providerMock(): CurrencyApiProvider&MockObject
     {
         return $this->getMockBuilder(CurrencyApiProvider::class)
-            ->setConstructorArgs([$this->client, $this->denormalizer])
+            ->setConstructorArgs([$this->client, $this->denormalizer, $this->cache])
             ->onlyMethods(['isAlive'])
             ->getMock();
     }

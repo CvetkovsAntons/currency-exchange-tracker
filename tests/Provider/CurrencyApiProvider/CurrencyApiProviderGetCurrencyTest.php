@@ -2,7 +2,7 @@
 
 namespace App\Tests\Provider\CurrencyApiProvider;
 
-use App\Dto\Currency as CurrencyDto;
+use App\Dto\Currency;
 use App\Exception\CurrencyApi\CurrencyApiUnavailableException;
 use App\Tests\Abstract\Provider\AbstractCurrencyApiProviderTest;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -13,9 +13,14 @@ class CurrencyApiProviderGetCurrencyTest extends AbstractCurrencyApiProviderTest
     {
         $code = 'USD';
         $dto = $this->prepareGetCurrency($code);
+
+        $this->cache
+            ->method('getCurrencies')
+            ->willReturn([$code => $dto]);
+
         $result = $this->provider->getCurrency($code);
 
-        $this->assertInstanceOf(CurrencyDto::class, $result);
+        $this->assertInstanceOf(Currency::class, $result);
         $this->assertSame($dto, $result);
     }
 
