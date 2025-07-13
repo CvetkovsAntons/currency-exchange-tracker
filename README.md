@@ -134,7 +134,7 @@ then you'll need to change database URL inside the `.env` file:
 ### Add exchange rate tracking 
 - Using Make (recommended):
     ```shell
-    make app-exchange-rate-sync
+    make app-rate-sync
     ```
 - Without Make:
     ```shell
@@ -143,7 +143,7 @@ then you'll need to change database URL inside the `.env` file:
 ### Remove exchange rate tracking
 - Using Make (recommended):
     ```shell
-    make app-exchange-rate-remove
+    make app-rate-untrack
     ```
 - Without Make:
     ```shell
@@ -152,7 +152,7 @@ then you'll need to change database URL inside the `.env` file:
 ### List exchange rates in real-time
 - Using Make (recommended):
     ```shell
-    make app-exchange-rate-list
+    make app-rate-list
     ```
 - Without Make:
     ```shell

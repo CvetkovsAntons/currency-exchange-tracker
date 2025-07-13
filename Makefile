@@ -15,13 +15,13 @@ app-shell:
 app-tests-run:
 	docker exec -it currency-exchange-app php bin/phpunit
 
-app-exchange-rate-sync:
+app-rate-sync:
 	docker exec -it currency-exchange-app php bin/console app:exchange-rate:sync
 
-app-exchange-rate-remove:
+app-rate-untrack:
 	docker exec -it currency-exchange-app php bin/console app:exchange-rate:stop-tracking
 
-app-exchange-rate-list:
+app-rate-list:
 	docker exec -it currency-exchange-app php bin/console app:exchange-rate:list
 
 app-currency-list:
